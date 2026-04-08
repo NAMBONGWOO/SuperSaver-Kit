@@ -214,35 +214,30 @@ body {
 <script>
 async function fetchPrice() {
   const btn = document.getElementById('refreshBtn');
-  btn.classList.add('spinning');
+  if (btn) btn.classList.add('spinning');
   try {
-    // Gate.io 공개 API (CORS 허용, 키 불필요)
-    const [tickerRes, klineRes] = await Promise.all([
-      fetch('https://api.gateio.ws/api/v4/spot/tickers?currency_pair=SUT_USDT'),
-      fetch('https://api.gateio.ws/api/v4/spot/candlesticks?currency_pair=SUT_USDT&interval=1d&limit=2')
-    ]);
-    const tickers = await tickerRes.json();
-    const t = Array.isArray(tickers) ? tickers[0] : tickers;
-    const price = parseFloat(t.last);
-    const price24h = parseFloat(t.last) - parseFloat(t.change_percentage || 0) / 100 * parseFloat(t.last);
-    const change = parseFloat(t.change_percentage);
-    const cls = change > 0 ? 'up' : change < 0 ? 'dn' : 'flat';
-    // KRW 환율 (간이: USD 기준 고정 환율 대신 별도 fetch)
-    const krwRes = await fetch('https://api.gateio.ws/api/v4/spot/tickers?currency_pair=USDT_KRW').catch(()=>null);
-    let krwRate = 1380; // 폴백
-    if (krwRes && krwRes.ok) {
-      const krwData = await krwRes.json();
-      if (Array.isArray(krwData) && krwData[0]) krwRate = parseFloat(krwData[0].last);
-    }
-    document.getElementById('chipPrice').textContent = price.toFixed(4) + ' USDT';
-    document.getElementById('chipKrw').textContent = '₩' + Math.round(price * krwRate).toLocaleString('ko-KR');
-    const cc = document.getElementById('chipChange');
-    cc.textContent = (change > 0 ? '+' : '') + change.toFixed(2) + '%';
-    cc.className = 'chip-change ' + cls;
+    const res = await fetch(
+      'https://api.coingecko.com/api/v3/simple/price?ids=super-trust&vs_currencies=usd,krw&include_24hr_change=true',
+      { headers: { 'Accept': 'application/json' } }
+    );
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    const d = data['super-trust'];
+    if (!d) throw new Error('no data');
+    const c = d.usd_24h_change || 0;
+    const cls = c > 0 ? 'up' : c < 0 ? 'dn' : 'flat';
+    const el = (id) => document.getElementById(id);
+    if (el('chipPrice'))  el('chipPrice').textContent  = d.usd.toFixed(4) + ' USDT';
+    if (el('chipKrw'))    el('chipKrw').textContent    = '₩' + Math.round(d.krw).toLocaleString('ko-KR');
+    const cc = el('chipChange');
+    if (cc) { cc.textContent = (c > 0 ? '+' : '') + c.toFixed(2) + '%'; cc.className = 'chip-change ' + cls; }
   } catch(e) {
-    document.getElementById('chipPrice').textContent = '조회 실패';
-    console.error(e);
-  } finally { btn.classList.remove('spinning'); }
+    const p = document.getElementById('chipPrice');
+    if (p) p.textContent = '조회 실패';
+    console.error('SUT fetch error:', e);
+  } finally {
+    if (btn) btn.classList.remove('spinning');
+  }
 }
 fetchPrice();
 setInterval(fetchPrice, 5 * 60 * 1000);

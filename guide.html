@@ -582,38 +582,35 @@ let liveSUT = null;
 /* ── 시세 조회 ── */
 async function fetchPrice() {
     const refreshBtn = document.getElementById('refreshBtn');
-    const display = document.getElementById('tickerDisplay') || document.getElementById('priceDisplay');
     if (refreshBtn) refreshBtn.classList.add('spinning');
+    const display = document.getElementById('tickerDisplay');
     try {
-        const res = await fetch('https://api.gateio.ws/api/v4/spot/tickers?currency_pair=SUT_USDT', { signal: AbortSignal.timeout(8000) });
-        if (!res.ok) throw new Error('API 오류');
-        const tickers = await res.json();
-        const t = Array.isArray(tickers) ? tickers[0] : tickers;
-        liveSUT = parseFloat(t.last);
-        const change = parseFloat(t.change_percentage || 0);
+        const res = await fetch(
+            'https://api.coingecko.com/api/v3/simple/price?ids=super-trust&vs_currencies=usd,krw&include_24hr_change=true',
+            { headers: { 'Accept': 'application/json' } }
+        );
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        const d = data['super-trust'];
+        if (!d) throw new Error('no data');
+        liveSUT = d.usd;
+        const change = d.usd_24h_change || 0;
         const chgClass = change > 0 ? 'up' : change < 0 ? 'dn' : 'flat';
-        const chgSign = change > 0 ? '+' : '';
+        const chgSign  = change > 0 ? '+' : '';
         const now = new Date();
         const timeStr = now.getHours() + ':' + String(now.getMinutes()).padStart(2,'0') + ' 기준';
-        // KRW 근사치 (Gate.io USDT_KRW 없으면 폴백)
-        let krwPrice = Math.round(liveSUT * 1380);
-        try {
-            const krwRes = await fetch('https://quotation-api-cdn.dunamu.com/v1/forex/recent?codes=FRX.KRWUSD');
-            const krwData = await krwRes.json();
-            if (krwData[0]) krwPrice = Math.round(liveSUT / krwData[0].basePrice);
-        } catch(ke) {}
-        if (display) display.innerHTML = `
-            <div class="ticker-price-group" style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;">
-                <span class="ticker-usdt" style="font-size:1.3rem;font-weight:900;color:var(--indigo,#2d2d9f)">${liveSUT.toFixed(4)} USDT</span>
-                <span class="ticker-krw" style="font-size:0.85rem;font-weight:700;color:var(--gray)">≈ ₩${krwPrice.toLocaleString('ko-KR')}</span>
-                <span class="ticker-change ${chgClass}">${chgSign}${change.toFixed(2)}%</span>
-                <span class="ticker-time" style="font-size:0.65rem;color:var(--gray)">${timeStr}</span>
-            </div>`;
+        if (display) display.innerHTML =
+            '<div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;">' +
+            '<span class="ticker-usdt">' + liveSUT.toFixed(4) + ' USDT</span>' +
+            '<span class="ticker-krw">≈ ₩' + Math.round(d.krw).toLocaleString('ko-KR') + '</span>' +
+            '<span class="ticker-change ' + chgClass + '">' + chgSign + change.toFixed(2) + '%</span>' +
+            '<span class="ticker-time">' + timeStr + '</span></div>';
         const noteEl = document.getElementById('tickerNote');
         if (noteEl) noteEl.style.display = '';
-        if (typeof updateLiveValues === 'function') updateLiveValues();
+        updateLiveValues();
     } catch(e) {
-        if (display) display.innerHTML = '<span style="font-size:0.72rem;color:#d93025">시세 조회 실패</span>';
+        if (display) display.innerHTML = '<span style="color:#d93025;font-size:0.75rem">시세 조회 실패</span>';
+        console.error('SUT fetch error:', e);
     } finally {
         if (refreshBtn) refreshBtn.classList.remove('spinning');
     }

@@ -551,36 +551,43 @@ let isManualSut = false; // 사용자가 수동으로 수정했는지
 
 async function fetchSutPrice() {
     const refreshBtn = document.getElementById('refreshBtn');
-    const display    = document.getElementById('priceDisplay');
-    const applyBtn   = document.getElementById('applyBtn');
-    refreshBtn.classList.add('spinning');
-    display.innerHTML = '<span style="font-size:0.8rem;color:var(--gray)">조회 중...</span>';
-    applyBtn.style.display = 'none';
+    if (refreshBtn) refreshBtn.classList.add('spinning');
     try {
-        const res = await fetch('https://api.gateio.ws/api/v4/spot/tickers?currency_pair=SUT_USDT', { signal: AbortSignal.timeout(8000) });
-        if (!res.ok) throw new Error('API 오류');
-        const tickers = await res.json();
-        const t = Array.isArray(tickers) ? tickers[0] : tickers;
-        liveUSDT = parseFloat(t.last);
-        const change = parseFloat(t.change_percentage || 0);
+        const res = await fetch(
+            'https://api.coingecko.com/api/v3/simple/price?ids=super-trust&vs_currencies=usd,krw&include_24hr_change=true',
+            { headers: { 'Accept': 'application/json' } }
+        );
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        const d = data['super-trust'];
+        if (!d) throw new Error('no data');
+
+        liveUSDT = d.usd;
+        const change = d.usd_24h_change || 0;
         const chgClass = change > 0 ? 'up' : change < 0 ? 'dn' : 'flat';
         const chgSign  = change > 0 ? '+' : '';
         const now = new Date();
-        const timeStr = `${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
-        display.innerHTML = `
-            <div style="display:flex;align-items:baseline;gap:6px;flex-wrap:wrap;">
-                <span class="price-usdt">${liveUSDT.toFixed(4)} USDT</span>
-                <span class="price-change ${chgClass}">${chgSign}${change.toFixed(2)}%</span>
-                <span class="price-time">${timeStr}</span>
-            </div>`;
-        applyBtn.style.display = '';
-        document.getElementById('tickerNote').style.display = '';
-        if (!isManualSut) applyLivePrice(true);
+        const timeStr = now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0');
+
+        const display = document.getElementById('priceDisplay');
+        if (display) {
+            display.innerHTML =
+                '<span class="price-usdt">' + liveUSDT.toFixed(4) + ' USDT</span>' +
+                ' <span class="price-krw">≈ ₩' + Math.round(d.krw).toLocaleString('ko-KR') + '</span>' +
+                ' <span class="price-change ' + chgClass + '">' + chgSign + change.toFixed(2) + '%</span>' +
+                ' <span class="price-time">' + timeStr + '</span>';
+        }
+        const applyBtn = document.getElementById('applyBtn');
+        if (applyBtn) applyBtn.style.display = '';
+        const noteEl = document.getElementById('tickerNote');
+        if (noteEl) noteEl.style.display = '';
+        if (!isManualSut && typeof applyLivePrice === 'function') applyLivePrice(true);
     } catch (e) {
-        display.innerHTML = '<span style="font-size:0.75rem;color:#d93025">조회 실패</span>';
-        applyBtn.style.display = 'none';
+        const display = document.getElementById('priceDisplay');
+        if (display) display.innerHTML = '<span style="color:#d93025;font-size:0.8rem">조회 실패</span>';
+        console.error('SUT price fetch error:', e);
     } finally {
-        refreshBtn.classList.remove('spinning');
+        if (refreshBtn) refreshBtn.classList.remove('spinning');
     }
 }
 
