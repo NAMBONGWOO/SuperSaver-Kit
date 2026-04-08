@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SS시뮬레이터">
+    <meta name="theme-color" content="#1e1e72">
+    <link rel="apple-touch-icon" href="icon.png">
+    <link rel="manifest" href="manifest.json">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SuperSaver Kit — 시뮬레이터</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+    <style>
+        :root {
+            --mint:  #2d2d9f;
+            --navy:  #1e1e72;
+            --gray:  #5e6c7c;
+            --bg:    #f4f4ff;
+            --accent:#d93025;
+            --boost: #ff9800;
+            --purple:#7b5ea7;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background: var(--bg);
+            padding: 10px;
+            color: var(--navy);
+            -webkit-text-size-adjust: none;
+        }
+        .card {
+            background: white;
+            padding: 16px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            max-width: 860px;
+            margin: auto auto 12px;
+        }
+        h2 { font-size: 1.2rem; font-weight: 800; text-align: center; color: var(--indigo); margin-bottom: 3px; }
+        .badge {
+            display: inline-block; background: var(--indigo); color: white;
+            font-size: 0.6rem; font-weight: 700; padding: 2px 7px;
+            border-radius: 20px; vertical-align: middle; margin-left: 5px;
+        }
+        .sub { font-size: 0.7rem; text-align: center; color: var(--gray); margin-bottom: 14px; }
+
+        /* ── 실시간 시세 배너 ── */
+        .price-banner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(135deg, #e0f5f4, #f0faf9);
+            border: 1px solid #d0d0f0;
+            border-radius: 12px;
+            padding: 10px 14px;
+            margin-bottom: 14px;
+            gap: 10px;
+        }
+        .price-banner-left { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .price-tag {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--gray);
+            letter-spacing: 0.06em;
+        }
+        .price-live {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+        }
+        .price-usdt {
+            font-size: 1.3rem;
+            font-weight: 900;
+            color: var(--indigo);
+            letter-spacing: -0.02em;
+        }
+        .price-krw {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--gray);
+        }
+        .price-change {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 8px;
+        }
+        .price-change.up { background: #e8f5e9; color: #2e7d32; }
+        .price-change.dn { background: #ffebee; color: #c62828; }
+        .price-change.flat { background: #f5f5f5; color: var(--gray); }
+        .price-time { font-size: 0.65rem; color: var(--gray); }
+
+        .price-right { display: flex; align-items: center; gap: 8px; }
+
+        .apply-btn {
+            padding: 6px 12px;
+            background: var(--indigo);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Pretendard', sans-serif;
+            white-space: nowrap;
+        }
+        .apply-btn:active { opacity: 0.85; transform: scale(0.97); }
+
+        .refresh-btn {
+            width: 32px; height: 32px;
+            background: white;
+            border: 1px solid #d0d0f0;
+            border-radius: 8px;
+            color: var(--indigo);
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Pretendard', sans-serif;
+        }
+        .refresh-btn:active { opacity: 0.75; }
+        .refresh-btn.spinning { animation: spin 0.8s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        .price-loading { font-size: 0.75rem; color: var(--gray); }
+        .price-error { font-size: 0.72rem; color: var(--accent); }
+
+        /* ── 입력 영역 ── */
+        .input-group { background: #f8f9fa; padding: 11px 13px; border-radius: 14px; margin-bottom: 12px; }
+        .irow2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+        .irow2:last-child { margin-bottom: 0; }
+        .ifield { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+        .ifield label { font-size: 0.78rem; font-weight: 700; color: var(--gray); white-space: nowrap; }
+        .ifield input, .ifield select {
+            padding: 6px 8px; border: 1px solid #ddd; border-radius: 8px;
+            text-align: right; font-weight: 800; color: var(--indigo);
+            background: white; outline: none; font-size: 0.85rem; width: 95px;
+            font-family: 'Pretendard', sans-serif;
+        }
+        .ifield input.live-synced { border-color: var(--indigo); background: var(--indigo-lt); }
+        .ifield select { width: 88px; }
+        .price-pair { display: flex; align-items: center; gap: 4px; }
+        .price-pair input { width: 54px; }
+        .price-pair span { font-size: 0.78rem; color: var(--gray); font-weight: 600; }
+        .stepper { display: inline-flex; align-items: center; gap: 4px; }
+        .btn-step {
+            width: 26px; height: 26px; border-radius: 6px; border: 1px solid #ddd;
+            background: white; color: var(--indigo); font-weight: 900; cursor: pointer;
+            font-size: 1rem; font-family: 'Pretendard', sans-serif;
+        }
+        .stepper input { width: 40px; text-align: center; }
+
+        /* ── 변동 시나리오 ── */
+        .scenario-group {
+            background: var(--indigo-lt); border: 1px solid #d0d0f0;
+            padding: 11px 13px; border-radius: 14px; margin-bottom: 12px;
+        }
+        .scenario-title { font-size: 0.8rem; font-weight: 800; color: var(--indigo); margin-bottom: 10px; }
+        .scenario-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px; }
+        .scenario-row:last-child { margin-bottom: 0; }
+        .sch-field { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+        .sch-field label { font-size: 0.75rem; font-weight: 700; color: var(--gray); white-space: nowrap; }
+        .sch-field input {
+            padding: 5px 7px; border: 1px solid #d0d0f0; border-radius: 7px;
+            text-align: right; font-weight: 800; color: var(--indigo);
+            background: white; outline: none; font-size: 0.82rem; width: 80px;
+            font-family: 'Pretendard', sans-serif;
+        }
+        .sch-note { font-size: 0.68rem; color: var(--gray); margin-top: 6px; line-height: 1.5; }
+
+        /* ── 요약 카드 ── */
+        .summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+        .sum-card { background: #f8f9fa; border-radius: 12px; padding: 10px 12px; }
+        .sum-label { font-size: 0.65rem; color: var(--gray); margin-bottom: 3px; line-height: 1.4; }
+        .sum-val { font-size: 1.0rem; font-weight: 800; color: var(--navy); }
+        .sum-val.green  { color: #2e7d32; }
+        .sum-val.mint   { color: var(--indigo); }
+        .sum-val.purple { color: var(--purple); }
+
+        /* ── 테이블 ── */
+        .tbl-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid #eee; -webkit-overflow-scrolling: touch; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.8rem; text-align: right; white-space: nowrap; table-layout: auto; }
+        th { background: var(--navy); color: white; padding: 8px 6px; font-weight: 600; text-align: center; font-size: 0.78rem; }
+        td { padding: 7px 6px; border-bottom: 1px solid #f0f0f0; font-size: 0.8rem; text-align: right; }
+        tr:last-child td { border-bottom: none; }
+        tr.month-start td { border-top: 2px solid #d0d0f0; }
+        th:first-child, td:first-child {
+            position: sticky; left: 0; z-index: 2;
+            text-align: center; padding-left: 10px; padding-right: 10px;
+        }
+        th:first-child { background: var(--navy); }
+        td:first-child { background: #fcfcfc; font-weight: 700; border-right: 1px solid #eee; }
+
+        .c-date     { color: var(--gray); text-align: center; font-size: 0.75rem; }
+        .c-contract { color: var(--indigo);   font-weight: 800; }
+        .c-cost     { color: var(--boost);  font-weight: 700; }
+        .c-daily    { color: var(--accent); font-weight: 800; }
+        .c-weekly   { color: #2e7d32;       font-weight: 800; }
+        .c-approved { color: var(--navy);   font-weight: 800; }
+        .c-none     { color: #ccc; }
+
+        .th-add { width: 110px; }
+        .td-add { text-align: center; padding-left: 4px; padding-right: 4px; }
+        .boost-ctrl { display: inline-flex; align-items: center; gap: 3px; }
+        .btn-mini {
+            width: 22px; height: 22px; border-radius: 5px;
+            border: 1px solid #ffe0b2; background: #fff3e0;
+            color: var(--boost); font-weight: 900; cursor: pointer; font-size: 0.85rem;
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+            font-family: 'Pretendard', sans-serif;
+        }
+        .add-input {
+            width: 50px; border: 1px solid #eee; border-radius: 5px;
+            text-align: center; font-size: 0.8rem; font-weight: 800;
+            color: var(--boost); background: white; outline: none; padding: 3px 2px;
+            font-family: 'Pretendard', sans-serif;
+        }
+        .price-input {
+            width: 46px; border: none; border-bottom: 1px dashed #b2dfdb;
+            text-align: center; font-size: 0.72rem; font-weight: 700;
+            color: var(--purple); background: transparent; outline: none; padding: 1px 0;
+            font-family: 'Pretendard', sans-serif;
+        }
+
+        /* ── 차트 ── */
+        .chart-title { font-size: 0.88rem; font-weight: 800; color: var(--navy); margin-bottom: 10px; }
+        .chart-wrap { position: relative; width: 100%; height: 260px; }
+        .legend { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 10px; font-size: 0.72rem; }
+        .legend-item { display: flex; align-items: center; gap: 5px; color: var(--gray); }
+        .legend-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+        /* ── 저장 버튼 ── */
+        .save-btn {
+            width: 100%; height: 46px; background: var(--navy); color: white;
+            border: none; border-radius: 14px; font-weight: 800; font-size: 0.95rem;
+            margin-top: 14px; cursor: pointer; font-family: 'Pretendard', sans-serif;
+            box-shadow: 0 4px 10px rgba(26,42,64,0.2);
+        }
+        .save-btn:active { transform: scale(0.98); opacity: 0.9; }
+        .notice { font-size: 0.67rem; color: #aaa; margin-top: 12px; line-height: 1.6; padding-left: 4px; }
+
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
+        input[type=number] { -moz-appearance: textfield; }
+      .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 999;
+    background: white; border-top: 1px solid #e2e8ef;
+    display: flex; height: 60px;
+    box-shadow: 0 -4px 16px rgba(15,31,53,0.08);
+    max-width: 860px; margin: 0 auto;
+  }
+  /* iOS 홈 인디케이터 대응 */
+  @supports (padding-bottom: env(safe-area-inset-bottom)) {
+    .bottom-nav { padding-bottom: env(safe-area-inset-bottom); height: calc(60px + env(safe-area-inset-bottom)); }
+  }
+  .nav-item {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 3px; text-decoration: none; color: #9aa5b4; font-size: 0.65rem; font-weight: 600;
+    transition: color 0.15s;
+  }
+  .nav-item svg { width: 22px; height: 22px; stroke: currentColor; }
+  .nav-item.active, .nav-item:hover { color: #00938a; }
+  body { padding-bottom: 68px; }
+
+  :root {
+    --indigo-deep: #1e1e72;
+    --indigo:      #2d2d9f;
+    --indigo-mid:  #3d3dbb;
+    --indigo-lt:   #f0f0ff;
+    --indigo-bg:   #f4f4ff;
+    --gold:        #FFD700;
+    --border:      #e0e0f4;
+    --text-main:   #1e1e72;
+    --text-sub:    #8888bb;
+  }
+  body { background: var(--indigo-bg) !important; padding-bottom: 68px !important; }
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
+    background: white; border-top: 1px solid var(--border);
+    display: flex; height: 60px;
+    box-shadow: 0 -4px 20px rgba(30,30,114,0.08);
+    max-width: 100%;
+  }
+  @supports (padding-bottom: env(safe-area-inset-bottom)) {
+    .bottom-nav { padding-bottom: env(safe-area-inset-bottom); height: calc(60px + env(safe-area-inset-bottom)); }
+  }
+  .nav-item {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 3px; text-decoration: none; color: #bbbbdd; font-size: 0.63rem; font-weight: 700;
+    transition: color 0.15s;
+  }
+  .nav-item svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; }
+  .nav-item.active { color: var(--indigo); }
+
+</style>
+</head>
+<body>
+
+<div class="card" id="captureArea">
+    <h2>SuperSave Simulator <span class="badge">2.0</span></h2>
+    <div class="sub" id="todayStr"></div>
+
+    <!-- 실시간 시세 배너 -->
+    <div class="price-banner" id="priceBanner">
+        <div class="price-banner-left">
+            <span class="price-tag">SUT 실시간 시세</span>
+            <div class="price-live" id="priceDisplay">
+                <span class="price-loading">시세 조회 중...</span>
+            </div>
+        </div>
+        <div class="price-right">
+            <button class="apply-btn" onclick="applyLivePrice()" id="applyBtn" style="display:none">
+                계산에 적용
+            </button>
+            <button class="refresh-btn" onclick="fetchSutPrice()" id="refreshBtn" title="새로고침">↺</button>
+        </div>
+    </div>
+
+    <!-- 기본 입력 -->
+    <div class="input-group">
+        <div class="irow2">
+            <div class="ifield">
+                <label>잔여 신용대금</label>
+                <input type="text" id="baseApproved" value="2,400" oninput="fmtInput(this); run()">
+            </div>
+            <div class="ifield">
+                <label>현재 일지급금</label>
+                <input type="text" id="baseDaily" value="6.58" oninput="fmtInput(this); run()">
+            </div>
+        </div>
+        <div class="irow2">
+            <div class="ifield">
+                <label>주정산 요일</label>
+                <select id="targetDay" onchange="saveData(); run()">
+                    <option value="1">월요일</option><option value="2">화요일</option>
+                    <option value="3">수요일</option><option value="4">목요일</option>
+                    <option value="5">금요일</option><option value="6">토요일</option>
+                    <option value="0">일요일</option>
+                </select>
+            </div>
+            <div class="ifield">
+                <label>시뮬레이션 기간</label>
+                <div class="stepper">
+                    <button class="btn-step" onclick="chgWeeks(-4)">−</button>
+                    <input type="number" id="weeks" value="12" min="1" max="104" oninput="saveData(); initAndRun()">
+                    <button class="btn-step" onclick="chgWeeks(4)">+</button>
+                </div>
+            </div>
+        </div>
+        <div class="irow2">
+            <div class="ifield">
+                <label>신용매수가 / SUT시세</label>
+                <div class="price-pair">
+                    <input type="number" id="creditPrice" value="3.24" step="0.01" oninput="saveData(); run()">
+                    <span>/</span>
+                    <input type="number" id="sutPrice" value="0.7091" step="0.0001" oninput="onSutManual()">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 변동 시나리오 -->
+    <div class="scenario-group">
+        <div class="scenario-title">📈 변동 시나리오 설정</div>
+        <div class="scenario-row">
+            <div class="sch-field">
+                <label>SUT시세 주간 변동률</label>
+                <div class="price-pair">
+                    <input type="number" id="sutChangeRate" value="0" step="0.1" oninput="saveData(); initAndRun()">
+                    <span>%</span>
+                </div>
+            </div>
+            <div class="sch-field">
+                <label>신용매수가 주간 변동률</label>
+                <div class="price-pair">
+                    <input type="number" id="crChangeRate" value="0" step="0.1" oninput="saveData(); initAndRun()">
+                    <span>%</span>
+                </div>
+            </div>
+        </div>
+        <div class="scenario-row">
+            <div class="sch-field">
+                <label>변동 시작 주차</label>
+                <input type="number" id="changeStartWeek" value="1" min="1" oninput="saveData(); initAndRun()">
+            </div>
+            <div class="sch-field">
+                <label>주차별 직접 입력</label>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <span style="font-size:0.72rem; color:var(--gray);">표에서 수정</span>
+                    <input type="checkbox" id="inlineEdit" onchange="saveData(); toggleInlineEdit(); run()"
+                        style="width:18px; height:18px; accent-color:var(--mint); cursor:pointer;">
+                </div>
+            </div>
+        </div>
+        <div class="sch-note">
+            * 변동률: 시작 주차부터 매주 누적 적용<br>
+            * 주차별 직접 입력 체크 시 표 안에서 각 주차의 신용매수가 / SUT시세를 개별 수정 가능
+        </div>
+    </div>
+
+    <!-- 요약 카드 -->
+    <div class="summary">
+        <div class="sum-card"><div class="sum-label">최종 잔여 신용대금</div><div class="sum-val mint" id="s_approved">-</div></div>
+        <div class="sum-card"><div class="sum-label">최종 일지급금</div><div class="sum-val green" id="s_daily">-</div></div>
+        <div class="sum-card"><div class="sum-label">최종 주정산</div><div class="sum-val green" id="s_weekly">-</div></div>
+        <div class="sum-card"><div class="sum-label">기간 내 총 주정산 수령</div><div class="sum-val purple" id="s_totalWeekly">-</div></div>
+        <div class="sum-card"><div class="sum-label">기간 내 총 재참여금</div><div class="sum-val mint" id="s_totalContract">-</div></div>
+        <div class="sum-card"><div class="sum-label">기간 내 총 SUT매수비용<br>(Step2 별도비용 합계)</div><div class="sum-val" id="s_totalCost">-</div></div>
+    </div>
+
+    <!-- 시뮬레이션 테이블 -->
+    <div class="tbl-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>차수</th>
+                    <th>날짜</th>
+                    <th id="th-price" style="display:none">신용매수가<br>/ SUT시세</th>
+                    <th class="th-add">추가투입</th>
+                    <th>가용합계</th>
+                    <th>재참여</th>
+                    <th>SUT매수</th>
+                    <th>일지급</th>
+                    <th>주정산</th>
+                    <th>잔여대금</th>
+                </tr>
+            </thead>
+            <tbody id="simBody"></tbody>
+        </table>
+    </div>
+
+    <div class="notice">
+        * 단위: USDT &nbsp;|&nbsp; 재참여: 가용합계 도달 시 100 USDT 단위 자동 재참여<br>
+        * 잔여대금: 주정산 지급만큼 감소, 재참여(준비금×2.4)만큼 증가 &nbsp;|&nbsp; 단순 참조용
+    </div>
+</div>
+
+<!-- 월별 차트 -->
+<div class="card">
+    <div class="chart-title">📊 월별 수익 요약</div>
+    <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#2e7d32"></div>월 주정산 수령액</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#ff9800"></div>월 재참여금</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#00938a; border-radius:50%"></div>잔여 신용대금 (우축)</div>
+    </div>
+    <div class="chart-wrap">
+        <canvas id="monthlyChart" role="img" aria-label="월별 주정산 수령액, 재참여금, 잔여 신용대금 차트">월별 수익 요약 차트</canvas>
+    </div>
+</div>
+
+<!-- 저장 버튼 -->
+<div style="max-width: 860px; margin: auto; padding: 0 10px;">
+    <button class="save-btn" onclick="captureScreen()">📸 시뮬레이션 결과 이미지로 저장</button>
+</div>
+
+<script>
+/* ════════════════════════════════
+   기본 설정
+════════════════════════════════ */
+const today = new Date();
+const weekNames = ['일','월','화','수','목','금','토'];
+document.getElementById('todayStr').textContent =
+    `${today.getFullYear()}년 ${today.getMonth()+1}월 ${today.getDate()}일 (${weekNames[today.getDay()]}요일)`;
+
+const f = (n, d=0) => Number(n).toLocaleString('ko-KR', {minimumFractionDigits:d, maximumFractionDigits:d});
+const ceilOne = n => Math.ceil(n * 10) / 10;
+function raw(id) { return parseFloat(document.getElementById(id).value.replace(/,/g,'')) || 0; }
+function fmtInput(el) {
+    let v = el.value.replace(/[^0-9.]/g,'');
+    let p = v.split('.');
+    p[0] = p[0].replace(/\B(?=(\d{3})+(?!\d))/g,',');
+    el.value = p.join('.');
+    saveData();
+}
+
+/* ════════════════════════════════
+   SUT 실시간 시세 조회 (CoinGecko)
+════════════════════════════════ */
+let liveUSDT = null;
+let liveKRW  = null;
+let isManualSut = false; // 사용자가 수동으로 수정했는지
+
+async function fetchSutPrice() {
+    const refreshBtn = document.getElementById('refreshBtn');
+    const display    = document.getElementById('priceDisplay');
+    const applyBtn   = document.getElementById('applyBtn');
+
+    refreshBtn.classList.add('spinning');
+    display.innerHTML = '<span class="price-loading">시세 조회 중...</span>';
+    applyBtn.style.display = 'none';
+
+    try {
+        // CoinGecko public API — SUT(super-trust) 시세
+        const res = await fetch(
+            'https://api.coingecko.com/api/v3/simple/price?ids=super-trust&vs_currencies=usd,krw&include_24hr_change=true',
+            { signal: AbortSignal.timeout(8000) }
+        );
+        if (!res.ok) throw new Error('API 응답 오류');
+        const data = await res.json();
+        const d = data['super-trust'];
+        if (!d) throw new Error('데이터 없음');
+
+        liveUSDT = d.usd;
+        liveKRW  = d.krw;
+        const change = d.usd_24h_change ?? 0;
+        const chgClass = change > 0 ? 'up' : change < 0 ? 'dn' : 'flat';
+        const chgSign  = change > 0 ? '+' : '';
+        const now = new Date();
+        const timeStr = `${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')} 기준`;
+
+        display.innerHTML = `
+            <span class="price-usdt">${liveUSDT.toFixed(4)} USDT</span>
+            <span class="price-krw">≈ ₩${Math.round(liveKRW).toLocaleString('ko-KR')}</span>
+            <span class="price-change ${chgClass}">${chgSign}${change.toFixed(2)}%</span>
+            <span class="price-time">${timeStr}</span>`;
+
+        applyBtn.style.display = '';
+
+        // 사용자가 수동으로 바꾸지 않았으면 자동 반영
+        if (!isManualSut) applyLivePrice(true);
+
+    } catch (e) {
+        display.innerHTML = `<span class="price-error">시세 조회 실패 — 수동 입력을 사용하세요</span>`;
+        applyBtn.style.display = 'none';
+    } finally {
+        refreshBtn.classList.remove('spinning');
+    }
+}
+
+function applyLivePrice(silent = false) {
+    if (liveUSDT === null) return;
+    const sutInput = document.getElementById('sutPrice');
+    sutInput.value = liveUSDT.toFixed(4);
+    sutInput.classList.add('live-synced');
+    isManualSut = false;
+    saveData();
+    initAndRun();
+    if (!silent) {
+        // 적용 확인 피드백 (잠깐 버튼 텍스트 변경)
+        const btn = document.getElementById('applyBtn');
+        btn.textContent = '✓ 적용됨';
+        setTimeout(() => { btn.textContent = '계산에 적용'; }, 1500);
+    }
+}
+
+function onSutManual() {
+    // 사용자가 SUT시세를 직접 수정하면 live sync 해제
+    isManualSut = true;
+    document.getElementById('sutPrice').classList.remove('live-synced');
+    saveData();
+    run();
+}
+
+/* ════════════════════════════════
+   localStorage
+════════════════════════════════ */
+function saveData() {
+    localStorage.setItem('ss2', JSON.stringify({
+        baseApproved:    document.getElementById('baseApproved').value,
+        baseDaily:       document.getElementById('baseDaily').value,
+        targetDay:       document.getElementById('targetDay').value,
+        creditPrice:     document.getElementById('creditPrice').value,
+        sutPrice:        document.getElementById('sutPrice').value,
+        weeks:           document.getElementById('weeks').value,
+        sutChangeRate:   document.getElementById('sutChangeRate').value,
+        crChangeRate:    document.getElementById('crChangeRate').value,
+        changeStartWeek: document.getElementById('changeStartWeek').value,
+        inlineEdit:      document.getElementById('inlineEdit').checked
+    }));
+}
+
+function loadData() {
+    const s = localStorage.getItem('ss2');
+    if (!s) return;
+    const d = JSON.parse(s);
+    const sv = (id, v) => { if (v !== undefined) document.getElementById(id).value = v; };
+    sv('baseApproved',    d.baseApproved    || '2,400');
+    sv('baseDaily',       d.baseDaily       || '6.58');
+    sv('targetDay',       d.targetDay       || '1');
+    sv('creditPrice',     d.creditPrice     || '3.24');
+    sv('sutPrice',        d.sutPrice        || '0.7091');
+    sv('weeks',           d.weeks           || '12');
+    sv('sutChangeRate',   d.sutChangeRate   || '0');
+    sv('crChangeRate',    d.crChangeRate    || '0');
+    sv('changeStartWeek', d.changeStartWeek || '1');
+    if (d.inlineEdit) document.getElementById('inlineEdit').checked = true;
+}
+
+/* ════════════════════════════════
+   주 수 조절
+════════════════════════════════ */
+function chgWeeks(delta) {
+    const el = document.getElementById('weeks');
+    el.value = Math.min(104, Math.max(1, (parseInt(el.value)||0) + delta));
+    saveData(); initAndRun();
+}
+function initAndRun() { initTable(); run(); }
+
+/* ════════════════════════════════
+   인라인 편집 토글
+════════════════════════════════ */
+function toggleInlineEdit() {
+    const on = document.getElementById('inlineEdit').checked;
+    document.getElementById('th-price').style.display = on ? '' : 'none';
+    document.querySelectorAll('.price-cell-td').forEach(td => td.style.display = on ? '' : 'none');
+}
+
+/* ════════════════════════════════
+   테이블 초기화
+════════════════════════════════ */
+function initTable() {
+    const weeks    = parseInt(document.getElementById('weeks').value) || 12;
+    const inlineOn = document.getElementById('inlineEdit').checked;
+    const baseCr   = parseFloat(document.getElementById('creditPrice').value) || 3.24;
+    const baseSut  = parseFloat(document.getElementById('sutPrice').value) || 0.7091;
+    const crRate   = parseFloat(document.getElementById('crChangeRate').value) || 0;
+    const sutRate  = parseFloat(document.getElementById('sutChangeRate').value) || 0;
+    const startW   = parseInt(document.getElementById('changeStartWeek').value) || 1;
+    const tbody    = document.getElementById('simBody');
+    tbody.innerHTML = '';
+
+    for (let i = 1; i <= weeks; i++) {
+        const steps  = Math.max(0, i - startW);
+        const crVal  = +(baseCr  * Math.pow(1 + crRate/100,  steps)).toFixed(4);
+        const sutVal = +(baseSut * Math.pow(1 + sutRate/100, steps)).toFixed(4);
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${i}</td>
+            <td class="c-date" id="d_date_${i}">-</td>
+            <td class="price-cell-td" style="display:${inlineOn?'':'none'}; text-align:center; padding:4px 3px;">
+                <div style="display:flex;flex-direction:column;gap:3px;align-items:center;">
+                    <input class="price-input" type="number" id="cr_${i}" value="${crVal}" step="0.01" oninput="run()" placeholder="신용매수가">
+                    <input class="price-input" type="number" id="sut_${i}" value="${sutVal}" step="0.0001" oninput="run()" placeholder="SUT시세">
+                </div>
+            </td>
+            <td class="td-add">
+                <div class="boost-ctrl">
+                    <button class="btn-mini" onclick="chgBoost(${i},-100)">−</button>
+                    <input class="add-input" type="number" id="add_${i}" value="0" oninput="run()">
+                    <button class="btn-mini" onclick="chgBoost(${i},100)">+</button>
+                </div>
+            </td>
+            <td id="d_total_${i}">-</td>
+            <td id="d_contract_${i}" class="c-none">-</td>
+            <td id="d_cost_${i}" class="c-none">-</td>
+            <td class="c-daily" id="d_daily_${i}">-</td>
+            <td class="c-weekly" id="d_weekly_${i}">-</td>
+            <td class="c-approved" id="d_approved_${i}">-</td>`;
+        tbody.appendChild(tr);
+    }
+}
+
+function chgBoost(i, delta) {
+    const el = document.getElementById(`add_${i}`);
+    el.value = Math.max(0, (parseFloat(el.value)||0) + delta);
+    run();
+}
+
+/* ════════════════════════════════
+   차트
+════════════════════════════════ */
+let myChart = null;
+function updateChart(monthData) {
+    if (myChart) myChart.destroy();
+    myChart = new Chart(document.getElementById('monthlyChart'), {
+        data: {
+            labels: monthData.map(m => m.label),
+            datasets: [
+                { type:'bar', label:'월 주정산', yAxisID:'y', data:monthData.map(m=>Math.round(m.weekly)), backgroundColor:'#2e7d3299', borderColor:'#2e7d32', borderWidth:1 },
+                { type:'bar', label:'월 재참여금', yAxisID:'y', data:monthData.map(m=>Math.round(m.contract)), backgroundColor:'#ff980099', borderColor:'#ff9800', borderWidth:1 },
+                { type:'line', label:'잔여 신용대금', yAxisID:'y2', data:monthData.map(m=>Math.round(m.approved)), borderColor:'#00938a', backgroundColor:'#00938a22', borderWidth:2, pointRadius:3, fill:false, tension:0.3 }
+            ]
+        },
+        options: {
+            responsive:true, maintainAspectRatio:false,
+            interaction:{ mode:'index', intersect:false },
+            plugins:{ legend:{ display:false } },
+            scales:{
+                x:{ ticks:{font:{size:11}}, grid:{display:false} },
+                y:{ position:'left', grid:{color:'#f0f0f0'}, ticks:{font:{size:11}, callback:v=>f(v)}, title:{display:true, text:'수령 / 재참여 (USDT)', font:{size:10}} },
+                y2:{ position:'right', grid:{drawOnChartArea:false}, ticks:{font:{size:11}, callback:v=>f(v)}, title:{display:true, text:'잔여 신용대금 (USDT)', font:{size:10}} }
+            }
+        }
+    });
+}
+
+/* ════════════════════════════════
+   핵심 시뮬레이션
+════════════════════════════════ */
+function run() {
+    let approved = raw('baseApproved');
+    let daily    = raw('baseDaily');
+    const baseCr   = parseFloat(document.getElementById('creditPrice').value) || 3.24;
+    const baseSut  = parseFloat(document.getElementById('sutPrice').value)    || 0.7091;
+    const crRate   = parseFloat(document.getElementById('crChangeRate').value)  || 0;
+    const sutRate  = parseFloat(document.getElementById('sutChangeRate').value) || 0;
+    const startW   = parseInt(document.getElementById('changeStartWeek').value) || 1;
+    const inlineOn = document.getElementById('inlineEdit').checked;
+    const targetDay = parseInt(document.getElementById('targetDay').value);
+    const weeks     = parseInt(document.getElementById('weeks').value) || 12;
+
+    let diff = targetDay - today.getDay();
+    if (diff <= 0) diff += 7;
+    const firstDate = new Date(today);
+    firstDate.setDate(today.getDate() + diff);
+
+    let carry = 0, totalWeekly = 0, totalContract = 0, totalCost = 0;
+    const monthMap = {};
+
+    for (let i = 1; i <= weeks; i++) {
+        const dt = new Date(firstDate);
+        dt.setDate(firstDate.getDate() + (i-1)*7);
+
+        let crPrice, sPrice;
+        if (inlineOn) {
+            crPrice = parseFloat(document.getElementById(`cr_${i}`)?.value)  || baseCr;
+            sPrice  = parseFloat(document.getElementById(`sut_${i}`)?.value) || baseSut;
+        } else {
+            const steps = Math.max(0, i - startW);
+            crPrice = +(baseCr  * Math.pow(1 + crRate/100,  steps)).toFixed(4);
+            sPrice  = +(baseSut * Math.pow(1 + sutRate/100, steps)).toFixed(4);
+        }
+
+        const co           = crPrice / 1.2;
+        const sutPerUnit   = ceilOne(100 / co);
+        const step2PerUnit = sutPerUnit * sPrice;
+        const costPerUnit  = 100 + step2PerUnit;
+        const extra        = parseFloat(document.getElementById(`add_${i}`)?.value) || 0;
+
+        const weeklyPay = daily * 7;
+        approved -= weeklyPay;
+        if (approved < 0) approved = 0;
+
+        const available   = weeklyPay + carry + extra;
+        const units       = costPerUnit > 0 ? Math.floor(available / costPerUnit) : 0;
+        const contractAmt = units * 100;
+        const step2Cost   = units * step2PerUnit;
+
+        if (contractAmt > 0) {
+            const newCredit = contractAmt * 2.4;
+            approved += newCredit;
+            daily    += newCredit / 365;
+            carry     = available - (contractAmt + step2Cost);
+        } else {
+            carry = available;
+        }
+
+        totalWeekly   += weeklyPay;
+        totalContract += contractAmt;
+        totalCost     += step2Cost;
+
+        const mKey = `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}`;
+        if (!monthMap[mKey]) monthMap[mKey] = { label:`${dt.getMonth()+1}월`, weekly:0, contract:0, approved:0 };
+        monthMap[mKey].weekly   += weeklyPay;
+        monthMap[mKey].contract += contractAmt;
+        monthMap[mKey].approved  = approved;
+
+        const prevDt = new Date(firstDate);
+        prevDt.setDate(firstDate.getDate() + (i-2)*7);
+        const trEl = document.getElementById(`d_date_${i}`)?.closest('tr');
+        if (trEl) trEl.className = (i > 1 && prevDt.getMonth() !== dt.getMonth()) ? 'month-start' : '';
+
+        const set = (id, val) => { const el=document.getElementById(id); if(el) el.textContent=val; };
+        const cls = (id, c)   => { const el=document.getElementById(id); if(el) el.className=c; };
+        set(`d_date_${i}`,     `${dt.getMonth()+1}/${dt.getDate()}`);
+        set(`d_total_${i}`,    f(available,0));
+        set(`d_contract_${i}`, contractAmt>0 ? f(contractAmt)  : '-');
+        set(`d_cost_${i}`,     contractAmt>0 ? f(step2Cost,1)  : '-');
+        set(`d_daily_${i}`,    f(daily,2));
+        set(`d_weekly_${i}`,   f(daily*7,1));
+        set(`d_approved_${i}`, f(approved,0));
+        cls(`d_contract_${i}`, contractAmt>0 ? 'c-contract' : 'c-none');
+        cls(`d_cost_${i}`,     contractAmt>0 ? 'c-cost'     : 'c-none');
+    }
+
+    document.getElementById('s_approved').textContent      = f(approved,0)       + ' USDT';
+    document.getElementById('s_daily').textContent         = f(daily,2)           + ' USDT';
+    document.getElementById('s_weekly').textContent        = f(daily*7,1)         + ' USDT';
+    document.getElementById('s_totalWeekly').textContent   = f(totalWeekly,0)     + ' USDT';
+    document.getElementById('s_totalContract').textContent = f(totalContract,0)   + ' USDT';
+    document.getElementById('s_totalCost').textContent     = f(totalCost,1)       + ' USDT';
+
+    updateChart(Object.values(monthMap));
+}
+
+/* ════════════════════════════════
+   이미지 저장
+════════════════════════════════ */
+function captureScreen() {
+    html2canvas(document.getElementById('captureArea'), {
+        scale:3, useCORS:true, backgroundColor:'#f4f7f9', logging:false, allowTaint:true
+    }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = `SuperSave_Sim2_${new Date().toISOString().slice(0,10)}.png`;
+        link.href = canvas.toDataURL();
+        link.click();
+    });
+}
+
+/* ════════════════════════════════
+   초기화
+════════════════════════════════ */
+window.onload = function() {
+    loadData();
+    initAndRun();
+    toggleInlineEdit();
+    // 실시간 시세 조회 (페이지 로드 시 자동)
+    fetchSutPrice();
+    // 5분마다 자동 갱신
+    setInterval(fetchSutPrice, 5 * 60 * 1000);
+};
+</script>
+
+
+<script>
+document.getElementById('nav-sim').classList.add('active');
+</script>
+
+
+<nav class="bottom-nav">
+  <a class="nav-item" href="index.html" id="nav-home">
+    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>홈
+  </a>
+  <a class="nav-item" href="guide.html" id="nav-guide">
+    <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>해설집
+  </a>
+  <a class="nav-item" href="calculator.html" id="nav-calc">
+    <svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="16" y2="10"/></svg>계산기
+  </a>
+  <a class="nav-item" href="simulator.html" id="nav-sim">
+    <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>시뮬레이터
+  </a>
+</nav>
+
+<script>
+(function(){
+  var el = document.getElementById('nav-sim');
+  if(el) el.classList.add('active');
+})();
+</script>
+</body>
+</html>

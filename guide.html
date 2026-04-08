@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="apple-mobile-web-app-title" content="SuperSaver Kit">
+<meta name="theme-color" content="#1e1e72">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SuperSaver Kit — 해설집</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --mint:    #00938a;
+  --mint-lt: #e0f5f4;
+  --mint-dk: #006b63;
+  --navy:    #0f1f35;
+  --navy-lt: #1a2e4a;
+  --gold:    #c9a84c;
+  --gold-lt: #fdf3dc;
+  --red:     #d93025;
+  --gray:    #5a6a7a;
+  --gray-lt: #f4f7f9;
+  --white:   #ffffff;
+  --border:  #e2e8ef;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Noto Sans KR', sans-serif; background: #f0f4f8; color: var(--navy); line-height: 1.7; }
+
+/* ── 헤더 ── */
+.hero {
+  background: linear-gradient(160deg, #1e1e72 0%, #2d2d9f 55%, #1e1e72 100%); color: white;
+  padding: 64px 24px 52px; text-align: center;
+  position: relative; overflow: hidden;
+}
+.hero::before {
+  content: ''; position: absolute; top: -80px; left: -80px;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(0,147,138,0.18) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero::after {
+  content: ''; position: absolute; bottom: -60px; right: -60px;
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(201,168,76,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-tag {
+  display: inline-block; background: rgba(0,147,138,0.25); color: rgba(255,215,0,0.8);
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.15em;
+  padding: 5px 14px; border-radius: 20px; border: 1px solid rgba(0,147,138,0.4);
+  margin-bottom: 20px;
+}
+.hero h1 {
+  font-family: 'Noto Serif KR', serif;
+  font-size: clamp(1.8rem, 5vw, 2.8rem); font-weight: 900;
+  line-height: 1.25; margin-bottom: 16px; letter-spacing: -0.02em;
+}
+.hero h1 em { color: var(--gold); font-style: normal; }
+.hero-sub { font-size: 0.95rem; color: rgba(255,255,255,0.65); max-width: 520px; margin: 0 auto; }
+
+/* ── 실시간 시세 위젯 ── */
+.live-ticker {
+  max-width: 860px; margin: 0 auto;
+  background: white; border-radius: 0 0 20px 20px;
+  border: 1px solid var(--border); border-top: none;
+  padding: 14px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 10px;
+  box-shadow: 0 4px 16px rgba(15,31,53,0.07);
+}
+.ticker-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.ticker-label {
+  font-size: 0.68rem; font-weight: 700; color: var(--gray);
+  letter-spacing: 0.1em; text-transform: uppercase;
+  background: var(--indigo-lt); color: var(--indigo);
+  padding: 3px 10px; border-radius: 20px;
+}
+.ticker-price-group { display: flex; align-items: baseline; gap: 8px; }
+.ticker-usdt { font-size: 1.5rem; font-weight: 900; color: var(--indigo); letter-spacing: -0.02em; }
+.ticker-krw  { font-size: 0.9rem;  font-weight: 700; color: var(--gray); }
+.ticker-change {
+  font-size: 0.75rem; font-weight: 700;
+  padding: 3px 9px; border-radius: 10px;
+}
+.ticker-change.up { background: #e8f5e9; color: #2e7d32; }
+.ticker-change.dn { background: #ffebee; color: #c62828; }
+.ticker-change.flat { background: #f5f5f5; color: var(--gray); }
+.ticker-time { font-size: 0.65rem; color: var(--gray); }
+.ticker-right { display: flex; align-items: center; gap: 8px; }
+.ticker-loading { font-size: 0.8rem; color: var(--gray); }
+.ticker-error  { font-size: 0.75rem; color: var(--red); }
+.refresh-btn {
+  width: 32px; height: 32px; background: var(--gray-lt);
+  border: 1px solid var(--border); border-radius: 8px;
+  color: var(--indigo); font-size: 1rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.refresh-btn.spinning { animation: spin 0.8s linear infinite; }
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+/* ── 레이아웃 ── */
+.container { max-width: 860px; margin: 0 auto; padding: 0 16px 64px; }
+
+/* ── 섹션 ── */
+.section {
+  background: white; border-radius: 20px; padding: 36px 32px;
+  margin-top: 20px; box-shadow: 0 2px 16px rgba(15,31,53,0.06);
+  border: 1px solid var(--border);
+}
+.section-num { color: white !important;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; background: var(--indigo); color: white;
+  border-radius: 50%; font-size: 0.8rem; font-weight: 900; margin-bottom: 10px; flex-shrink: 0;
+}
+.section-header {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border);
+}
+.section-title { font-family: 'Noto Serif KR', serif; font-size: 1.2rem; font-weight: 700; color: var(--navy); letter-spacing: -0.02em; }
+.section-title span { color: var(--indigo); }
+p { font-size: 0.92rem; color: #3a4a5c; line-height: 1.8; margin-bottom: 12px; }
+p:last-child { margin-bottom: 0; }
+
+/* ── 강조 박스 ── */
+.highlight-box {
+  background: var(--indigo-lt); border-left: 4px solid var(--indigo);
+  border-radius: 0 12px 12px 0; padding: 16px 20px; margin: 16px 0;
+  font-size: 0.9rem; color: var(--indigo); font-weight: 500;
+}
+.gold-box {
+  background: var(--gold-lt); border-left: 4px solid var(--gold);
+  border-radius: 0 12px 12px 0; padding: 16px 20px; margin: 16px 0;
+  font-size: 0.9rem; color: #7a5a10; font-weight: 500;
+}
+.navy-box {
+  background: linear-gradient(160deg, #1e1e72 0%, #2d2d9f 55%, #1e1e72 100%); border-radius: 14px; padding: 20px 24px; margin: 16px 0;
+  color: rgba(255,255,255,0.9); font-size: 0.88rem; line-height: 1.8;
+}
+.navy-box strong { color: var(--gold); }
+
+/* ── 흐름도 ── */
+.flow { display: flex; flex-direction: column; gap: 0; margin: 20px 0; }
+.flow-item { display: flex; gap: 16px; align-items: flex-start; position: relative; }
+.flow-item:not(:last-child)::after {
+  content: ''; position: absolute; left: 19px; top: 42px;
+  width: 2px; height: calc(100% - 10px);
+  background: linear-gradient(to bottom, var(--mint), transparent);
+}
+.flow-dot {
+  width: 40px; height: 40px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 900; font-size: 0.82rem; flex-shrink: 0; position: relative; z-index: 1;
+}
+.flow-dot.step1 { background: var(--indigo); color: white; }
+.flow-dot.step2 { background: var(--gold); color: white; }
+.flow-dot.stepG { background: #2e7d32; color: white; }
+.flow-content { flex: 1; background: var(--gray-lt); border-radius: 12px; padding: 14px 18px; margin-bottom: 12px; }
+.flow-content h4 { font-size: 0.88rem; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.flow-content p { font-size: 0.82rem; color: var(--gray); margin: 0; line-height: 1.6; }
+.flow-content .amount { font-size: 1.0rem; font-weight: 900; color: var(--indigo); margin-top: 4px; }
+
+/* ── 수식 카드 ── */
+.formula-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 16px 0; }
+.formula-card { background: var(--gray-lt); border-radius: 14px; padding: 16px 18px; border: 1px solid var(--border); }
+.formula-label { font-size: 0.7rem; font-weight: 700; color: var(--gray); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; }
+.formula-expr { font-size: 1.0rem; font-weight: 900; color: var(--navy); letter-spacing: -0.02em; }
+.formula-expr em { color: var(--indigo); font-style: normal; }
+.formula-note { font-size: 0.72rem; color: var(--gray); margin-top: 4px; }
+
+/* ── 비교 테이블 ── */
+.compare-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin: 16px 0; }
+.compare-table th { background: linear-gradient(160deg, #1e1e72 0%, #2d2d9f 55%, #1e1e72 100%); color: white; padding: 10px 14px; text-align: left; font-weight: 700; font-size: 0.8rem; }
+.compare-table th:first-child { border-radius: 10px 0 0 0; }
+.compare-table th:last-child  { border-radius: 0 10px 0 0; }
+.compare-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: #3a4a5c; vertical-align: top; }
+.compare-table tr:last-child td { border-bottom: none; }
+.compare-table tr:nth-child(even) td { background: var(--gray-lt); }
+.tag-mint { display: inline-block; background: var(--indigo-lt); color: var(--indigo); font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
+.tag-gold { display: inline-block; background: var(--gold-lt); color: #7a5a10; font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
+
+/* ── 변수 카드 ── */
+.var-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 16px 0; }
+.var-card { border: 1px solid var(--border); border-radius: 14px; padding: 16px; position: relative; overflow: hidden; }
+.var-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--indigo); }
+.var-card.gold::before { background: var(--gold); }
+.var-card.navy::before { background: linear-gradient(160deg, #1e1e72 0%, #2d2d9f 55%, #1e1e72 100%); }
+.var-name  { font-size: 0.72rem; font-weight: 700; color: var(--gray); letter-spacing: 0.06em; margin-bottom: 6px; }
+.var-value { font-size: 1.3rem; font-weight: 900; color: var(--indigo); letter-spacing: -0.02em; margin-bottom: 4px; }
+.var-card.gold .var-value { color: var(--gold); }
+.var-card.navy .var-value { color: var(--gold); }
+.var-desc  { font-size: 0.75rem; color: var(--gray); line-height: 1.5; }
+
+/* ── Right 증서 흐름 ── */
+.cert-flow { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0; margin: 20px 0; position: relative; }
+.cert-step { text-align: center; padding: 20px 12px; position: relative; }
+.cert-step:not(:last-child)::after {
+  content: '→'; position: absolute; right: -8px; top: 50%;
+  transform: translateY(-50%); font-size: 1.2rem; color: var(--indigo); font-weight: 900;
+}
+.cert-icon { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin: 0 auto 10px; }
+.cert-step h4 { font-size: 0.82rem; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.cert-step p { font-size: 0.75rem; color: var(--gray); margin: 0; line-height: 1.5; }
+
+/* ── 복리 바 ── */
+.compound-bars { display: flex; flex-direction: column; gap: 10px; margin: 20px 0; }
+.bar-row { display: flex; align-items: center; gap: 12px; }
+.bar-label { font-size: 0.78rem; font-weight: 700; color: var(--gray); min-width: 52px; text-align: right; }
+.bar-track { flex: 1; height: 28px; background: var(--gray-lt); border-radius: 6px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 6px; display: flex; align-items: center; padding-left: 10px; font-size: 0.75rem; font-weight: 700; color: white; background: linear-gradient(90deg, var(--mint), var(--mint-dk)); white-space: nowrap; }
+.bar-val { font-size: 0.78rem; font-weight: 700; color: var(--navy); min-width: 80px; }
+
+/* ── 실시간 연동 강조 ── */
+.live-val {
+  display: inline-block;
+  background: var(--indigo-lt);
+  color: var(--indigo);
+  font-weight: 900;
+  padding: 1px 6px;
+  border-radius: 6px;
+  font-size: 0.9em;
+  border: 1px solid rgba(0,147,138,0.2);
+  cursor: help;
+}
+.live-val::after {
+  content: ' ●';
+  font-size: 0.6em;
+  color: var(--indigo);
+  vertical-align: super;
+}
+
+/* ── 푸터 ── */
+.footer { text-align: center; padding: 32px 16px; font-size: 0.75rem; color: var(--gray); }
+
+@media (max-width: 600px) {
+  .section { padding: 24px 18px; }
+  .cert-step:not(:last-child)::after { display: none; }
+  .cert-flow { grid-template-columns: 1fr; }
+  .live-ticker { border-radius: 0; }
+}
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 999;
+    background: white; border-top: 1px solid #e2e8ef;
+    display: flex; height: 60px;
+    box-shadow: 0 -4px 16px rgba(15,31,53,0.08);
+    max-width: 860px; margin: 0 auto;
+  }
+  /* iOS 홈 인디케이터 대응 */
+  @supports (padding-bottom: env(safe-area-inset-bottom)) {
+    .bottom-nav { padding-bottom: env(safe-area-inset-bottom); height: calc(60px + env(safe-area-inset-bottom)); }
+  }
+  .nav-item {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 3px; text-decoration: none; color: #9aa5b4; font-size: 0.65rem; font-weight: 600;
+    transition: color 0.15s;
+  }
+  .nav-item svg { width: 22px; height: 22px; stroke: currentColor; }
+  .nav-item.active, .nav-item:hover { color: var(--indigo); }
+  body { padding-bottom: 68px; }
+
+  :root {
+    --indigo-deep: #1e1e72;
+    --indigo:      #2d2d9f;
+    --indigo-mid:  #3d3dbb;
+    --indigo-lt:   #f0f0ff;
+    --indigo-bg:   #f4f4ff;
+    --gold:        #FFD700;
+    --border:      #e0e0f4;
+    --text-main:   #1e1e72;
+    --text-sub:    #8888bb;
+  }
+  body { background: var(--indigo-bg) !important; padding-bottom: 68px !important; }
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
+    background: white; border-top: 1px solid var(--border);
+    display: flex; height: 60px;
+    box-shadow: 0 -4px 20px rgba(30,30,114,0.08);
+    max-width: 100%;
+  }
+  @supports (padding-bottom: env(safe-area-inset-bottom)) {
+    .bottom-nav { padding-bottom: env(safe-area-inset-bottom); height: calc(60px + env(safe-area-inset-bottom)); }
+  }
+  .nav-item {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 3px; text-decoration: none; color: #bbbbdd; font-size: 0.63rem; font-weight: 700;
+    transition: color 0.15s;
+  }
+  .nav-item svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; }
+  .nav-item.active { color: var(--indigo); }
+
+</style>
+</head>
+<body>
+
+<!-- 헤더 -->
+<div class="hero">
+  <div class="hero-tag">DECENTRALIZED CREDIT TRANSACTION · DeCT</div>
+  <h1>슈퍼세이브<br><em>구조 완전 해설</em></h1>
+  <p class="hero-sub">주식회사 슈퍼트러스트가 운영하는 코인 금융 플랫폼 슈퍼세이브의 계약 구조, 수익 원리, Right 증서 시스템을 논리적으로 정리한 안내서입니다.</p>
+</div>
+
+<!-- 실시간 시세 위젯 -->
+<div class="live-ticker">
+  <div class="ticker-left">
+    <span class="ticker-label">SUT 실시간 시세</span>
+    <div id="tickerDisplay">
+      <span class="ticker-loading">시세 조회 중...</span>
+    </div>
+  </div>
+  <div class="ticker-right">
+    <span style="font-size:0.65rem; color:var(--gray)" id="tickerNote" style="display:none">● 본문 시세 연동됨</span>
+    <button class="refresh-btn" onclick="fetchPrice()" id="refreshBtn" title="새로고침">↺</button>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- 1. 슈퍼세이브란 -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">1</div>
+    <h2 class="section-title">슈퍼세이브란 <span>무엇인가</span></h2>
+  </div>
+  <p>슈퍼세이브는 주식회사 슈퍼트러스트가 운영하는 코인 금융 플랫폼으로, <strong>스테이킹과 레버리지의 하이브리드 구조</strong>를 기반으로 합니다. 회원이 SUT 토큰을 매개로 회사와 신용거래 계약을 체결하고, 그 계약에서 발생하는 신용대금을 365일에 걸쳐 분할 수령하는 방식입니다.</p>
+  <div class="highlight-box">
+    핵심 개념: <strong>DeCT(Decentralized Credit Transaction)</strong> — 탈중앙화 신용거래. 시장 시세보다 높은 미래가치(신용매수가)로 SUT를 평가하여 신용대금을 승인하는 구조입니다.
+  </div>
+  <p>전용 앱 <strong>슈퍼스트러스</strong>를 통해 모든 거래가 진행되며, 준비금은 USDT(테더) 기준 100 USDT 단위로 참여할 수 있습니다.</p>
+</div>
+
+<!-- 2. SUT 토큰 -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">2</div>
+    <h2 class="section-title">SUT <span>토큰 기본 정보</span></h2>
+  </div>
+  <div class="var-grid">
+    <div class="var-card">
+      <div class="var-name">네트워크</div>
+      <div class="var-value" style="font-size:1.0rem">Polygon</div>
+      <div class="var-desc">폴리곤 네트워크에서 발행된 ERC-20 계열 토큰</div>
+    </div>
+    <div class="var-card gold">
+      <div class="var-name">거래소 시세 (실시간)</div>
+      <div class="var-value" id="v_market">조회 중...</div>
+      <div class="var-desc">GATE·KuCoin 거래소 기준 시장 유통 가격</div>
+    </div>
+    <div class="var-card navy">
+      <div class="var-name">신용매수가 (예시)</div>
+      <div class="var-value">3.24 USDT</div>
+      <div class="var-desc">회사가 미래가치로 인정하는 SUT 기준가격</div>
+    </div>
+  </div>
+  <div class="gold-box">
+    <strong>핵심 원리:</strong> 시장 시세(<span id="t_market1" class="live-val">조회 중</span>)와 신용매수가(3.24 USDT)의 차이가 수익의 원천입니다. 회사는 시세보다 <span id="t_ratio" class="live-val">-</span>배 높은 가격으로 SUT를 평가하여 신용대금을 승인합니다.
+  </div>
+</div>
+
+<!-- 3. 신용거래 계약 구조 -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">3</div>
+    <h2 class="section-title">신용거래 계약 <span>구조</span></h2>
+  </div>
+  <p>1건의 신용거래 계약은 <strong>Step 1과 Step 2</strong>, 두 가지로 구성됩니다. 두 Step 모두 동일한 SUT 수량을 기준으로 하며, 각각 동일한 신용대금이 승인됩니다.</p>
+
+  <div class="flow">
+    <div class="flow-item">
+      <div class="flow-dot step1">S1</div>
+      <div class="flow-content">
+        <h4>Step 1 — 준비금(USDT) 회사 전송</h4>
+        <p>준비금 USDT를 회사 지갑으로 전송하고 TXID를 앱에 입력. 회사는 보유한 SUT를 회사보유분 매수가 기준으로 자동 매수·매도 처리하며, 20% 마진을 적용해 신용매수가 기준으로 신용대금을 승인. 이 과정은 앱 내부에서 자동 진행되며 별도 SUT 전송 불필요.</p>
+        <div class="amount">신용대금 = 준비금 × 1.2 승인</div>
+      </div>
+    </div>
+    <div class="flow-item">
+      <div class="flow-dot step2">S2</div>
+      <div class="flow-content">
+        <h4>Step 2 — 시장에서 SUT 매수 후 전송 (별도 비용)</h4>
+        <p>앱이 안내하는 SUT 수량을 거래소에서 시장 시세(<span id="t_market2" class="live-val">조회 중</span>)로 직접 매수하여 회사 지갑으로 전송. 이 비용은 준비금과 별도로 준비해야 하며, 시세가 낮을수록 부담이 줄어듦.</p>
+        <div class="amount">신용대금 = Step 1과 동일 금액 추가 승인</div>
+      </div>
+    </div>
+    <div class="flow-item">
+      <div class="flow-dot stepG">✓</div>
+      <div class="flow-content">
+        <h4>계약 완료 — 총 신용대금 확정</h4>
+        <p>Step 1 + Step 2 신용대금 합산. 준비금 1,000 USDT 기준 총 신용대금 2,400 USDT 승인.</p>
+        <div class="amount">총 신용대금 = 준비금 × 2.4</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="navy-box" id="exampleBox">
+    <strong>예시 계산 (준비금 1,000 USDT, 신용매수가 3.24, SUT시세 <span id="t_ex_price">조회 중</span>)</strong><br>
+    회사보유분 매수가 = 3.24 ÷ 1.2 = <strong>2.70 USDT</strong><br>
+    SUT 수량 = 1,000 ÷ 2.70 = 370.37... → <strong>370.4 SUT</strong> (소수점 1자리 올림 처리)<br>
+    Step 1 신용대금 = 1,000 × 1.2 = <strong>1,200 USDT</strong><br>
+    Step 2 비용 = 370.4 × <span id="t_ex_price2">-</span> = <strong id="t_ex_step2cost">-</strong> USDT (별도 준비)<br>
+    총 신용대금 = 1,200 + 1,200 = <strong>2,400 USDT</strong>
+  </div>
+</div>
+
+<!-- 4. 수익 발생 원리 -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">4</div>
+    <h2 class="section-title">수익 발생 <span>원리</span></h2>
+  </div>
+  <p>승인된 신용대금은 365일에 걸쳐 매일 균등하게 지급됩니다. 정해진 요일에 7일치를 한꺼번에 주정산으로 수령하는 방식입니다.</p>
+  <div class="formula-grid">
+    <div class="formula-card">
+      <div class="formula-label">일 지급금</div>
+      <div class="formula-expr">신용대금 <em>÷ 365</em></div>
+      <div class="formula-note">예: 2,400 ÷ 365 = 6.58 USDT/일</div>
+    </div>
+    <div class="formula-card">
+      <div class="formula-label">주 정산 (7일치)</div>
+      <div class="formula-expr">일지급 <em>× 7</em></div>
+      <div class="formula-note">예: 6.58 × 7 = 46.1 USDT/주</div>
+    </div>
+    <div class="formula-card">
+      <div class="formula-label">주정산 요일</div>
+      <div class="formula-expr"><em>월~금</em> 중 배정</div>
+      <div class="formula-note">회원마다 분산 배정, 고정 요일 수령</div>
+    </div>
+    <div class="formula-card">
+      <div class="formula-label">잔여 신용대금</div>
+      <div class="formula-expr">지급 시 <em>감소</em></div>
+      <div class="formula-note">주정산 수령 시 신용대금이 차감됨</div>
+    </div>
+  </div>
+  <div class="highlight-box">
+    <strong>재참여(복리 효과):</strong> 주정산으로 받은 USDT가 100 USDT 단위를 넘으면 다시 신용거래 계약에 재참여할 수 있습니다. 재참여 시 신용대금이 추가로 쌓이면서 일지급금도 함께 증가합니다. 이것이 주복리 효과를 만들어냅니다.
+  </div>
+</div>
+
+<!-- 5. 가격 구조 -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">5</div>
+    <h2 class="section-title">가격 구조와 <span>마진 원리</span></h2>
+  </div>
+  <p>슈퍼세이브의 수익 구조는 <strong>두 가지 가격 차이</strong>에서 발생합니다.</p>
+  <table class="compare-table">
+    <thead>
+      <tr><th>구분</th><th>가격</th><th>역할</th><th>마진 발생</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="tag-mint">신용매수가</span></td>
+        <td><strong>3.24 USDT</strong></td>
+        <td>회사가 SUT를 평가하는 기준가. 신용대금 산정 기준.</td>
+        <td>시세 대비 <span id="t_ratio2">-</span>배 프리미엄</td>
+      </tr>
+      <tr>
+        <td><span class="tag-gold">회사보유분 매수가</span></td>
+        <td><strong>2.70 USDT</strong></td>
+        <td>신용매수가 ÷ 1.2. Step 1에서 준비금으로 SUT를 매수하는 가격. 앱 내부에서만 적용.</td>
+        <td>신용매수가 대비 20% 마진 제공</td>
+      </tr>
+      <tr>
+        <td><span class="tag-mint">거래소 시세 (실시간)</span></td>
+        <td><strong><span id="t_market3" class="live-val">조회 중</span></strong></td>
+        <td>시장에서 SUT를 매수할 때 지불하는 실제 가격. Step 2 비용 계산 기준.</td>
+        <td>신용매수가 대비 <span id="t_ratio3">-</span>배 차이가 레버리지 원천</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="formula-grid">
+    <div class="formula-card">
+      <div class="formula-label">가격 관계식</div>
+      <div class="formula-expr">신용매수가 = 회사매수가 <em>× 1.2</em></div>
+      <div class="formula-note">회사보유분 매수가는 외부에 노출되지 않음</div>
+    </div>
+    <div class="formula-card">
+      <div class="formula-label">레버리지 원리</div>
+      <div class="formula-expr">신용대금 = 준비금 <em>× 2.4</em></div>
+      <div class="formula-note">Step1·Step2 각각 ×1.2 → 합산 ×2.4</div>
+    </div>
+  </div>
+</div>
+
+<!-- 6. Right 증서 -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">6</div>
+    <h2 class="section-title">Right 증서 <span>시스템</span></h2>
+  </div>
+  <p>Right 증서는 슈퍼세이브의 <strong>1:1 소개 구조</strong>에서 발생하는 신용거래 계약권입니다. 현금 수당이 아니라 신용대금 계약 자격을 증서 형태로 부여하는 방식입니다.</p>
+  <div class="cert-flow">
+    <div class="cert-step">
+      <div class="cert-icon" style="background:#e0f5f4">👤</div>
+      <h4>피소개인 계약 체결</h4>
+      <p>새 회원이 준비금으로 신용거래 계약을 완료</p>
+    </div>
+    <div class="cert-step">
+      <div class="cert-icon" style="background:#fdf3dc">📄</div>
+      <h4>Right 증서 발행</h4>
+      <p>소개자 지분%에 따라 증서 자동 발행 (준비금의 최대 100%)</p>
+    </div>
+    <div class="cert-step">
+      <div class="cert-icon" style="background:#e8f5e9">💰</div>
+      <h4>SUT 매수 후 전송</h4>
+      <p>증서액×1.2 ÷ 신용매수가 = 필요 SUT<br>시장에서 매수 후 전송</p>
+    </div>
+    <div class="cert-step">
+      <div class="cert-icon" style="background:#e3f2fd">✅</div>
+      <h4>신용대금 승인</h4>
+      <p>증서액×1.2 신용대금 승인<br>일지급·주정산 개시</p>
+    </div>
+  </div>
+
+  <div class="navy-box">
+    <strong>예시: 피소개인 준비금 1,000 USDT, 소개자 A 100% 등록 시</strong><br>
+    증서 발행액 = 1,000 USDT<br>
+    신용대금 = 1,000 × 1.2 = <strong>1,200 USDT</strong><br>
+    필요 SUT = 1,200 ÷ 3.24 = 370.37... → <strong>371 SUT</strong> (소수점 올림 처리)<br>
+    SUT 매수 비용 = 371 × <span id="t_cert_price" class="live-val">조회 중</span> = <strong id="t_cert_cost">-</strong> USDT<br>
+    → 소개 활동으로 얻은 증서로, SUT 매수비용만 부담하면 1,200 USDT 신용대금 계약 체결
+  </div>
+
+  <div class="gold-box">
+    <strong>일반 계약 vs Right 증서 비교:</strong> 동일 1,000 USDT 기준, 일반 계약은 준비금 1,000 USDT + Step2 약 <span id="t_compare_step2">-</span> USDT = 총 약 <span id="t_compare_total">-</span> USDT 필요. Right 증서는 SUT 매수 비용 약 <span id="t_compare_cert">-</span> USDT만 부담하면 1,200 USDT 신용대금 계약 가능. 소개 활동이 준비금을 대체하는 구조입니다.
+  </div>
+</div>
+
+<!-- 7. 재참여 복리 효과 -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">7</div>
+    <h2 class="section-title">재참여의 <span>복리 효과</span></h2>
+  </div>
+  <p>주정산으로 받은 USDT를 다시 재참여에 사용하면, 신용대금이 누적되어 일지급금이 점점 증가합니다. 아래는 준비금 1,000 USDT로 시작해 매주 재참여했을 때의 주정산 변화 예시입니다.</p>
+  <div class="compound-bars">
+    <div class="bar-row"><div class="bar-label">1주</div><div class="bar-track"><div class="bar-fill" style="width:18%">46 USDT</div></div><div class="bar-val">46.1 USDT</div></div>
+    <div class="bar-row"><div class="bar-label">4주</div><div class="bar-track"><div class="bar-fill" style="width:28%">55 USDT</div></div><div class="bar-val">~55 USDT</div></div>
+    <div class="bar-row"><div class="bar-label">8주</div><div class="bar-track"><div class="bar-fill" style="width:45%">65 USDT</div></div><div class="bar-val">~65 USDT</div></div>
+    <div class="bar-row"><div class="bar-label">12주</div><div class="bar-track"><div class="bar-fill" style="width:68%">80 USDT</div></div><div class="bar-val">~80 USDT</div></div>
+    <div class="bar-row"><div class="bar-label">24주</div><div class="bar-track"><div class="bar-fill" style="width:100%">130+ USDT</div></div><div class="bar-val">130+ USDT</div></div>
+  </div>
+  <div class="highlight-box">
+    재참여 조건: 가용합계(주정산 + 이월금 + 추가투입)가 단위 비용(준비금 100 USDT + Step2 SUT 매수 비용)을 초과할 때마다 자동으로 100 USDT 단위 재계약이 발생합니다. SUT시세가 낮을수록 Step2 비용이 줄어 재참여 빈도가 높아집니다.
+  </div>
+</div>
+
+<!-- 8. 주요 변수 요약 -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">8</div>
+    <h2 class="section-title">주요 변수 <span>요약</span></h2>
+  </div>
+  <table class="compare-table">
+    <thead>
+      <tr><th>변수</th><th>역할</th><th>변동 방향</th><th>수익 영향</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>신용매수가</strong></td><td>신용대금 산정 기준</td><td>회사가 조정 (상향 가능)</td><td>상승 시 동일 SUT로 더 많은 신용대금 승인</td></tr>
+      <tr><td><strong>SUT 시세</strong><br><small style="color:var(--mint)">현재: <span id="t_var_price">조회 중</span></small></td><td>Step2 비용 결정</td><td>시장 변동</td><td>하락 시 Step2 비용 감소 → 재참여 용이</td></tr>
+      <tr><td><strong>준비금</strong></td><td>Step1 기준금액</td><td>회원 선택</td><td>클수록 신용대금 및 일지급금 비례 증가</td></tr>
+      <tr><td><strong>재참여 주기</strong></td><td>복리 속도</td><td>자동 (가용합계 기준)</td><td>빠를수록 신용대금 누적 속도 증가</td></tr>
+    </tbody>
+  </table>
+  <div class="gold-box">
+    <strong>생태계 지속성:</strong> SUT 시세가 상승하면 Step2 비용이 증가하여 재참여 부담이 커집니다. 이때 회사는 신용매수가를 적절히 인상하여 마진을 유지하고 참여 유인을 제공합니다. 시세 변동에 따른 신용매수가 조정이 플랫폼 지속성의 핵심입니다.
+  </div>
+</div>
+
+</div>
+
+<div class="footer">
+  SuperSave 구조 가이드 · 단순 참조용 — 실제 운영 조건은 앱 및 공식 안내를 기준으로 하십시오.<br>
+  시세 데이터 제공: CoinGecko Public API
+</div>
+
+<script>
+const CREDIT_PRICE = 3.24;
+let liveSUT = null;
+
+/* ── 시세 조회 ── */
+async function fetchPrice() {
+  const refreshBtn = document.getElementById('refreshBtn');
+  const display    = document.getElementById('tickerDisplay');
+  refreshBtn.classList.add('spinning');
+  display.innerHTML = '<span class="ticker-loading">시세 조회 중...</span>';
+
+  try {
+    const res = await fetch(
+      'https://api.coingecko.com/api/v3/simple/price?ids=super-trust&vs_currencies=usd,krw&include_24hr_change=true',
+      { signal: AbortSignal.timeout(8000) }
+    );
+    if (!res.ok) throw new Error('API 오류');
+    const data = await res.json();
+    const d = data['super-trust'];
+    if (!d) throw new Error('데이터 없음');
+
+    liveSUT = d.usd;
+    const change   = d.usd_24h_change ?? 0;
+    const chgClass = change > 0 ? 'up' : change < 0 ? 'dn' : 'flat';
+    const chgSign  = change > 0 ? '+' : '';
+    const now = new Date();
+    const timeStr = `${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')} 기준`;
+
+    display.innerHTML = `
+      <div class="ticker-price-group">
+        <span class="ticker-usdt">${liveSUT.toFixed(4)} USDT</span>
+        <span class="ticker-krw">≈ ₩${Math.round(d.krw).toLocaleString('ko-KR')}</span>
+        <span class="ticker-change ${chgClass}">${chgSign}${change.toFixed(2)}%</span>
+        <span class="ticker-time">${timeStr}</span>
+      </div>`;
+
+    document.getElementById('tickerNote').style.display = '';
+    updateLiveValues();
+
+  } catch(e) {
+    display.innerHTML = '<span class="ticker-error">시세 조회 실패 — 잠시 후 다시 시도해주세요</span>';
+  } finally {
+    refreshBtn.classList.remove('spinning');
+  }
+}
+
+/* ── 본문 시세 값 업데이트 ── */
+function updateLiveValues() {
+  if (!liveSUT) return;
+  const p = liveSUT;
+  const ratio = (CREDIT_PRICE / p).toFixed(1);
+  const fmt2 = v => v.toFixed(4);
+  const fmtN = v => v.toLocaleString('ko-KR', {minimumFractionDigits:1, maximumFractionDigits:1});
+
+  // 섹션2 변수 카드
+  const vm = document.getElementById('v_market');
+  if (vm) vm.textContent = fmt2(p) + ' USDT';
+
+  // 시세 참조 live-val 태그들
+  const ids = ['t_market1','t_market2','t_market3','t_cert_price','t_var_price'];
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = fmt2(p) + ' USDT';
+  });
+
+  // 배율
+  ['t_ratio','t_ratio2','t_ratio3'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = ratio + '배';
+  });
+
+  // 예시 계산 (섹션3)
+  const exPrice = document.getElementById('t_ex_price');
+  const exPrice2 = document.getElementById('t_ex_price2');
+  const exStep2 = document.getElementById('t_ex_step2cost');
+  if (exPrice)  exPrice.textContent  = fmt2(p);
+  if (exPrice2) exPrice2.textContent = fmt2(p);
+  if (exStep2)  exStep2.textContent  = fmtN(370.4 * p);
+
+  // Right 증서 예시 (섹션6)
+  const certCost = document.getElementById('t_cert_cost');
+  if (certCost) certCost.textContent = fmtN(371 * p) + ' USDT';
+
+  // 비교 (섹션6)
+  const co = CREDIT_PRICE / 1.2;
+  const sut = Math.ceil((1000 / co * 10)) / 10;
+  const step2_1000 = fmtN(sut * p);
+  const total_1000 = fmtN(1000 + sut * p);
+  const cert_cost  = fmtN(371 * p);
+
+  const cs2 = document.getElementById('t_compare_step2');
+  const ct  = document.getElementById('t_compare_total');
+  const cc  = document.getElementById('t_compare_cert');
+  if (cs2) cs2.textContent = step2_1000;
+  if (ct)  ct.textContent  = total_1000;
+  if (cc)  cc.textContent  = cert_cost;
+}
+
+/* ── 초기화 ── */
+fetchPrice();
+setInterval(fetchPrice, 5 * 60 * 1000); // 5분마다 자동 갱신
+</script>
+
+
+<script>
+document.getElementById('nav-guide').classList.add('active');
+</script>
+
+
+<nav class="bottom-nav">
+  <a class="nav-item" href="index.html" id="nav-home">
+    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>홈
+  </a>
+  <a class="nav-item" href="guide.html" id="nav-guide">
+    <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>해설집
+  </a>
+  <a class="nav-item" href="calculator.html" id="nav-calc">
+    <svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="16" y2="10"/></svg>계산기
+  </a>
+  <a class="nav-item" href="simulator.html" id="nav-sim">
+    <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>시뮬레이터
+  </a>
+</nav>
+
+<script>
+(function(){
+  var el = document.getElementById('nav-guide');
+  if(el) el.classList.add('active');
+})();
+</script>
+</body>
+</html>
