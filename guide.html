@@ -338,9 +338,9 @@ p:last-child { margin-bottom: 0; }
   </div>
   <p>슈퍼세이브는 (주)슈퍼트러스트가 운영하는 코인 금융 플랫폼으로, <strong>코인 스테이킹과 금융 레버리지의 하이브리드 구조</strong>를 기반으로 만들어졌습니다. 회원이 SUT 토큰을 매개로 회사와 신용거래 계약을 체결하고, 승인받은 신용대금을 365일에 걸쳐 분할 수령하는 방식입니다.</p>
   <div class="highlight-box">
-    핵심 개념: <strong>DeCT(Decentralized Credit Transaction)</strong> — 탈중앙화 신용거래. 시장 시세보다 높은 미래가치(신용매수가)로 SUT를 평가하여 신용대금을 승인하는 구조입니다.
+    핵심 개념: <strong>DeCT(Decentralized Credit Transaction)</strong> — 탈중앙화 신용거래. 시장 시세보다 높은 미래가치(신용매수가)로 SUT를 평가하여 신용대금을 승인하는 구조.
   </div>
-  <p>전용 앱 <strong>'슈퍼스트러스'</strong>를 통해 모든 거래가 진행되며, 준비금은 USDT(테더) 기준 100 USDT 단위로 참여할 수 있습니다.</p>
+  <p>전용 앱 <strong>'슈퍼스트러스'</strong>를 통해 거래가 진행되며, 준비금은 USDT(테더) 기준 100 USDT 단위로 참여가능.</p>
 </div>
 
 <!-- 2. SUT 토큰 -->
@@ -367,7 +367,7 @@ p:last-child { margin-bottom: 0; }
     </div>
   </div>
   <div class="gold-box">
-    <strong>핵심 원리:</strong> 시장 시세(<span id="t_market1" class="live-val">조회 중</span>)와 신용매수가(3.24 USDT)의 차이가 수익의 원천입니다. 회사는 시세보다 <span id="t_ratio" class="live-val">-</span>배 높은 가격으로 SUT를 평가하여 신용대금을 승인합니다.
+    <strong>핵심 원리:</strong> 시장 시세(<span id="t_market1" class="live-val">조회 중</span>)와 신용매수가의 차이가 거래의 수익입니다. 회사는 시세보다 <span id="t_ratio" class="live-val">-</span>배 높은 가격으로 SUT를 평가하여 신용대금을 승인합니다.
   </div>
 
   <!-- 토큰 공급량 정보 (폴리곤스캔 기준) -->
@@ -410,22 +410,22 @@ p:last-child { margin-bottom: 0; }
     <div class="section-num">3</div>
     <h2 class="section-title">신용거래 계약 <span>구조</span></h2>
   </div>
-  <p>1건의 신용거래 계약은 <strong>Step 1과 Step 2</strong>, 두 가지로 구성됩니다. 두 Step 모두 동일한 SUT 수량을 기준으로 하며, 각각 동일한 신용대금이 승인됩니다.</p>
+  <p>1건의 신용거래 계약은 <strong>Step 1과 Step 2</strong>, 두 가지로 구성됩니다.</p>
 
   <div class="flow">
     <div class="flow-item">
       <div class="flow-dot step1">S1</div>
       <div class="flow-content">
         <h4>Step 1 — 준비금(USDT) 회사 전송</h4>
-        <p>준비금 USDT를 회사 지갑으로 전송하고 TXID를 앱에 입력. 회사는 보유한 SUT를 회사보유분 매수가 기준으로 자동 매수·매도 처리하며, 20% 마진을 적용해 신용매수가 기준으로 신용대금을 승인. 이 과정은 앱 내부에서 자동 진행되며 별도 SUT 전송 불필요.</p>
+        <p>준비금 USDT를 회사 지갑으로 전송하고 TXID를 앱에 입력. 회사는 보유한 SUT를 회사보유분 매수가 기준으로 자동 매수·매도 처리하며, 20% 마진을 적용해 신용대금 승인.</p>
         <div class="amount">신용대금 = 준비금 × 1.2 승인</div>
       </div>
     </div>
     <div class="flow-item">
       <div class="flow-dot step2">S2</div>
       <div class="flow-content">
-        <h4>Step 2 — 시장에서 SUT 매수 후 전송 (별도 비용)</h4>
-        <p>앱이 안내하는 SUT 수량을 거래소에서 시장 시세(<span id="t_market2" class="live-val">조회 중</span>)로 직접 매수하여 회사 지갑으로 전송. 이 비용은 준비금과 별도로 준비해야 하며, 시세가 낮을수록 부담이 줄어듦.</p>
+        <h4>Step 2 — 시장에서 SUT 매수 후 전송</h4>
+        <p>회사 보유분 매수시 표시되는 SUT 수량을 거래소에서 시장 시세(<span id="t_market2" class="live-val">조회 중</span>)로 직접 매수하여 회사 지갑으로 전송.</p>
         <div class="amount">신용대금 = Step 1과 동일 금액 추가 승인</div>
       </div>
     </div>
