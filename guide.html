@@ -181,11 +181,12 @@ p:last-child { margin-bottom: 0; }
 .compare-table th { background: linear-gradient(160deg, #1e1e72 0%, #2d2d9f 55%, #1e1e72 100%); color: white; padding: 10px 14px; text-align: left; font-weight: 700; font-size: 0.8rem; }
 .compare-table th:first-child { border-radius: 10px 0 0 0; }
 .compare-table th:last-child  { border-radius: 0 10px 0 0; }
-.compare-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: #3a4a5c; vertical-align: top; }
+.compare-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: #3a4a5c; vertical-align: middle; }
+.compare-table td:first-child { white-space: nowrap; width: 1%; }
 .compare-table tr:last-child td { border-bottom: none; }
 .compare-table tr:nth-child(even) td { background: var(--gray-lt); }
-.tag-mint { display: inline-block; background: var(--indigo-lt); color: var(--indigo); font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
-.tag-gold { display: inline-block; background: var(--gold-lt); color: #7a5a10; font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
+.tag-mint { display: inline-block; background: var(--indigo-lt); color: var(--indigo); font-size: 0.7rem; font-weight: 700; white-space: nowrap; padding: 2px 8px; border-radius: 10px; }
+.tag-gold { display: inline-block; background: var(--gold-lt); color: #7a5a10; font-size: 0.7rem; font-weight: 700; white-space: nowrap; padding: 2px 8px; border-radius: 10px; }
 
 /* ── 변수 카드 ── */
 .var-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 16px 0; }
@@ -621,18 +622,60 @@ p:last-child { margin-bottom: 0; }
     <div class="section-num">7</div>
     <h2 class="section-title">재참여의 <span>복리 효과</span></h2>
   </div>
-  <p>주정산으로 받은 USDT를 다시 재참여에 사용하면, 신용대금이 누적되어 일지급금이 점점 증가합니다. 아래는 준비금 1,000 USDT로 시작해 매주 재참여했을 때의 주정산 변화 예시입니다.</p>
-  <div class="compound-bars">
-    <div class="bar-row"><div class="bar-label">1주</div><div class="bar-track"><div class="bar-fill" style="width:18%">46 USDT</div></div><div class="bar-val">46.1 USDT</div></div>
-    <div class="bar-row"><div class="bar-label">4주</div><div class="bar-track"><div class="bar-fill" style="width:28%">55 USDT</div></div><div class="bar-val">~55 USDT</div></div>
-    <div class="bar-row"><div class="bar-label">8주</div><div class="bar-track"><div class="bar-fill" style="width:45%">65 USDT</div></div><div class="bar-val">~65 USDT</div></div>
-    <div class="bar-row"><div class="bar-label">12주</div><div class="bar-track"><div class="bar-fill" style="width:68%">80 USDT</div></div><div class="bar-val">~80 USDT</div></div>
-    <div class="bar-row"><div class="bar-label">24주</div><div class="bar-track"><div class="bar-fill" style="width:100%">130+ USDT</div></div><div class="bar-val">130+ USDT</div></div>
+  <p>주정산으로 받은 USDT를 다시 재참여에 사용하면 신용대금이 누적되어 주정산이 점점 증가합니다. 준비금과 신용매수가를 직접 입력해 복리 성장을 확인해보세요.</p>
+
+  <!-- 입력 컨트롤 -->
+  <div style="display:flex;flex-wrap:wrap;gap:10px;margin:16px 0;padding:14px 16px;background:var(--indigo-lt);border-radius:14px;border:1px solid var(--border);align-items:center;">
+    <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:160px;">
+      <label style="font-size:0.72rem;font-weight:700;color:var(--indigo);white-space:nowrap;">준비금</label>
+      <input id="cr_reserve" type="number" value="1000" min="100" step="100"
+        oninput="calcCompound()"
+        style="flex:1;min-width:80px;padding:7px 10px;border:1px solid var(--border);border-radius:8px;
+               font-size:0.9rem;font-weight:900;color:var(--indigo);text-align:right;font-family:inherit;outline:none;">
+      <span style="font-size:0.75rem;font-weight:700;color:var(--indigo);">USDT</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:160px;">
+      <label style="font-size:0.72rem;font-weight:700;color:var(--indigo);white-space:nowrap;">신용매수가</label>
+      <input id="cr_creditprice" type="number" value="3.24" min="0.01" step="0.01"
+        oninput="calcCompound()"
+        style="flex:1;min-width:70px;padding:7px 10px;border:1px solid var(--border);border-radius:8px;
+               font-size:0.9rem;font-weight:900;color:var(--indigo);text-align:right;font-family:inherit;outline:none;">
+      <span style="font-size:0.75rem;font-weight:700;color:var(--indigo);">USDT</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:160px;">
+      <label style="font-size:0.72rem;font-weight:700;color:var(--indigo);white-space:nowrap;">SUT 시세</label>
+      <input id="cr_sutprice" type="number" value="0.70" min="0.01" step="0.01"
+        oninput="calcCompound()"
+        style="flex:1;min-width:70px;padding:7px 10px;border:1px solid var(--border);border-radius:8px;
+               font-size:0.9rem;font-weight:900;color:var(--indigo);text-align:right;font-family:inherit;outline:none;">
+      <span style="font-size:0.75rem;font-weight:700;color:var(--indigo);">USDT</span>
+    </div>
   </div>
-  <div class="highlight-box">
-    재참여 조건: 가용합계(주정산 + 이월금 + 추가투입)가 단위 비용(준비금 100 USDT + Step2 SUT 매수 비용)을 초과할 때마다 자동으로 100 USDT 단위 재계약이 발생합니다. SUT시세가 낮을수록 Step2 비용이 줄어 재참여 빈도가 높아집니다.
+
+  <!-- 요약 카드 -->
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;" id="cr_summary">
+    <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:10px 12px;">
+      <div style="font-size:0.62rem;font-weight:700;color:var(--gray);margin-bottom:3px;">초기 주정산</div>
+      <div style="font-size:0.95rem;font-weight:900;color:var(--indigo)" id="cr_week1">—</div>
+    </div>
+    <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:10px 12px;">
+      <div style="font-size:0.62rem;font-weight:700;color:var(--gray);margin-bottom:3px;">12주 주정산</div>
+      <div style="font-size:0.95rem;font-weight:900;color:#2e7d32" id="cr_week12">—</div>
+    </div>
+    <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:10px 12px;">
+      <div style="font-size:0.62rem;font-weight:700;color:var(--gray);margin-bottom:3px;">24주 주정산</div>
+      <div style="font-size:0.95rem;font-weight:900;color:var(--indigo)" id="cr_week24">—</div>
+    </div>
+  </div>
+
+  <!-- 바 차트 -->
+  <div class="compound-bars" id="cr_bars"></div>
+
+  <div class="highlight-box" style="margin-top:14px;">
+    재참여 조건: 가용합계(주정산 + 이월금)가 단위 비용(100 USDT + Step2 SUT 매수비용)을 초과할 때마다 자동 재계약 발생. <strong>SUT 시세가 낮을수록 재참여 빈도↑</strong>
   </div>
 </div>
+
 
 <!-- 8. 주요 변수 요약 -->
 <div class="section">
@@ -783,7 +826,96 @@ function updateLiveValues() {
 /* ── 초기화 ── */
 fetchPrice();
 setInterval(fetchPrice, 5 * 60 * 1000);
-updateLiveValues(); // 5분마다 자동 갱신
+updateLiveValues();
+calcCompound(); // 5분마다 자동 갱신
+
+/* ── 섹션7 복리 시뮬레이션 ── */
+function calcCompound() {
+    const reserve    = parseFloat(document.getElementById('cr_reserve')?.value)    || 1000;
+    const creditP    = parseFloat(document.getElementById('cr_creditprice')?.value) || getCreditPrice();
+    const sutP       = parseFloat(document.getElementById('cr_sutprice')?.value)    || (liveSUT || 0.70);
+
+    // 단위 재참여 비용: 100 USDT + Step2 (SUT수량 × SUT시세)
+    const co         = creditP / 1.2;                          // 회사보유분 매수가
+    const sutPerUnit = Math.ceil((100 * 1.2 / creditP) * 10) / 10; // 100USDT 기준 SUT (올림)
+    const step2Cost  = sutPerUnit * sutP;
+    const unitCost   = 100 + step2Cost;                        // 재참여 1단위 총비용
+
+    // 초기 신용대금 & 일지급
+    let approved = reserve * 2.4;
+    let daily    = approved / 365;
+    let carry    = 0;
+
+    const WEEKS  = 24;
+    const results = [];
+
+    for (let w = 1; w <= WEEKS; w++) {
+        const weekly = daily * 7;
+        approved -= weekly;
+        if (approved < 0) approved = 0;
+
+        const avail  = weekly + carry;
+        const units  = unitCost > 0 ? Math.floor(avail / unitCost) : 0;
+        const cont   = units * 100;
+
+        if (cont > 0) {
+            const newCredit = cont * 2.4;
+            approved += newCredit;
+            daily    += newCredit / 365;
+            carry     = avail - units * unitCost;
+        } else {
+            carry = avail;
+        }
+        results.push({ w, weekly: parseFloat(weekly.toFixed(2)), daily: parseFloat(daily.toFixed(4)) });
+    }
+
+    // 요약 카드
+    const fmt = v => v.toFixed(1) + ' USDT';
+    const el = id => document.getElementById(id);
+    if (el('cr_week1'))  el('cr_week1').textContent  = fmt(results[0].weekly);
+    if (el('cr_week12')) el('cr_week12').textContent = fmt(results[11].weekly);
+    if (el('cr_week24')) el('cr_week24').textContent = fmt(results[23].weekly);
+
+    // 바 차트 (1, 2, 4, 8, 12, 16, 20, 24주)
+    const showWeeks = [1, 2, 4, 8, 12, 16, 20, 24];
+    const maxVal = Math.max(...showWeeks.map(w => results[w-1].weekly));
+    const barsEl = document.getElementById('cr_bars');
+    if (!barsEl) return;
+
+    barsEl.innerHTML = showWeeks.map(function(w) {
+        var val = results[w-1].weekly;
+        var pct = maxVal > 0 ? Math.max(4, (val / maxVal * 100).toFixed(1)) : 4;
+        return '<div class="bar-row">' +
+            '<div class="bar-label">' + w + '주</div>' +
+            '<div class="bar-track">' +
+            '<div class="bar-fill" style="width:' + pct + '%;min-width:4px;">' +
+            (val >= 10 ? val.toFixed(1) : '') +
+            '</div></div>' +
+            '<div class="bar-val">' + val.toFixed(1) + ' USDT</div>' +
+            '</div>';
+    }).join('');
+}
+
+/* SUT 시세 조회 후 cr_sutprice 자동 반영 */
+const _origUpdateLive = typeof updateLiveValues === 'function' ? updateLiveValues : null;
+function updateLiveValuesWithCompound() {
+    if (_origUpdateLive) _origUpdateLive();
+    const sutEl = document.getElementById('cr_sutprice');
+    if (sutEl && liveSUT && !sutEl._manual) {
+        sutEl.value = liveSUT.toFixed(4);
+        sutEl.style.borderColor = 'var(--indigo)';
+    }
+    const crEl = document.getElementById('cr_creditprice');
+    if (crEl) crEl.value = getCreditPrice().toFixed(2);
+    calcCompound();
+}
+// cr_sutprice 수동 수정 감지
+document.addEventListener('DOMContentLoaded', function() {
+    const sutEl = document.getElementById('cr_sutprice');
+    if (sutEl) sutEl.addEventListener('input', () => { sutEl._manual = true; });
+    calcCompound();
+});
+
 </script>
 
 
