@@ -333,18 +333,7 @@ p:last-child { margin-bottom: 0; }
   </div>
 </div>
   </div>
-  <div class="ticker-right" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-    <div style="display:flex;align-items:center;gap:6px;background:var(--indigo-lt);border:1px solid var(--border);border-radius:10px;padding:5px 12px;">
-      <span style="font-size:0.65rem;font-weight:700;color:var(--indigo);letter-spacing:0.06em;white-space:nowrap;">신용매수가</span>
-      <input id="inputCreditPrice" type="number" value="3.24" step="0.01" min="0.01"
-        oninput="updateLiveValues()"
-        style="width:56px;font-size:0.95rem;font-weight:900;color:var(--indigo);background:transparent;
-               border:none;outline:none;text-align:right;font-family:inherit;padding:0;">
-      <span style="font-size:0.78rem;font-weight:700;color:var(--indigo);">USDT</span>
-    </div>
-    <span style="font-size:0.65rem; color:var(--gray); display:none" id="tickerNote">● 본문 시세 연동됨</span>
-    <button class="refresh-btn" onclick="fetchPrice()" id="refreshBtn" title="새로고침">↺</button>
-  </div>
+  
 </div>
 
 <div class="container">
