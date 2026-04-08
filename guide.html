@@ -29,7 +29,7 @@ body { font-family: 'Noto Sans KR', sans-serif; background: #f0f4f8; color: var(
 /* ── 헤더 ── */
 .hero {
   background: linear-gradient(160deg, #1e1e72 0%, #2d2d9f 55%, #1e1e72 100%); color: white;
-  padding: 64px 24px 52px; text-align: center;
+  padding: 40px 24px 32px; text-align: center;
   position: relative; overflow: hidden;
 }
 .hero::before {
@@ -63,38 +63,36 @@ body { font-family: 'Noto Sans KR', sans-serif; background: #f0f4f8; color: var(
   max-width: 860px; margin: 0 auto;
   background: white; border-radius: 0 0 20px 20px;
   border: 1px solid var(--border); border-top: none;
-  padding: 12px 16px;
-  display: flex; flex-direction: column; gap: 8px;
+  padding: 10px 16px;
+  display: flex; flex-direction: column; gap: 6px;
   box-shadow: 0 4px 16px rgba(15,31,53,0.07);
 }
-.ticker-row1 { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
-.ticker-row2 { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.ticker-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.ticker-row1 { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: nowrap; }
+.ticker-row2 { display: flex; align-items: center; gap: 8px; flex-wrap: nowrap; }
+.ticker-left { display: flex; align-items: center; gap: 8px; flex-wrap: nowrap; min-width: 0; flex: 1; }
 .ticker-label {
-  font-size: 0.68rem; font-weight: 700; color: var(--gray);
-  letter-spacing: 0.1em; text-transform: uppercase;
-  background: var(--indigo-lt); color: var(--indigo);
-  padding: 3px 10px; border-radius: 20px;
+  font-size: 0.62rem; font-weight: 700; color: var(--indigo);
+  letter-spacing: 0.06em; text-transform: uppercase;
+  background: var(--indigo-lt); padding: 2px 8px; border-radius: 20px;
+  white-space: nowrap; flex-shrink: 0;
 }
 .ticker-price-group { display: flex; align-items: baseline; gap: 8px; }
-.ticker-usdt { font-size: 1.5rem; font-weight: 900; color: var(--indigo); letter-spacing: -0.02em; }
-.ticker-krw  { font-size: 0.9rem;  font-weight: 700; color: var(--gray); }
-.ticker-change {
-  font-size: 0.75rem; font-weight: 700;
-  padding: 3px 9px; border-radius: 10px;
-}
+.ticker-usdt { font-size: 1.0rem; font-weight: 900; color: var(--indigo); letter-spacing: -0.01em; white-space: nowrap; }
+.ticker-krw { font-size: 0.78rem; font-weight: 700; color: var(--gray); white-space: nowrap; }
+.ticker-change { font-size: 0.7rem; font-weight: 700; padding: 2px 7px; border-radius: 8px; white-space: nowrap; }
 .ticker-change.up { background: #e8f5e9; color: #2e7d32; }
 .ticker-change.dn { background: #ffebee; color: #c62828; }
 .ticker-change.flat { background: #f5f5f5; color: var(--gray); }
-.ticker-time { font-size: 0.65rem; color: var(--gray); }
+.ticker-time { font-size: 0.62rem; color: var(--gray); white-space: nowrap; }
 .ticker-right { display: flex; align-items: center; gap: 8px; }
 .ticker-loading { font-size: 0.8rem; color: var(--gray); }
 .ticker-error  { font-size: 0.75rem; color: var(--red); }
 .refresh-btn {
-  width: 32px; height: 32px; background: var(--gray-lt);
+  width: 28px; height: 28px; background: var(--indigo-lt);
   border: 1px solid var(--border); border-radius: 8px;
-  color: var(--indigo); font-size: 1rem; cursor: pointer;
+  color: var(--indigo); font-size: 0.9rem; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
 }
 .refresh-btn.spinning { animation: spin 0.8s linear infinite; }
 @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
@@ -732,7 +730,7 @@ async function fetchPrice() {
         const now = new Date();
         const timeStr = now.getHours() + ':' + String(now.getMinutes()).padStart(2,'0') + ' 기준';
         if (display) display.innerHTML =
-            '<div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;">' +
+            '<div style="display:flex;align-items:baseline;gap:6px;flex-wrap:nowrap;">' +
             '<span class="ticker-usdt">' + liveSUT.toFixed(4) + ' USDT</span>' +
             '<span class="ticker-krw">≈ ₩' + Math.round(d.krw).toLocaleString('ko-KR') + '</span>' +
             '<span class="ticker-change ' + chgClass + '">' + chgSign + change.toFixed(2) + '%</span>' +
