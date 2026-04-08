@@ -47,8 +47,9 @@ body {
 
 
   .hero-header {
-    display: flex; align-items: center; gap: 18px;
-    margin-bottom: 20px; position: relative; z-index: 1;
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 24px;
+    position: relative; z-index: 2;
   }
   .logo-wrap {
     width: 76px; height: 76px; border-radius: 18px;
@@ -58,22 +59,28 @@ body {
     position: relative;
   }
   
-  .hero-title-group { display: flex; flex-direction: column; gap: 4px; position: relative; z-index: 2; }
+  .hero-title-group {
+    display: flex; flex-direction: column; gap: 4px;
+    position: relative; z-index: 2;
+  }
 
   @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.7;transform:scale(1.25)} } 50%{opacity:.7;transform:scale(1.25)} }
 
 /* ── 텍스트 ── */
 .app-name {
-  font-size: clamp(1.5rem, 5vw, 2.0rem); font-weight: 900;
-  color: #ffffff; letter-spacing: -0.02em;
-  text-align: left; margin-bottom: 2px;
-  text-shadow: 0 1px 6px rgba(0,0,0,0.3);
-  position: relative; z-index: 2;
+  font-size: 1.45rem; font-weight: 900;
+  color: #ffffff !important;
+  letter-spacing: -0.02em;
+  text-align: left; margin-bottom: 4px;
+  position: relative; z-index: 3;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.3);
 }
 .app-tagline {
-  font-size: 0.75rem; font-weight: 600; color: rgba(255,255,255,0.85);
-  letter-spacing: 0.14em; text-transform: uppercase;
+  font-size: 0.7rem; font-weight: 600;
+  color: rgba(255,255,255,0.8) !important;
+  letter-spacing: 0.06em;
   text-align: left; margin-bottom: 0;
+  position: relative; z-index: 3;
 }
 
 /* ── 시세 칩 ── */
@@ -163,25 +170,24 @@ body {
 <div class="hero">
   <!-- 상단 인디고 밴드 -->
   <div class="hero-band">
-  <div class="hero-header" style="position:relative;z-index:2;">
-  <div class="logo-wrap">
-    <img src="icon.png" alt="SuperTrust" style="width:60px;height:60px;object-fit:contain;">
-    <div class="live-dot"></div>
+  <div class="hero-header">
+    <div class="logo-wrap">
+      <img src="icon.png" alt="SuperTrust" style="width:60px;height:60px;object-fit:contain;">
+      <div class="live-dot"></div>
+    </div>
+    <div class="hero-title-group">
+      <h1 class="app-name">SuperSaver Kit</h1>
+      <p class="app-tagline">슈퍼세이버를 위한 필수 도구</p>
+    </div>
   </div>
-  <div class="hero-title-group">
-    <h1 class="app-name">SuperSaver Kit</h1>
-    <p class="app-tagline">슈퍼세이버를 위한 필수 도구</p>
-  </div>
-  </div>
-
-  <div class="price-chip" style="position:relative;z-index:1;">
+  <div class="price-chip" style="position:relative;z-index:2;">
     <span class="chip-label">SUT</span>
     <span id="chipPrice" class="chip-price">—</span>
     <span id="chipKrw" class="chip-krw">—</span>
     <span id="chipChange" class="chip-change flat">—</span>
     <button class="refresh-chip" onclick="fetchPrice()" id="refreshBtn">↺</button>
   </div>
-  </div><!-- /hero-band -->
+</div><!-- /hero-band -->
 
   <div class="cards-section">
   <div class="cards">
