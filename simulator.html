@@ -50,22 +50,29 @@
 
         /* ── 실시간 시세 배너 ── */
         .price-banner {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: linear-gradient(135deg, #e0f5f4, #f0faf9);
+            background: linear-gradient(135deg, #f0f0ff, #f4f4ff);
             border: 1px solid #d0d0f0;
             border-radius: 12px;
             padding: 10px 14px;
             margin-bottom: 14px;
-            gap: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
         }
-        .price-banner-left { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .price-banner-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            flex: 1;
+            min-width: 0;
+        }
         .price-tag {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 700;
             color: var(--gray);
-            letter-spacing: 0.06em;
+            letter-spacing: 0.04em;
+            white-space: nowrap;
         }
         .price-live {
             display: flex;
@@ -73,15 +80,17 @@
             gap: 6px;
         }
         .price-usdt {
-            font-size: 1.3rem;
+            font-size: 0.95rem;
             font-weight: 900;
-            color: var(--indigo);
-            letter-spacing: -0.02em;
+            color: var(--indigo, #2d2d9f);
+            letter-spacing: -0.01em;
+            white-space: nowrap;
         }
         .price-krw {
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             font-weight: 700;
             color: var(--gray);
+            white-space: nowrap;
         }
         .price-change {
             font-size: 0.75rem;
@@ -94,32 +103,38 @@
         .price-change.flat { background: #f5f5f5; color: var(--gray); }
         .price-time { font-size: 0.65rem; color: var(--gray); }
 
-        .price-right { display: flex; align-items: center; gap: 8px; }
+        .price-right {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
 
         .apply-btn {
-            padding: 6px 12px;
-            background: var(--indigo);
+            padding: 5px 10px;
+            background: var(--indigo, #2d2d9f);
             color: white;
             border: none;
             border-radius: 8px;
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             font-weight: 700;
             cursor: pointer;
-            font-family: 'Pretendard', sans-serif;
             white-space: nowrap;
+            flex-shrink: 0;
+            font-family: 'Pretendard', sans-serif;
         }
         .apply-btn:active { opacity: 0.85; transform: scale(0.97); }
 
         .refresh-btn {
-            width: 32px; height: 32px;
+            width: 30px; height: 30px;
             background: white;
             border: 1px solid #d0d0f0;
             border-radius: 8px;
-            color: var(--indigo);
+            color: var(--indigo, #2d2d9f);
             font-size: 1rem;
             cursor: pointer;
             display: flex; align-items: center; justify-content: center;
-            font-family: 'Pretendard', sans-serif;
+            flex-shrink: 0;
         }
         .refresh-btn:active { opacity: 0.75; }
         .refresh-btn.spinning { animation: spin 0.8s linear infinite; }
@@ -129,21 +144,43 @@
         .price-error { font-size: 0.72rem; color: var(--accent); }
 
         /* ── 입력 영역 ── */
-        .input-group { background: #f8f9fa; padding: 11px 13px; border-radius: 14px; margin-bottom: 12px; }
-        .irow2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+        .input-group {
+            background: #f8f9fa;
+            padding: 11px 13px;
+            border-radius: 14px;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+        .irow2 {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
         .irow2:last-child { margin-bottom: 0; }
-        .ifield { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
-        .ifield label { font-size: 0.78rem; font-weight: 700; color: var(--gray); white-space: nowrap; }
+        .ifield {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            width: 100%;
+        }
+        .ifield label {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--gray);
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
         .ifield input, .ifield select {
-            padding: 6px 8px; border: 1px solid #ddd; border-radius: 8px;
-            text-align: right; font-weight: 800; color: var(--indigo);
-            background: white; outline: none; font-size: 0.85rem; width: 95px;
-            font-family: 'Pretendard', sans-serif;
+            max-width: 120px;
         }
         .ifield input.live-synced { border-color: var(--indigo); background: var(--indigo-lt); }
-        .ifield select { width: 88px; }
+        .ifield select {
+            max-width: 120px;
+        }
         .price-pair { display: flex; align-items: center; gap: 4px; }
-        .price-pair input { width: 54px; }
+        .price-pair input { width: 46px; }
         .price-pair span { font-size: 0.78rem; color: var(--gray); font-weight: 600; }
         .stepper { display: inline-flex; align-items: center; gap: 4px; }
         .btn-step {
@@ -155,18 +192,48 @@
 
         /* ── 변동 시나리오 ── */
         .scenario-group {
-            background: var(--indigo-lt); border: 1px solid #d0d0f0;
-            padding: 11px 13px; border-radius: 14px; margin-bottom: 12px;
+            background: #f0f0ff;
+            border: 1px solid #d0d0f0;
+            padding: 11px 13px;
+            border-radius: 14px;
+            margin-bottom: 12px;
+            overflow: hidden;
         }
         .scenario-title { font-size: 0.8rem; font-weight: 800; color: var(--indigo); margin-bottom: 10px; }
-        .scenario-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px; }
+        .scenario-row {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
         .scenario-row:last-child { margin-bottom: 0; }
-        .sch-field { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
-        .sch-field label { font-size: 0.75rem; font-weight: 700; color: var(--gray); white-space: nowrap; }
+        .sch-field {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            width: 100%;
+        }
+        .sch-field label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--gray);
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
         .sch-field input {
-            padding: 5px 7px; border: 1px solid #d0d0f0; border-radius: 7px;
-            text-align: right; font-weight: 800; color: var(--indigo);
-            background: white; outline: none; font-size: 0.82rem; width: 80px;
+            padding: 5px 7px;
+            border: 1px solid #d0d0f0;
+            border-radius: 7px;
+            text-align: right;
+            font-weight: 800;
+            color: var(--indigo, #2d2d9f);
+            background: white;
+            outline: none;
+            font-size: 0.82rem;
+            width: auto;
+            max-width: 100px;
+            flex-shrink: 0;
             font-family: 'Pretendard', sans-serif;
         }
         .sch-note { font-size: 0.68rem; color: var(--gray); margin-top: 6px; line-height: 1.5; }
@@ -305,18 +372,17 @@
 
     <!-- 실시간 시세 배너 -->
     <div class="price-banner" id="priceBanner">
-        <div class="price-banner-left">
-            <span class="price-tag">SUT 실시간 시세</span>
-            <div class="price-live" id="priceDisplay">
-                <span class="price-loading">시세 조회 중...</span>
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:6px; flex-wrap:wrap;">
+            <div class="price-banner-left">
+                <span class="price-tag">SUT 실시간 시세</span>
+                <div id="priceDisplay"><span style="font-size:0.8rem;color:var(--gray)">조회 중...</span></div>
+            </div>
+            <div class="price-right">
+                <button class="apply-btn" onclick="applyLivePrice()" id="applyBtn" style="display:none">계산에 적용</button>
+                <button class="refresh-btn" onclick="fetchSutPrice()" id="refreshBtn">↺</button>
             </div>
         </div>
-        <div class="price-right">
-            <button class="apply-btn" onclick="applyLivePrice()" id="applyBtn" style="display:none">
-                계산에 적용
-            </button>
-            <button class="refresh-btn" onclick="fetchSutPrice()" id="refreshBtn" title="새로고침">↺</button>
-        </div>
+        <span id="tickerNote" style="font-size:0.62rem; color:var(--gray); display:none">● 시세 연동됨</span>
     </div>
 
     <!-- 기본 입력 -->
@@ -487,43 +553,31 @@ async function fetchSutPrice() {
     const refreshBtn = document.getElementById('refreshBtn');
     const display    = document.getElementById('priceDisplay');
     const applyBtn   = document.getElementById('applyBtn');
-
     refreshBtn.classList.add('spinning');
-    display.innerHTML = '<span class="price-loading">시세 조회 중...</span>';
+    display.innerHTML = '<span style="font-size:0.8rem;color:var(--gray)">조회 중...</span>';
     applyBtn.style.display = 'none';
-
     try {
-        // CoinGecko public API — SUT(super-trust) 시세
-        const res = await fetch(
-            'https://api.coingecko.com/api/v3/simple/price?ids=super-trust&vs_currencies=usd,krw&include_24hr_change=true',
-            { signal: AbortSignal.timeout(8000) }
-        );
-        if (!res.ok) throw new Error('API 응답 오류');
-        const data = await res.json();
-        const d = data['super-trust'];
-        if (!d) throw new Error('데이터 없음');
-
-        liveUSDT = d.usd;
-        liveKRW  = d.krw;
-        const change = d.usd_24h_change ?? 0;
+        const res = await fetch('https://api.gateio.ws/api/v4/spot/tickers?currency_pair=SUT_USDT', { signal: AbortSignal.timeout(8000) });
+        if (!res.ok) throw new Error('API 오류');
+        const tickers = await res.json();
+        const t = Array.isArray(tickers) ? tickers[0] : tickers;
+        liveUSDT = parseFloat(t.last);
+        const change = parseFloat(t.change_percentage || 0);
         const chgClass = change > 0 ? 'up' : change < 0 ? 'dn' : 'flat';
         const chgSign  = change > 0 ? '+' : '';
         const now = new Date();
-        const timeStr = `${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')} 기준`;
-
+        const timeStr = `${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
         display.innerHTML = `
-            <span class="price-usdt">${liveUSDT.toFixed(4)} USDT</span>
-            <span class="price-krw">≈ ₩${Math.round(liveKRW).toLocaleString('ko-KR')}</span>
-            <span class="price-change ${chgClass}">${chgSign}${change.toFixed(2)}%</span>
-            <span class="price-time">${timeStr}</span>`;
-
+            <div style="display:flex;align-items:baseline;gap:6px;flex-wrap:wrap;">
+                <span class="price-usdt">${liveUSDT.toFixed(4)} USDT</span>
+                <span class="price-change ${chgClass}">${chgSign}${change.toFixed(2)}%</span>
+                <span class="price-time">${timeStr}</span>
+            </div>`;
         applyBtn.style.display = '';
-
-        // 사용자가 수동으로 바꾸지 않았으면 자동 반영
+        document.getElementById('tickerNote').style.display = '';
         if (!isManualSut) applyLivePrice(true);
-
     } catch (e) {
-        display.innerHTML = `<span class="price-error">시세 조회 실패 — 수동 입력을 사용하세요</span>`;
+        display.innerHTML = '<span style="font-size:0.75rem;color:#d93025">조회 실패</span>';
         applyBtn.style.display = 'none';
     } finally {
         refreshBtn.classList.remove('spinning');
