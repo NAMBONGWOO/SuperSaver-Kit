@@ -117,11 +117,72 @@
   .nav-item svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; }
   .nav-item.active { color: var(--indigo); }
 
-</style>
+
+        /* ── 실시간 시세 배너 ── */
+        .price-banner {
+            background: linear-gradient(135deg, #f0f0ff, #f4f4ff);
+            border: 1px solid #d0d0f4;
+            border-radius: 14px;
+            padding: 10px 14px;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .banner-left {
+            display: flex; align-items: center; gap: 8px; flex-wrap: wrap; flex: 1; min-width: 0;
+        }
+        .banner-sut-label {
+            font-size: 0.65rem; font-weight: 700;
+            color: var(--tether-mint); letter-spacing: 0.08em;
+            white-space: nowrap;
+        }
+        .banner-price { font-size: 1.05rem; font-weight: 900; color: var(--tether-mint); }
+        .banner-krw   { font-size: 0.72rem; font-weight: 600; color: var(--tether-gray); }
+        .banner-change { font-size: 0.7rem; font-weight: 700; padding: 2px 7px; border-radius: 10px; }
+        .banner-change.up { background: #e8f5e9; color: #2e7d32; }
+        .banner-change.dn { background: #ffebee; color: #c62828; }
+        .banner-change.flat { background: #f5f5f5; color: var(--tether-gray); }
+        .banner-time { font-size: 0.62rem; color: var(--tether-gray); }
+        .banner-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+        .apply-btn {
+            padding: 5px 10px; background: var(--tether-mint); color: white;
+            border: none; border-radius: 8px; font-size: 0.72rem; font-weight: 700;
+            cursor: pointer; white-space: nowrap; font-family: 'Pretendard', sans-serif;
+        }
+        .apply-btn:active { opacity: 0.85; }
+        .refresh-btn-sm {
+            width: 28px; height: 28px; background: white;
+            border: 1px solid #d0d0f4; border-radius: 8px;
+            color: var(--tether-mint); font-size: 0.95rem;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            font-family: 'Pretendard', sans-serif;
+        }
+        .refresh-btn-sm.spinning { animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .live-synced { border-color: var(--tether-mint) !important; background: #f0f8ff !important; }
+
+        </style>
 </head>
 <body>
 
 <div class="card">
+        <!-- 실시간 시세 배너 -->
+    <div class="price-banner">
+        <div class="banner-left">
+            <span class="banner-sut-label">SUT 실시간 시세</span>
+            <div id="priceDisplay" style="display:flex;align-items:baseline;gap:6px;flex-wrap:wrap;">
+                <span style="font-size:0.8rem;color:var(--tether-gray)">조회 중...</span>
+            </div>
+        </div>
+        <div class="banner-right">
+            <button class="apply-btn" id="applyBtn" onclick="applyLivePrice()" style="display:none">계산에 적용</button>
+            <button class="refresh-btn-sm" id="refreshBtn" onclick="fetchSutPrice()">↺</button>
+        </div>
+    </div>
+
     <div class="header-row">
         <h2>SuperSave Calculator</h2>
         <div class="variable-panel">
@@ -131,7 +192,7 @@
             </div>
             <div class="v-input-group">
                 <label>SUT 시세</label>
-                <input type="number" id="marketPrice" step="0.01" value="1.00" oninput="calculate()">
+                <input type="number" id="marketPrice" step="0.01" value="1.00" oninput="onSutManual()">
             </div>
         </div>
     </div>
@@ -271,7 +332,73 @@
         updateUI(appBase + appBonusB, baseSutQuantity + sutBonusB, {app: 'app_100', daily: 'd_100', weekly: 'w_100', margin: 'm_100', total: 'total100'});
     }
     calculate();
-</script>
+
+    /* ── SUT 실시간 시세 ── */
+    let liveUSDT = null;
+    let isManualSut = false;
+
+    async function fetchSutPrice() {
+        const btn = document.getElementById('refreshBtn');
+        const display = document.getElementById('priceDisplay');
+        const applyBtn = document.getElementById('applyBtn');
+        if (btn) btn.classList.add('spinning');
+        display.innerHTML = '<span style="font-size:0.8rem;color:var(--tether-gray)">조회 중...</span>';
+        applyBtn.style.display = 'none';
+        try {
+            const res = await fetch(
+                'https://api.coingecko.com/api/v3/simple/price?ids=super-trust&vs_currencies=usd,krw&include_24hr_change=true',
+                { headers: { 'Accept': 'application/json' } }
+            );
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            const data = await res.json();
+            const d = data['super-trust'];
+            if (!d) throw new Error('no data');
+            liveUSDT = d.usd;
+            const change = d.usd_24h_change || 0;
+            const cls = change > 0 ? 'up' : change < 0 ? 'dn' : 'flat';
+            const sign = change > 0 ? '+' : '';
+            const now = new Date();
+            const t = now.getHours() + ':' + String(now.getMinutes()).padStart(2,'0');
+            display.innerHTML =
+                '<span class="banner-price">' + liveUSDT.toFixed(4) + ' USDT</span>' +
+                ' <span class="banner-krw">≈ ₩' + Math.round(d.krw).toLocaleString('ko-KR') + '</span>' +
+                ' <span class="banner-change ' + cls + '">' + sign + change.toFixed(2) + '%</span>' +
+                ' <span class="banner-time">' + t + '</span>';
+            applyBtn.style.display = '';
+            if (!isManualSut) applyLivePrice(true);
+        } catch(e) {
+            display.innerHTML = '<span style="color:#d93025;font-size:0.78rem">조회 실패</span>';
+            console.error('SUT fetch error:', e);
+        } finally {
+            if (btn) btn.classList.remove('spinning');
+        }
+    }
+
+    function applyLivePrice(silent) {
+        if (!liveUSDT) return;
+        const input = document.getElementById('marketPrice');
+        input.value = liveUSDT.toFixed(4);
+        input.classList.add('live-synced');
+        isManualSut = false;
+        calculate();
+        if (!silent) {
+            const btn = document.getElementById('applyBtn');
+            btn.textContent = '✓ 적용됨';
+            setTimeout(() => { btn.textContent = '계산에 적용'; }, 1500);
+        }
+    }
+
+    function onSutManual() {
+        isManualSut = true;
+        document.getElementById('marketPrice').classList.remove('live-synced');
+        calculate();
+    }
+
+    /* 초기 실행 */
+    fetchSutPrice();
+    setInterval(fetchSutPrice, 5 * 60 * 1000);
+
+    </script>
 
 
 <script>

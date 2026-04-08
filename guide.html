@@ -307,8 +307,16 @@ p:last-child { margin-bottom: 0; }
       <span class="ticker-loading">시세 조회 중...</span>
     </div>
   </div>
-  <div class="ticker-right">
-    <span style="font-size:0.65rem; color:var(--gray)" id="tickerNote" style="display:none">● 본문 시세 연동됨</span>
+  <div class="ticker-right" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+    <div style="display:flex;align-items:center;gap:6px;background:var(--indigo-lt);border:1px solid var(--border);border-radius:10px;padding:5px 12px;">
+      <span style="font-size:0.65rem;font-weight:700;color:var(--indigo);letter-spacing:0.06em;white-space:nowrap;">신용매수가</span>
+      <input id="inputCreditPrice" type="number" value="3.24" step="0.01" min="0.01"
+        oninput="updateLiveValues()"
+        style="width:56px;font-size:0.95rem;font-weight:900;color:var(--indigo);background:transparent;
+               border:none;outline:none;text-align:right;font-family:inherit;padding:0;">
+      <span style="font-size:0.78rem;font-weight:700;color:var(--indigo);">USDT</span>
+    </div>
+    <span style="font-size:0.65rem; color:var(--gray); display:none" id="tickerNote">● 본문 시세 연동됨</span>
     <button class="refresh-btn" onclick="fetchPrice()" id="refreshBtn" title="새로고침">↺</button>
   </div>
 </div>
@@ -346,9 +354,9 @@ p:last-child { margin-bottom: 0; }
       <div class="var-desc">GATE·KuCoin 거래소 기준 시장 유통 가격</div>
     </div>
     <div class="var-card navy">
-      <div class="var-name">신용매수가 (예시)</div>
-      <div class="var-value">3.24 USDT</div>
-      <div class="var-desc">회사가 미래가치로 인정하는 SUT 기준가격</div>
+      <div class="var-name">신용매수가</div>
+      <div class="var-value" id="v_credit">3.24 USDT</div>
+      <div class="var-desc">상단에서 직접 입력 · 회사가 미래가치로 인정하는 SUT 기준가격</div>
     </div>
   </div>
   <div class="gold-box">
@@ -392,11 +400,11 @@ p:last-child { margin-bottom: 0; }
   </div>
 
   <div class="navy-box" id="exampleBox">
-    <strong>예시 계산 (준비금 1,000 USDT, 신용매수가 3.24, SUT시세 <span id="t_ex_price">조회 중</span>)</strong><br>
-    회사보유분 매수가 = 3.24 ÷ 1.2 = <strong>2.70 USDT</strong><br>
-    SUT 수량 = 1,000 ÷ 2.70 = 370.37... → <strong>370.4 SUT</strong> (소수점 1자리 올림 처리)<br>
+    <strong>예시 계산 (준비금 1,000 USDT, 신용매수가 <span id="t_ex_cr">3.24</span>, SUT시세 <span id="t_ex_price">조회 중</span>)</strong><br>
+    회사보유분 매수가 = <span id="t_ex_cr2"></span><span id="t_ex_cr_show">3.24</span> ÷ 1.2 = <strong><span id="t_ex_co">2.70</span> USDT</strong><br>
+    SUT 수량 = 1,200 ÷ <span id="t_ex_cr3"></span><span id="t_ex_cr_show2">3.24</span> = ... → <strong><span id="t_ex_sut">370.4</span></strong> (소수점 1자리 올림 처리)<br>
     Step 1 신용대금 = 1,000 × 1.2 = <strong>1,200 USDT</strong><br>
-    Step 2 비용 = 370.4 × <span id="t_ex_price2">-</span> = <strong id="t_ex_step2cost">-</strong> USDT (별도 준비)<br>
+    Step 2 비용 = <span id="t_ex_sut2"></span><span id="t_ex_sut_show">370.4</span> × <span id="t_ex_price2">-</span> = <strong id="t_ex_step2cost">-</strong> USDT (별도 준비)<br>
     총 신용대금 = 1,200 + 1,200 = <strong>2,400 USDT</strong>
   </div>
 </div>
@@ -516,7 +524,7 @@ p:last-child { margin-bottom: 0; }
     <strong>예시: 피소개인 준비금 1,000 USDT, 소개자 A 100% 등록 시</strong><br>
     증서 발행액 = 1,000 USDT<br>
     신용대금 = 1,000 × 1.2 = <strong>1,200 USDT</strong><br>
-    필요 SUT = 1,200 ÷ 3.24 = 370.37... → <strong>371 SUT</strong> (소수점 올림 처리)<br>
+    필요 SUT = 1,200 ÷ <span id="t_cert_cr">3.24</span> = ... → <strong><span id="t_cert_sut">371</span> SUT</strong> (소수점 올림 처리)<br>
     SUT 매수 비용 = 371 × <span id="t_cert_price" class="live-val">조회 중</span> = <strong id="t_cert_cost">-</strong> USDT<br>
     → 소개 활동으로 얻은 증서로, SUT 매수비용만 부담하면 1,200 USDT 신용대금 계약 체결
   </div>
@@ -576,8 +584,8 @@ p:last-child { margin-bottom: 0; }
 </div>
 
 <script>
-const CREDIT_PRICE = 3.24;
 let liveSUT = null;
+function getCreditPrice() { const el = document.getElementById("inputCreditPrice"); return el ? (parseFloat(el.value) || 3.24) : 3.24; }
 
 /* ── 시세 조회 ── */
 async function fetchPrice() {
@@ -620,13 +628,16 @@ async function fetchPrice() {
 function updateLiveValues() {
   if (!liveSUT) return;
   const p = liveSUT;
-  const ratio = (CREDIT_PRICE / p).toFixed(1);
+  const cr = getCreditPrice();
+  const ratio = (cr / p).toFixed(1);
   const fmt2 = v => v.toFixed(4);
   const fmtN = v => v.toLocaleString('ko-KR', {minimumFractionDigits:1, maximumFractionDigits:1});
 
   // 섹션2 변수 카드
   const vm = document.getElementById('v_market');
   if (vm) vm.textContent = fmt2(p) + ' USDT';
+  const vc = document.getElementById('v_credit');
+  if (vc) vc.textContent = cr.toFixed(2) + ' USDT';
 
   // 시세 참조 live-val 태그들
   const ids = ['t_market1','t_market2','t_market3','t_cert_price','t_var_price'];
@@ -645,20 +656,33 @@ function updateLiveValues() {
   const exPrice = document.getElementById('t_ex_price');
   const exPrice2 = document.getElementById('t_ex_price2');
   const exStep2 = document.getElementById('t_ex_step2cost');
+  const step1CreditAmt = 1000 * 1.2; // 1,200
+  const coStep = cr / 1.2;
+  const sutPerStep = Math.ceil((step1CreditAmt / cr) * 10) / 10; // ceilOne
   if (exPrice)  exPrice.textContent  = fmt2(p);
   if (exPrice2) exPrice2.textContent = fmt2(p);
-  if (exStep2)  exStep2.textContent  = fmtN(370.4 * p);
+  if (exStep2)  exStep2.textContent  = fmtN(sutPerStep * p);
+  // 예시 내 SUT 수량 업데이트
+  ['t_ex_sut','t_ex_sut_show'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent = sutPerStep.toFixed(1); });
+  const exCo = document.getElementById('t_ex_co');
+  if (exCo) exCo.textContent = (cr / 1.2).toFixed(2);
+  ['t_ex_cr','t_ex_cr_show','t_ex_cr_show2'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent = cr.toFixed(2); });
 
-  // Right 증서 예시 (섹션6)
+  // Right 증서 예시 (섹션6) — 동적
+  const certSut = Math.ceil(1000 * 1.2 / cr); // 정수 올림
   const certCost = document.getElementById('t_cert_cost');
-  if (certCost) certCost.textContent = fmtN(371 * p) + ' USDT';
+  if (certCost) certCost.textContent = fmtN(certSut * p) + ' USDT';
+  const certSutEl = document.getElementById('t_cert_sut');
+  if (certSutEl) certSutEl.textContent = certSut;
+  const certCrEl = document.getElementById('t_cert_cr');
+  if (certCrEl) certCrEl.textContent = cr.toFixed(2);
 
   // 비교 (섹션6)
-  const co = CREDIT_PRICE / 1.2;
+  const co = cr / 1.2;
   const sut = Math.ceil((1000 / co * 10)) / 10;
   const step2_1000 = fmtN(sut * p);
   const total_1000 = fmtN(1000 + sut * p);
-  const cert_cost  = fmtN(371 * p);
+  const cert_cost  = fmtN(certSut * p);
 
   const cs2 = document.getElementById('t_compare_step2');
   const ct  = document.getElementById('t_compare_total');
@@ -670,7 +694,8 @@ function updateLiveValues() {
 
 /* ── 초기화 ── */
 fetchPrice();
-setInterval(fetchPrice, 5 * 60 * 1000); // 5분마다 자동 갱신
+setInterval(fetchPrice, 5 * 60 * 1000);
+updateLiveValues(); // 5분마다 자동 갱신
 </script>
 
 
