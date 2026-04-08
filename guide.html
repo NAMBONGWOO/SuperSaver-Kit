@@ -168,7 +168,8 @@ p:last-child { margin-bottom: 0; }
 .formula-note { font-size: 0.72rem; color: var(--gray); margin-top: 4px; }
 
 /* ── 비교 테이블 ── */
-.compare-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin: 16px 0; }
+.compare-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 10px; margin: 16px 0; }
+.compare-table { width: 100%; min-width: 560px; border-collapse: collapse; font-size: 0.85rem; margin: 0; }
 .compare-table th { background: linear-gradient(160deg, #1e1e72 0%, #2d2d9f 55%, #1e1e72 100%); color: white; padding: 10px 14px; text-align: left; font-weight: 700; font-size: 0.8rem; }
 .compare-table th:first-child { border-radius: 10px 0 0 0; }
 .compare-table th:last-child  { border-radius: 0 10px 0 0; }
@@ -441,7 +442,7 @@ p:last-child { margin-bottom: 0; }
     <h2 class="section-title">가격 구조와 <span>마진 원리</span></h2>
   </div>
   <p>슈퍼세이브의 수익 구조는 <strong>두 가지 가격 차이</strong>에서 발생합니다.</p>
-  <table class="compare-table">
+  <div class="compare-table-wrap"><table class="compare-table">
     <thead>
       <tr><th>구분</th><th>가격</th><th>역할</th><th>마진 발생</th></tr>
     </thead>
@@ -466,6 +467,7 @@ p:last-child { margin-bottom: 0; }
       </tr>
     </tbody>
   </table>
+</div>
   <div class="formula-grid">
     <div class="formula-card">
       <div class="formula-label">가격 관계식</div>
@@ -549,7 +551,7 @@ p:last-child { margin-bottom: 0; }
     <div class="section-num">8</div>
     <h2 class="section-title">주요 변수 <span>요약</span></h2>
   </div>
-  <table class="compare-table">
+  <div class="compare-table-wrap"><table class="compare-table">
     <thead>
       <tr><th>변수</th><th>역할</th><th>변동 방향</th><th>수익 영향</th></tr>
     </thead>
@@ -560,6 +562,7 @@ p:last-child { margin-bottom: 0; }
       <tr><td><strong>재참여 주기</strong></td><td>복리 속도</td><td>자동 (가용합계 기준)</td><td>빠를수록 신용대금 누적 속도 증가</td></tr>
     </tbody>
   </table>
+</div>
   <div class="gold-box">
     <strong>생태계 지속성:</strong> SUT 시세가 상승하면 Step2 비용이 증가하여 재참여 부담이 커집니다. 이때 회사는 신용매수가를 적절히 인상하여 마진을 유지하고 참여 유인을 제공합니다. 시세 변동에 따른 신용매수가 조정이 플랫폼 지속성의 핵심입니다.
   </div>
