@@ -2,6 +2,10 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SuperSaver Kit">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="SuperSaver Kit">
 <meta name="theme-color" content="#1e1e72">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -63,13 +67,15 @@ body { font-family: 'Noto Sans KR', sans-serif; background: #f0f4f8; color: var(
   max-width: 860px; margin: 0 auto;
   background: white; border-radius: 0 0 20px 20px;
   border: 1px solid var(--border); border-top: none;
-  padding: 10px 16px;
+  padding: 10px 14px;
   display: flex; flex-direction: column; gap: 6px;
   box-shadow: 0 4px 16px rgba(15,31,53,0.07);
+  overflow: hidden;
+  box-sizing: border-box;
 }
-.ticker-row1 { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: nowrap; }
+.ticker-row1 { display: flex; align-items: center; justify-content: space-between; gap: 6px; flex-wrap: nowrap; min-width: 0; overflow: hidden; }
 .ticker-row2 { display: flex; align-items: center; gap: 8px; flex-wrap: nowrap; }
-.ticker-left { display: flex; align-items: center; gap: 8px; flex-wrap: nowrap; min-width: 0; flex: 1; }
+.ticker-left { display: flex; align-items: center; gap: 6px; flex-wrap: nowrap; flex: 1; min-width: 0; overflow: hidden; }
 .ticker-label {
   font-size: 0.62rem; font-weight: 700; color: var(--indigo);
   letter-spacing: 0.06em; text-transform: uppercase;
@@ -77,7 +83,7 @@ body { font-family: 'Noto Sans KR', sans-serif; background: #f0f4f8; color: var(
   white-space: nowrap; flex-shrink: 0;
 }
 .ticker-price-group { display: flex; align-items: baseline; gap: 8px; }
-.ticker-usdt { font-size: 1.0rem; font-weight: 900; color: var(--indigo); letter-spacing: -0.01em; white-space: nowrap; }
+.ticker-usdt { font-size: 0.95rem; font-weight: 900; color: var(--indigo); letter-spacing: -0.01em; white-space: nowrap; }
 .ticker-krw { font-size: 0.78rem; font-weight: 700; color: var(--gray); white-space: nowrap; }
 .ticker-change { font-size: 0.7rem; font-weight: 700; padding: 2px 7px; border-radius: 8px; white-space: nowrap; }
 .ticker-change.up { background: #e8f5e9; color: #2e7d32; }
@@ -88,11 +94,11 @@ body { font-family: 'Noto Sans KR', sans-serif; background: #f0f4f8; color: var(
 .ticker-loading { font-size: 0.8rem; color: var(--gray); }
 .ticker-error  { font-size: 0.75rem; color: var(--red); }
 .refresh-btn {
-  width: 28px; height: 28px; background: var(--indigo-lt);
+  width: 28px; height: 28px; flex-shrink: 0;
+  background: var(--indigo-lt);
   border: 1px solid var(--border); border-radius: 8px;
   color: var(--indigo); font-size: 0.9rem; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
 }
 .refresh-btn.spinning { animation: spin 0.8s linear infinite; }
 @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
@@ -295,6 +301,14 @@ p:last-child { margin-bottom: 0; }
   .nav-item svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; }
   .nav-item.active { color: var(--indigo); }
 
+
+@media (max-width: 430px) {
+  .ticker-usdt { font-size: 0.85rem; }
+  .ticker-krw  { font-size: 0.7rem; }
+  .ticker-change { font-size: 0.65rem; padding: 2px 5px; }
+  .ticker-time { display: none; }
+  .live-ticker { padding: 8px 12px; }
+}
 </style>
 </head>
 <body>
@@ -303,7 +317,7 @@ p:last-child { margin-bottom: 0; }
 <div class="hero">
   
   <h1>SuperSave <em>가이드</em></h1>
-  <p class="hero-sub">DeCT 신용거래 구조부터 Right 보상까지 알아야 할 모든 것.</p>
+  <p class="hero-sub">DeCT 신용거래 구조부터 Right 보상, 복리 재참여까지 — 슈퍼세이버가 알아야 할 모든 것.</p>
 </div>
 
 <!-- 실시간 시세 위젯 -->
@@ -343,12 +357,12 @@ p:last-child { margin-bottom: 0; }
     <div class="section-num">1</div>
     <h2 class="section-title">슈퍼세이브란 <span>무엇인가</span></h2>
   </div>
-  <p>(주)슈퍼트러스트가 운영하는 코인 금융 플랫폼. SUT 토큰을 매개로 회사와 신용거래 계약을 체결하고, 승인된 신용대금을 <strong>365일 분할 수령</strong></p>
+  <p>(주)슈퍼트러스트가 운영하는 코인 금융 플랫폼. SUT 토큰을 매개로 회사와 신용거래 계약을 체결하고, 승인된 신용대금을 <strong>365일 분할 수령</strong>하는 구조입니다.</p>
   <div class="highlight-box">
-    <strong>DeCT(Decentralized Credit Transaction)</strong>탈중앙화 신용거래<br>
-    시세보다 높은 신용매수가로 SUT를 평가 → 신용대금 승인. 이 거래마진이 수익의 핵심.
+    <strong>DeCT(Decentralized Credit Transaction)</strong> — 탈중앙화 신용거래.<br>
+    시세보다 높은 신용매수가로 SUT를 평가 → 신용대금 승인. 이 차이가 수익의 핵심입니다.
   </div>
-  <p>전용 앱을 통해 <strong>100 USDT 단위</strong>로 거래 참여가능.</p>
+  <p>전용 앱을 통해 진행하며, 준비금은 USDT 기준 <strong>100 USDT 단위</strong>로 참여합니다.</p>
 </div>
 
 <!-- 2. SUT 토큰 -->
@@ -730,7 +744,7 @@ async function fetchPrice() {
         const now = new Date();
         const timeStr = now.getHours() + ':' + String(now.getMinutes()).padStart(2,'0') + ' 기준';
         if (display) display.innerHTML =
-            '<div style="display:flex;align-items:baseline;gap:6px;flex-wrap:nowrap;">' +
+            '<div style="display:flex;align-items:baseline;gap:6px;flex-wrap:nowrap;overflow:hidden;min-width:0;">' +
             '<span class="ticker-usdt">' + liveSUT.toFixed(4) + ' USDT</span>' +
             '<span class="ticker-krw">≈ ₩' + Math.round(d.krw).toLocaleString('ko-KR') + '</span>' +
             '<span class="ticker-change ' + chgClass + '">' + chgSign + change.toFixed(2) + '%</span>' +
@@ -914,6 +928,8 @@ document.addEventListener('DOMContentLoaded', function() {
     calcCompound();
 });
 
+
+function goto(url) { window.location.href = url; }
 </script>
 
 
@@ -923,18 +939,18 @@ document.getElementById('nav-guide').classList.add('active');
 
 
 <nav class="bottom-nav">
-  <a class="nav-item" href="index.html" id="nav-home">
+  <div class="nav-item" onclick="goto('index.html')" style="cursor:pointer;" id="nav-home">
     <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>홈
-  </a>
-  <a class="nav-item" href="guide.html" id="nav-guide">
+  </div>
+  <div class="nav-item" onclick="goto('guide.html')" style="cursor:pointer;" id="nav-guide">
     <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>해설집
-  </a>
-  <a class="nav-item" href="calculator.html" id="nav-calc">
+  </div>
+  <div class="nav-item" onclick="goto('calculator.html')" style="cursor:pointer;" id="nav-calc">
     <svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="16" y2="10"/></svg>계산기
-  </a>
-  <a class="nav-item" href="simulator.html" id="nav-sim">
+  </div>
+  <div class="nav-item" onclick="goto('simulator.html')" style="cursor:pointer;" id="nav-sim">
     <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>시뮬레이터
-  </a>
+  </div>
 </nav>
 
 <script>
