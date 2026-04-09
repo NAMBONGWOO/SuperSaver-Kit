@@ -2,10 +2,8 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-<meta name="apple-mobile-web-app-title" content="SuperSaver Kit">
-<meta name="theme-color" content="#1e1e72">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SuperSaver Kit — 계산기</title>
+    <title>SuperSave Calculator - 테너남</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
     <style>
         :root {
@@ -18,7 +16,7 @@
             --warning-bg: #fff3f3;
         }
 
-        body { font-family: 'Pretendard', sans-serif; background: var(--indigo-bg); display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; margin: 0; padding-top: 10px; color: var(--tether-navy); -webkit-text-size-adjust: none; }
+        body { font-family: 'Pretendard', sans-serif; background: var(--indigo-bg, #f4f4ff); display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; margin: 0; padding-top: 10px; color: var(--tether-navy); -webkit-text-size-adjust: none; }
         .card { background: white; padding: 15px 18px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); width: 95%; max-width: 400px; box-sizing: border-box; position: relative; }
         
         .header-row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 12px; }
@@ -67,136 +65,86 @@
         .notice-content li::before { content: '•'; position: absolute; left: 0; color: #ccc; }
 
         .copyright { margin-top: 12px; font-size: 0.75rem; color: #bbb; text-align: right; border-top: 1px solid #eee; padding-top: 8px; font-weight: 600; }
-      .bottom-nav {
-    position: fixed; bottom: 0; left: 0; right: 0; z-index: 999;
-    background: white; border-top: 1px solid #e2e8ef;
-    display: flex; height: 60px;
-    box-shadow: 0 -4px 16px rgba(15,31,53,0.08);
-    max-width: 860px; margin: 0 auto;
-  }
-  /* iOS 홈 인디케이터 대응 */
-  @supports (padding-bottom: env(safe-area-inset-bottom)) {
-    .bottom-nav { padding-bottom: env(safe-area-inset-bottom); height: calc(60px + env(safe-area-inset-bottom)); }
-  }
-  .nav-item {
-    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: 3px; text-decoration: none; color: #9aa5b4; font-size: 0.65rem; font-weight: 600;
-    transition: color 0.15s;
-  }
-  .nav-item svg { width: 22px; height: 22px; stroke: currentColor; }
-  .nav-item.active, .nav-item:hover { color: #00938a; }
-  body { padding-bottom: 68px; }
-
-  :root {
-    --indigo-deep: #1e1e72;
-    --indigo:      #2d2d9f;
-    --indigo-mid:  #3d3dbb;
-    --indigo-lt:   #f0f0ff;
-    --indigo-bg:   #f4f4ff;
-    --gold:        #FFD700;
-    --border:      #e0e0f4;
-    --text-main:   #1e1e72;
-    --text-sub:    #8888bb;
-  }
-  body { background: var(--indigo-bg) !important; padding-bottom: 68px !important; }
-  .bottom-nav {
-    position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
-    background: white; border-top: 1px solid var(--border);
-    display: flex; height: 60px;
-    box-shadow: 0 -4px 20px rgba(30,30,114,0.08);
-    max-width: 100%;
-  }
-  @supports (padding-bottom: env(safe-area-inset-bottom)) {
-    .bottom-nav { padding-bottom: env(safe-area-inset-bottom); height: calc(60px + env(safe-area-inset-bottom)); }
-  }
-  .nav-item {
-    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: 3px; text-decoration: none; color: #bbbbdd; font-size: 0.63rem; font-weight: 700;
-    transition: color 0.15s;
-  }
-  .nav-item svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; }
-  .nav-item.active { color: var(--indigo); }
-
-
-        /* ── 실시간 시세 배너 ── */
+    
+        h2 { font-size: 1.2rem; font-weight: 800; text-align: center; color: var(--tether-navy); margin-bottom: 3px; }
+        .badge { display: inline-block; background: var(--tether-mint); color: white; font-size: 0.6rem; font-weight: 700; padding: 2px 7px; border-radius: 20px; vertical-align: middle; margin-left: 5px; }
+        .sub { font-size: 0.7rem; text-align: center; color: var(--tether-gray); margin-bottom: 12px; }
+        .live-synced { border-color: var(--tether-mint) !important; background: #f0f0ff !important; }
+    
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
+            background: white; border-top: 1px solid #e0e0f4;
+            display: flex; height: 60px;
+            box-shadow: 0 -4px 20px rgba(30,30,114,0.08);
+        }
+        @supports (padding-bottom: env(safe-area-inset-bottom)) {
+            .bottom-nav { padding-bottom: env(safe-area-inset-bottom); height: calc(60px + env(safe-area-inset-bottom)); }
+        }
+        .nav-item {
+            flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            gap: 3px; text-decoration: none; color: #bbbbdd; font-size: 0.63rem; font-weight: 700;
+        }
+        .nav-item svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; }
+        .nav-item.active { color: #2d2d9f; }
+        body { padding-bottom: 68px !important; }
+    
         .price-banner {
             background: linear-gradient(135deg, #f0f0ff, #f4f4ff);
-            border: 1px solid #d0d0f4;
-            border-radius: 14px;
-            padding: 10px 14px;
-            margin-bottom: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 8px;
-            flex-wrap: wrap;
+            border: 1px solid #d0d0f4; border-radius: 14px;
+            padding: 10px 14px; margin-bottom: 14px;
+            display: flex; flex-direction: column; gap: 6px;
         }
-        .banner-left {
-            display: flex; align-items: center; gap: 8px; flex-wrap: wrap; flex: 1; min-width: 0;
-        }
-        .banner-sut-label {
-            font-size: 0.65rem; font-weight: 700;
-            color: var(--tether-mint); letter-spacing: 0.08em;
-            white-space: nowrap;
-        }
-        .banner-price { font-size: 1.05rem; font-weight: 900; color: var(--tether-mint); }
-        .banner-krw   { font-size: 0.72rem; font-weight: 600; color: var(--tether-gray); }
-        .banner-change { font-size: 0.7rem; font-weight: 700; padding: 2px 7px; border-radius: 10px; }
+        .banner-sut-label { font-size: 0.62rem; font-weight: 700; color: var(--tether-mint); letter-spacing: 0.08em; background: var(--tether-mint-light); padding: 2px 8px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+        .banner-price { font-size: 1.0rem; font-weight: 900; color: var(--tether-mint); white-space: nowrap; }
+        .banner-krw   { font-size: 0.75rem; font-weight: 600; color: var(--tether-gray); white-space: nowrap; }
+        .banner-change { font-size: 0.7rem; font-weight: 700; padding: 2px 7px; border-radius: 10px; white-space: nowrap; }
         .banner-change.up { background: #e8f5e9; color: #2e7d32; }
         .banner-change.dn { background: #ffebee; color: #c62828; }
         .banner-change.flat { background: #f5f5f5; color: var(--tether-gray); }
-        .banner-time { font-size: 0.62rem; color: var(--tether-gray); }
-        .banner-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
-        .apply-btn {
-            padding: 5px 10px; background: var(--tether-mint); color: white;
-            border: none; border-radius: 8px; font-size: 0.72rem; font-weight: 700;
-            cursor: pointer; white-space: nowrap; font-family: 'Pretendard', sans-serif;
-        }
+        .banner-time { font-size: 0.62rem; color: var(--tether-gray); white-space: nowrap; }
+        .apply-btn { padding: 5px 10px; background: var(--tether-mint); color: white; border: none; border-radius: 8px; font-size: 0.72rem; font-weight: 700; cursor: pointer; white-space: nowrap; font-family: 'Pretendard', sans-serif; }
         .apply-btn:active { opacity: 0.85; }
-        .refresh-btn-sm {
-            width: 28px; height: 28px; background: white;
-            border: 1px solid #d0d0f4; border-radius: 8px;
-            color: var(--tether-mint); font-size: 0.95rem;
-            cursor: pointer; display: flex; align-items: center; justify-content: center;
-            font-family: 'Pretendard', sans-serif;
-        }
+        .refresh-btn-sm { width: 28px; height: 28px; background: white; border: 1px solid #d0d0f4; border-radius: 8px; color: var(--tether-mint); font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; justify-content: center; font-family: 'Pretendard', sans-serif; }
         .refresh-btn-sm.spinning { animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .live-synced { border-color: var(--tether-mint) !important; background: #f0f8ff !important; }
-
-        </style>
+    </style>
 </head>
 <body>
 
 <div class="card">
-        <!-- 실시간 시세 배너 -->
+    <h2>SuperSave Calculator <span class="badge">v1</span></h2>
+    <div class="sub" id="todayStr"></div>
+
+    <!-- 실시간 시세 배너 -->
     <div class="price-banner">
-        <div class="banner-left">
-            <span class="banner-sut-label">SUT 실시간 시세</span>
-            <div id="priceDisplay" style="display:flex;align-items:baseline;gap:6px;flex-wrap:wrap;">
-                <span style="font-size:0.8rem;color:var(--tether-gray)">조회 중...</span>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:nowrap;">
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:nowrap;flex:1;min-width:0;">
+                <span class="banner-sut-label">SUT 실시간 시세</span>
+                <div id="priceDisplay" style="display:flex;align-items:baseline;gap:6px;flex-wrap:nowrap;">
+                    <span style="font-size:0.8rem;color:var(--tether-gray)">조회 중...</span>
+                </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+                <button class="apply-btn" id="applyBtn" onclick="applyLivePrice()" style="display:none">계산에 적용</button>
+                <button class="refresh-btn-sm" id="refreshBtn" onclick="fetchSutPrice()">↺</button>
             </div>
         </div>
-        <div class="banner-right">
-            <button class="apply-btn" id="applyBtn" onclick="applyLivePrice()" style="display:none">계산에 적용</button>
-            <button class="refresh-btn-sm" id="refreshBtn" onclick="fetchSutPrice()">↺</button>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <div style="display:flex;align-items:center;gap:6px;background:var(--tether-mint-light);border:1px solid #b2dfdb;border-radius:10px;padding:5px 10px;">
+                <span style="font-size:0.62rem;font-weight:700;color:var(--tether-mint);white-space:nowrap;">신용매수가</span>
+                <input type="number" id="creditPrice" step="0.01" value="3.24" oninput="calculate()" class="highlight-input"
+                    style="width:46px;font-size:0.9rem;font-weight:900;color:var(--tether-navy);background:transparent;border:none;outline:none;text-align:right;font-family:inherit;padding:0;">
+                <span style="font-size:0.72rem;font-weight:700;color:var(--tether-mint);">USDT</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;background:#f4f4ff;border:1px solid #d0d0f4;border-radius:10px;padding:5px 10px;">
+                <span style="font-size:0.62rem;font-weight:700;color:var(--tether-gray);white-space:nowrap;">SUT 시세</span>
+                <input type="number" id="marketPrice" step="0.0001" value="1.00" oninput="onSutManual()"
+                    style="width:54px;font-size:0.9rem;font-weight:900;color:var(--tether-navy);background:transparent;border:none;outline:none;text-align:right;font-family:inherit;padding:0;" class="live-synced">
+                <span style="font-size:0.72rem;font-weight:700;color:var(--tether-gray);">USDT</span>
+            </div>
         </div>
     </div>
 
-    <div class="header-row">
-        <h2>SuperSave Calculator</h2>
-        <div class="variable-panel">
-            <div class="v-input-group">
-                <label>신용매수가</label>
-                <input type="number" id="creditPrice" step="0.01" value="3.24" oninput="calculate()" class="highlight-input">
-            </div>
-            <div class="v-input-group">
-                <label>SUT 시세</label>
-                <input type="number" id="marketPrice" step="0.01" value="1.00" oninput="onSutManual()">
-            </div>
-        </div>
-    </div>
-    
     <div class="input-container">
         <label class="main-label">USDT 준비금 (100 단위)</label>
         <div class="stepper">
@@ -270,6 +218,22 @@
     <div class="copyright">© 테너남. All Rights Reserved.</div>
 </div>
 
+<!-- 하단 탭바 -->
+<nav class="bottom-nav">
+  <a class="nav-item" href="index.html" id="nav-home">
+    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>홈
+  </a>
+  <a class="nav-item" href="guide.html" id="nav-guide">
+    <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>해설집
+  </a>
+  <a class="nav-item active" href="calculator.html" id="nav-calc">
+    <svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="16" y2="10"/></svg>계산기
+  </a>
+  <a class="nav-item" href="simulator.html" id="nav-sim">
+    <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>시뮬레이터
+  </a>
+</nav>
+
 <script>
     const input = document.getElementById('usdtInput');
     const marketPriceInput = document.getElementById('marketPrice');
@@ -289,49 +253,49 @@
         const creditPrice = parseFloat(creditPriceInput.value) || 0;
         const ratioA = (parseFloat(ratioAInput.value) / 100) || 0;
         const ratioB = (parseFloat(ratioBInput.value) / 100) || 0;
-        
         if (reserveUsdt === 0 || creditPrice === 0) return;
 
-        // [기본 재참여] 2.4배 승인
         const baseSutQuantity = (reserveUsdt * 1.2) / creditPrice;
         const appBase = reserveUsdt * 2.4;
-        
+
         const updateUI = (app, totalSut, ids) => {
             const sutCostUsdt = totalSut * marketPrice;
-            const principal = reserveUsdt + sutCostUsdt; 
+            const principal = reserveUsdt + sutCostUsdt;
             const margin = ((app / principal) - 1) * 100;
             const daily = app / 365;
-
             document.getElementById(ids.app).innerText = f(app) + ' USDT';
             document.getElementById(ids.daily).innerText = f(daily, 3);
             document.getElementById(ids.weekly).innerText = f(daily * 7, 2);
-            document.getElementById(ids.margin).innerText = `순마진율: +${f(margin, 1)}%`;
-            
+            document.getElementById(ids.margin).innerText = '순마진율: +' + f(margin, 1) + '%';
             if(ids.total) {
                 document.getElementById(ids.total).innerText = f(totalSut, 1) + ' SUT';
-                document.getElementById(ids.total + 'Buy').innerText = `(매수: ${f(sutCostUsdt, 1)} USDT)`;
+                document.getElementById(ids.total + 'Buy').innerText = '(매수: ' + f(sutCostUsdt, 1) + ' USDT)';
             }
             if(ids.baseBuy) {
-                document.getElementById(ids.baseBuy).innerText = `(매수: ${f(sutCostUsdt, 1)} USDT)`;
+                document.getElementById(ids.baseBuy).innerText = '(매수: ' + f(sutCostUsdt, 1) + ' USDT)';
             }
         };
 
         document.getElementById('baseSut').innerText = f(baseSutQuantity, 1) + ' SUT';
         updateUI(appBase, baseSutQuantity, {app: 'app_base', daily: 'd_base', weekly: 'w_base', margin: 'm_base', baseBuy: 'baseBuy'});
 
-        // [Right 보상 A] 1.2배 승인 로직 적용
         const contractableBonusA = Math.floor((reserveUsdt * ratioA) / 100) * 100;
-        const sutBonusA = (contractableBonusA * 1.2) / creditPrice; // SUT만 페어링
-        const appBonusA = contractableBonusA * 1.2; 
+        const sutBonusA = (contractableBonusA * 1.2) / creditPrice;
+        const appBonusA = contractableBonusA * 1.2;
         updateUI(appBase + appBonusA, baseSutQuantity + sutBonusA, {app: 'app_50', daily: 'd_50', weekly: 'w_50', margin: 'm_50', total: 'total50'});
 
-        // [Right 보상 B] 1.2배 승인 로직 적용
         const contractableBonusB = Math.floor((reserveUsdt * ratioB) / 100) * 100;
         const sutBonusB = (contractableBonusB * 1.2) / creditPrice;
         const appBonusB = contractableBonusB * 1.2;
         updateUI(appBase + appBonusB, baseSutQuantity + sutBonusB, {app: 'app_100', daily: 'd_100', weekly: 'w_100', margin: 'm_100', total: 'total100'});
     }
-    calculate();
+
+    /* ── 날짜 표시 ── */
+    (function() {
+        var d = new Date(); var days = ['일','월','화','수','목','금','토'];
+        var el = document.getElementById('todayStr');
+        if(el) el.textContent = d.getFullYear() + '년 ' + (d.getMonth()+1) + '월 ' + d.getDate() + '일 (' + days[d.getDay()] + '요일)';
+    })();
 
     /* ── SUT 실시간 시세 ── */
     let liveUSDT = null;
@@ -376,9 +340,9 @@
 
     function applyLivePrice(silent) {
         if (!liveUSDT) return;
-        const input = document.getElementById('marketPrice');
-        input.value = liveUSDT.toFixed(4);
-        input.classList.add('live-synced');
+        const inp = document.getElementById('marketPrice');
+        inp.value = liveUSDT.toFixed(4);
+        inp.classList.add('live-synced');
         isManualSut = false;
         calculate();
         if (!silent) {
@@ -394,38 +358,9 @@
         calculate();
     }
 
-    /* 초기 실행 */
+    calculate();
     fetchSutPrice();
     setInterval(fetchSutPrice, 5 * 60 * 1000);
-
-    </script>
-
-
-<script>
-document.getElementById('nav-calc').classList.add('active');
-</script>
-
-
-<nav class="bottom-nav">
-  <a class="nav-item" href="index.html" id="nav-home">
-    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>홈
-  </a>
-  <a class="nav-item" href="guide.html" id="nav-guide">
-    <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>해설집
-  </a>
-  <a class="nav-item" href="calculator.html" id="nav-calc">
-    <svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="16" y2="10"/></svg>계산기
-  </a>
-  <a class="nav-item" href="simulator.html" id="nav-sim">
-    <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>시뮬레이터
-  </a>
-</nav>
-
-<script>
-(function(){
-  var el = document.getElementById('nav-calc');
-  if(el) el.classList.add('active');
-})();
 </script>
 </body>
 </html>
