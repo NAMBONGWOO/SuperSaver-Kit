@@ -103,15 +103,17 @@ body {
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* ── 기능 카드 (1열 3행) ── */
-.cards { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 420px; position: relative; z-index: 1; }
+.cards { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 420px; position: relative; z-index: 1; box-sizing: border-box; }
 .card {
   background: white; border: 1px solid var(--border);
   border-left: 4px solid var(--indigo);
   border-radius: 16px; padding: 16px 18px;
   display: flex; align-items: center; gap: 14px;
+  width: 100%;
   text-decoration: none; color: var(--text-main);
   box-shadow: 0 2px 12px rgba(30,30,114,0.08);
   transition: transform 0.15s, box-shadow 0.15s;
+  box-sizing: border-box;
 }
 .card:active { transform: scale(0.98); box-shadow: 0 1px 6px rgba(30,30,114,0.06); }
 .card-icon-wrap {
@@ -187,7 +189,7 @@ body {
 
   <div class="cards-section">
   <div class="cards">
-    <div class="card" onclick="goto('guide.html')" style="cursor:pointer;">
+    <div class="card" onclick="goto('guide.html')">
       <div class="card-icon-wrap">
         <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
       </div>
@@ -196,18 +198,18 @@ body {
         <div class="card-desc">슈퍼세이브 구조 · 수익 원리 완전 해설</div>
       </div>
       <div class="card-arrow">›</div>
-    </a>
-    <div class="card" onclick="goto('calculator.html')" style="cursor:pointer;">
+    </div>
+    <div class="card" onclick="goto('calculator.html')">
       <div class="card-icon-wrap">
-        <svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="10" y2="14"/><line x1="14" y1="14" x2="16" y2="14"/></svg>
+        <svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="16" y2="10"/></svg>
       </div>
       <div class="card-text">
         <div class="card-name">계산기</div>
         <div class="card-desc">SUT 수량 · 신용대금 · Right 보상 계산</div>
       </div>
       <div class="card-arrow">›</div>
-    </a>
-    <div class="card" onclick="goto('simulator.html')" style="cursor:pointer;">
+    </div>
+    <div class="card" onclick="goto('simulator.html')">
       <div class="card-icon-wrap">
         <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
       </div>
@@ -216,22 +218,22 @@ body {
         <div class="card-desc">재참여 복리 · 월별 차트 · 변동 시나리오</div>
       </div>
       <div class="card-arrow">›</div>
-    </a>
+    </div>
   </div>
   </div><!-- /cards-section -->
 </div>
 
 <nav class="bottom-nav">
-  <div class="nav-item active" onclick="goto('index.html')" style="cursor:pointer;">
+  <div class="nav-item active" onclick="goto('index.html')">
     <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>홈
-  </a>
-  <div class="nav-item" onclick="goto('guide.html')" style="cursor:pointer;">
+  </div>
+  <div class="nav-item" onclick="goto('guide.html')">
     <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>해설집
-  </a>
-  <div class="nav-item" onclick="goto('calculator.html')" style="cursor:pointer;">
+  </div>
+  <div class="nav-item" onclick="goto('calculator.html')">
     <svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="16" y2="10"/></svg>계산기
-  </a>
-  <div class="nav-item" onclick="goto('simulator.html')" style="cursor:pointer;">
+  </div>
+  <div class="nav-item" onclick="goto('simulator.html')">
     <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>시뮬레이터
   </div>
 </nav>
