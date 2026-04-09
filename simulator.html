@@ -11,9 +11,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SuperSaver Kit — 시뮬레이터</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
-    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js">
-function goto(url) { window.location.replace(url); }
-</script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
     <style>
@@ -53,15 +51,13 @@ function goto(url) { window.location.replace(url); }
         /* ── 실시간 시세 배너 ── */
         .price-banner {
             background: linear-gradient(135deg, #f0f0ff, #f4f4ff);
-            border: 1px solid #d0d0f0;
-            border-radius: 12px;
+            border: 1px solid #d0d0f4;
+            border-radius: 14px;
             padding: 10px 14px;
             margin-bottom: 14px;
             display: flex;
             flex-direction: column;
             gap: 6px;
-            overflow: hidden;
-            box-sizing: border-box;
         }
         .price-banner-left {
             display: flex;
@@ -83,7 +79,13 @@ function goto(url) { window.location.replace(url); }
             align-items: baseline;
             gap: 6px;
         }
-        .price-usdt { font-size: 0.95rem; font-weight: 900; color: var(--indigo, #2d2d9f); letter-spacing: -0.01em; white-space: nowrap; }
+        .price-usdt {
+            font-size: 0.95rem;
+            font-weight: 900;
+            color: var(--indigo, #2d2d9f);
+            letter-spacing: -0.01em;
+            white-space: nowrap; white-space: nowrap;
+        }
         .price-krw {
             font-size: 0.75rem;
             font-weight: 700;
@@ -360,17 +362,7 @@ function goto(url) { window.location.replace(url); }
   .nav-item svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; }
   .nav-item.active { color: var(--indigo); }
 
-
-@media (max-width: 430px) {
-  .price-usdt { font-size: 0.85rem; }
-  .price-krw  { font-size: 0.7rem; }
-  .price-change { font-size: 0.65rem; padding: 2px 5px; }
-  .price-time { display: none; }
-  .price-banner { padding: 8px 12px; }
-  .apply-btn { padding: 4px 8px; font-size: 0.68rem; }
-}
-
-    </style>
+</style>
 </head>
 <body>
 
@@ -380,10 +372,10 @@ function goto(url) { window.location.replace(url); }
 
     <!-- 실시간 시세 배너 -->
     <div class="price-banner" id="priceBanner">
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;flex-wrap:nowrap;overflow:hidden;min-width:0;">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:nowrap;">
             <div style="display:flex;align-items:center;gap:8px;flex-wrap:nowrap;flex:1;min-width:0;">
                 <span class="price-tag">SUT 실시간 시세</span>
-                <div id="priceDisplay" style="display:flex;align-items:baseline;gap:5px;flex-wrap:nowrap;overflow:hidden;min-width:0;flex:1;"><span style="font-size:0.8rem;color:var(--gray)">조회 중...</span></div>
+                <div id="priceDisplay"><span style="font-size:0.8rem;color:var(--gray)">조회 중...</span></div>
             </div>
             <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
                 <button class="apply-btn" onclick="applyLivePrice()" id="applyBtn" style="display:none">계산에 적용</button>
@@ -890,18 +882,18 @@ document.getElementById('nav-sim').classList.add('active');
 
 
 <nav class="bottom-nav">
-  <div class="nav-item" onclick="goto('index.html')" style="cursor:pointer;" id="nav-home">
+  <a class="nav-item" href="index.html" id="nav-home">
     <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>홈
-  </div>
-  <div class="nav-item" onclick="goto('guide.html')" style="cursor:pointer;" id="nav-guide">
+  </a>
+  <a class="nav-item" href="guide.html" id="nav-guide">
     <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>해설집
-  </div>
-  <div class="nav-item" onclick="goto('calculator.html')" style="cursor:pointer;" id="nav-calc">
+  </a>
+  <a class="nav-item" href="calculator.html" id="nav-calc">
     <svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="16" y2="10"/></svg>계산기
-  </div>
-  <div class="nav-item" onclick="goto('simulator.html')" style="cursor:pointer;" id="nav-sim">
+  </a>
+  <a class="nav-item" href="simulator.html" id="nav-sim">
     <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>시뮬레이터
-  </div>
+  </a>
 </nav>
 
 <script>
