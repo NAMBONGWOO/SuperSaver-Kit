@@ -61,7 +61,8 @@ body {
   
   .hero-title-group {
     display: flex; flex-direction: column; gap: 4px;
-    position: relative; z-index: 10;
+    position: relative; z-index: 20;
+    isolation: isolate;
   }
 
   @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.7;transform:scale(1.25)} } 50%{opacity:.7;transform:scale(1.25)} }
@@ -69,18 +70,18 @@ body {
 /* ── 텍스트 ── */
 .app-name {
   font-size: 1.45rem; font-weight: 900;
-  color: #fff !important;
+  color: #ffffff;
   letter-spacing: -0.02em;
   text-align: left; margin-bottom: 4px;
-  position: relative; z-index: 10;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  position: relative; z-index: 20;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.6), 0 0 30px rgba(0,0,0,0.3);
 }
 .app-tagline {
   font-size: 0.7rem; font-weight: 600;
-  color: rgba(255,255,255,0.85) !important;
+  color: rgba(255,255,255,0.85);
   letter-spacing: 0.06em;
   text-align: left; margin-bottom: 0;
-  position: relative; z-index: 10;
+  position: relative; z-index: 20;
 }
 
 /* ── 시세 칩 ── */
@@ -150,12 +151,7 @@ body {
   padding: 52px 24px 32px;
   position: relative; overflow: hidden;
 }
-.hero-band::before {
-  content: ''; position: absolute; inset: 0; z-index: 0;
-  background: repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,255,255,0.02) 40px),
-              repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,0.02) 40px);
-  pointer-events: none;
-}
+.hero-band::before { display: none; }
 /* ── 카드 섹션 (하단 밝은 배경) ── */
 .cards-section {
   width: 100%; background: var(--indigo-bg);

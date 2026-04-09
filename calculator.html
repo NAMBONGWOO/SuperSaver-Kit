@@ -112,7 +112,7 @@
 <body>
 
 <div class="card">
-    <h2>SuperSave Calculator <span class="badge">v1</span></h2>
+    <h2>SuperSave Calculator</h2>
     <div class="sub" id="todayStr"></div>
 
     <!-- 실시간 시세 배너 -->
@@ -324,7 +324,7 @@
             const now = new Date();
             const t = now.getHours() + ':' + String(now.getMinutes()).padStart(2,'0');
             display.innerHTML =
-                '<span class="banner-price">' + liveUSDT.toFixed(4) + ' USDT</span>' +
+                '<span class="banner-price" style="white-space:nowrap;">' + liveUSDT.toFixed(4) + ' USDT</span>' +
                 ' <span class="banner-krw">≈ ₩' + Math.round(d.krw).toLocaleString('ko-KR') + '</span>' +
                 ' <span class="banner-change ' + cls + '">' + sign + change.toFixed(2) + '%</span>' +
                 ' <span class="banner-time">' + t + '</span>';
