@@ -6,10 +6,52 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="SuperSaver Kit">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#1e1e72">
 <title>SuperSaver Kit</title>
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
 <style>
+/* ── 공통 기반 ── */
+:root {
+  --indigo-deep: #1e1e72; --indigo: #2d2d9f; --indigo-mid: #3d3dbb;
+  --indigo-lt: #f0f0ff; --indigo-bg: #f4f4ff;
+  --gold: #FFD700; --gold-lt: rgba(255,215,0,0.18);
+  --border: #e0e0f4; --text-main: #1e1e72; --text-sub: #8888bb;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; font-family: "Pretendard", sans-serif; -webkit-text-size-adjust: none; }
+body { background: var(--indigo-bg); color: var(--text-main); overflow-x: hidden; }
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
+input[type=number] { -moz-appearance: textfield; }
+
+/* ── 탭 화면 ── */
+.tab-page { display: none; min-height: 100vh; padding-bottom: 68px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.tab-page.active { display: block; }
+
+/* ── 하단 탭바 ── */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
+  background: white; border-top: 1px solid var(--border);
+  display: flex; height: 60px;
+  box-shadow: 0 -4px 20px rgba(30,30,114,0.08);
+}
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .bottom-nav { padding-bottom: env(safe-area-inset-bottom); height: calc(60px + env(safe-area-inset-bottom)); }
+}
+.nav-item {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 3px; color: #bbbbdd; font-size: 0.63rem; font-weight: 700;
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+  transition: color 0.15s;
+}
+.nav-item svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; }
+.nav-item.active { color: var(--indigo); }
+
+/* ── 홈 CSS ── */
+
 :root {
   --indigo-deep: #1e1e72;
   --indigo:      #2d2d9f;
@@ -161,16 +203,791 @@ body {
   display: flex; flex-direction: column; align-items: center;
 }
 
+
+
+/* ── 해설집 CSS ── */
+
+:root {
+  --mint:    #00938a;
+  --mint-lt: #e0f5f4;
+  --mint-dk: #006b63;
+  --navy:    #0f1f35;
+  --navy-lt: #1a2e4a;
+  --gold:    #c9a84c;
+  --gold-lt: #fdf3dc;
+  --red:     #d93025;
+  --gray:    #5a6a7a;
+  --gray-lt: #f4f7f9;
+  --white:   #ffffff;
+  --border:  #e2e8ef;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Noto Sans KR', sans-serif; background: #f0f4f8; color: var(--navy); line-height: 1.7; }
+
+/* ── 헤더 ── */
+.hero {
+  background: linear-gradient(160deg, #1e1e72 0%, #2d2d9f 55%, #1e1e72 100%); color: white;
+  padding: 40px 24px 32px; text-align: center;
+  position: relative; overflow: hidden;
+}
+.hero::before {
+  content: ''; position: absolute; top: -80px; left: -80px;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(0,147,138,0.18) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero::after {
+  content: ''; position: absolute; bottom: -60px; right: -60px;
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(201,168,76,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-tag {
+  display: inline-block; background: rgba(0,147,138,0.25); color: rgba(255,215,0,0.8);
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.15em;
+  padding: 5px 14px; border-radius: 20px; border: 1px solid rgba(0,147,138,0.4);
+  margin-bottom: 20px;
+}
+.hero h1 {
+  font-family: 'Pretendard', sans-serif;
+  font-size: clamp(1.6rem, 4.5vw, 2.4rem); font-weight: 900;
+  line-height: 1.25; margin-bottom: 16px; letter-spacing: -0.02em;
+}
+.hero h1 em { color: var(--gold); font-style: normal; }
+.hero-sub { font-size: 0.95rem; color: rgba(255,255,255,0.65); max-width: 520px; margin: 0 auto; }
+
+/* ── 실시간 시세 위젯 ── */
+.live-ticker {
+  max-width: 860px; margin: 0 auto;
+  background: white; border-radius: 0 0 20px 20px;
+  border: 1px solid var(--border); border-top: none;
+  padding: 10px 14px;
+  display: flex; flex-direction: column; gap: 6px;
+  box-shadow: 0 4px 16px rgba(15,31,53,0.07);
+  overflow: hidden;
+  box-sizing: border-box;
+}
+.ticker-row1 { display: flex; align-items: center; justify-content: space-between; gap: 6px; flex-wrap: nowrap; min-width: 0; overflow: hidden; }
+.ticker-row2 { display: flex; align-items: center; gap: 8px; flex-wrap: nowrap; }
+.ticker-left { display: flex; align-items: center; gap: 6px; flex-wrap: nowrap; flex: 1; min-width: 0; overflow: hidden; }
+.ticker-label {
+  font-size: 0.62rem; font-weight: 700; color: var(--indigo);
+  letter-spacing: 0.06em; text-transform: uppercase;
+  background: var(--indigo-lt); padding: 2px 8px; border-radius: 20px;
+  white-space: nowrap; flex-shrink: 0;
+}
+.ticker-price-group { display: flex; align-items: baseline; gap: 8px; }
+.ticker-usdt { font-size: 0.95rem; font-weight: 900; color: var(--indigo); letter-spacing: -0.01em; white-space: nowrap; }
+.ticker-krw { font-size: 0.78rem; font-weight: 700; color: var(--gray); white-space: nowrap; }
+.ticker-change { font-size: 0.7rem; font-weight: 700; padding: 2px 7px; border-radius: 8px; white-space: nowrap; }
+.ticker-change.up { background: #e8f5e9; color: #2e7d32; }
+.ticker-change.dn { background: #ffebee; color: #c62828; }
+.ticker-change.flat { background: #f5f5f5; color: var(--gray); }
+.ticker-time { font-size: 0.62rem; color: var(--gray); white-space: nowrap; }
+.ticker-right { display: flex; align-items: center; gap: 8px; }
+.ticker-loading { font-size: 0.8rem; color: var(--gray); }
+.ticker-error  { font-size: 0.75rem; color: var(--red); }
+.refresh-btn {
+  width: 28px; height: 28px; flex-shrink: 0;
+  background: var(--indigo-lt);
+  border: 1px solid var(--border); border-radius: 8px;
+  color: var(--indigo); font-size: 0.9rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.refresh-btn.spinning { animation: spin 0.8s linear infinite; }
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+/* ── 레이아웃 ── */
+.container { max-width: 860px; margin: 0 auto; padding: 0 16px 64px; }
+
+/* ── 섹션 ── */
+.section {
+  background: white; border-radius: 20px; padding: 36px 32px;
+  margin-top: 20px; box-shadow: 0 2px 16px rgba(15,31,53,0.06);
+  border: 1px solid var(--border);
+}
+.section-num { color: white !important;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; background: var(--indigo); color: white;
+  border-radius: 50%; font-size: 0.8rem; font-weight: 900; margin-bottom: 10px; flex-shrink: 0;
+}
+.section-header {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border);
+}
+.section-num {
+  width: 32px; height: 32px; min-width: 32px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--indigo); color: white !important;
+  border-radius: 50%; font-size: 0.8rem; font-weight: 900;
+  line-height: 1; flex-shrink: 0; margin: 0;
+}
+.section-title { font-family: 'Pretendard', sans-serif; font-size: 1.2rem; font-weight: 700; color: var(--navy); letter-spacing: -0.02em; line-height: 1.3; }
+.section-title span { color: var(--indigo); }
+p { font-size: 0.92rem; color: #3a4a5c; line-height: 1.8; margin-bottom: 12px; }
+p:last-child { margin-bottom: 0; }
+
+/* ── 강조 박스 ── */
+.highlight-box {
+  background: var(--indigo-lt); border-left: 4px solid var(--indigo);
+  border-radius: 0 12px 12px 0; padding: 16px 20px; margin: 16px 0;
+  font-size: 0.9rem; color: var(--indigo); font-weight: 500;
+}
+.gold-box {
+  background: var(--gold-lt); border-left: 4px solid var(--gold);
+  border-radius: 0 12px 12px 0; padding: 16px 20px; margin: 16px 0;
+  font-size: 0.9rem; color: #7a5a10; font-weight: 500;
+}
+.navy-box {
+  background: linear-gradient(160deg, #1e1e72 0%, #2d2d9f 55%, #1e1e72 100%); border-radius: 14px; padding: 20px 24px; margin: 16px 0;
+  color: rgba(255,255,255,0.9); font-size: 0.88rem; line-height: 1.8;
+}
+.navy-box strong { color: var(--gold); }
+
+/* ── 흐름도 ── */
+.flow { display: flex; flex-direction: column; gap: 0; margin: 20px 0; }
+.flow-item { display: flex; gap: 16px; align-items: flex-start; position: relative; }
+.flow-item:not(:last-child)::after {
+  content: ''; position: absolute; left: 19px; top: 42px;
+  width: 2px; height: calc(100% - 10px);
+  background: linear-gradient(to bottom, var(--mint), transparent);
+}
+.flow-dot {
+  width: 40px; height: 40px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 900; font-size: 0.82rem; flex-shrink: 0; position: relative; z-index: 1;
+}
+.flow-dot.step1 { background: var(--indigo); color: white; }
+.flow-dot.step2 { background: var(--gold); color: white; }
+.flow-dot.stepG { background: #2e7d32; color: white; }
+.flow-content { flex: 1; background: var(--gray-lt); border-radius: 12px; padding: 14px 18px; margin-bottom: 12px; }
+.flow-content h4 { font-size: 0.88rem; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.flow-content p { font-size: 0.82rem; color: var(--gray); margin: 0; line-height: 1.6; }
+.flow-content .amount { font-size: 1.0rem; font-weight: 900; color: var(--indigo); margin-top: 4px; }
+
+/* ── 수식 카드 ── */
+.formula-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 16px 0; }
+.formula-card { background: var(--gray-lt); border-radius: 14px; padding: 16px 18px; border: 1px solid var(--border); }
+.formula-label { font-size: 0.7rem; font-weight: 700; color: var(--gray); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; }
+.formula-expr { font-size: 1.0rem; font-weight: 900; color: var(--navy); letter-spacing: -0.02em; }
+.formula-expr em { color: var(--indigo); font-style: normal; }
+.formula-note { font-size: 0.72rem; color: var(--gray); margin-top: 4px; }
+
+/* ── 비교 테이블 ── */
+.compare-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 10px; margin: 16px 0; }
+.compare-table { width: 100%; min-width: 560px; border-collapse: collapse; font-size: 0.85rem; margin: 0; }
+.compare-table th { background: linear-gradient(160deg, #1e1e72 0%, #2d2d9f 55%, #1e1e72 100%); color: white; padding: 10px 14px; text-align: left; font-weight: 700; font-size: 0.8rem; }
+.compare-table th:first-child { border-radius: 10px 0 0 0; }
+.compare-table th:last-child  { border-radius: 0 10px 0 0; }
+.compare-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: #3a4a5c; vertical-align: middle; }
+.compare-table td:first-child { white-space: nowrap; width: 1%; }
+.compare-table tr:last-child td { border-bottom: none; }
+.compare-table tr:nth-child(even) td { background: var(--gray-lt); }
+.tag-mint { display: inline-block; background: var(--indigo-lt); color: var(--indigo); font-size: 0.7rem; font-weight: 700; white-space: nowrap; padding: 2px 8px; border-radius: 10px; }
+.tag-gold { display: inline-block; background: var(--gold-lt); color: #7a5a10; font-size: 0.7rem; font-weight: 700; white-space: nowrap; padding: 2px 8px; border-radius: 10px; }
+
+/* ── 변수 카드 ── */
+.var-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 16px 0; }
+.var-card { border: 1px solid var(--border); border-radius: 14px; padding: 16px; position: relative; overflow: hidden; }
+.var-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--indigo); }
+.var-card.gold::before { background: var(--gold); }
+.var-card.navy::before { background: linear-gradient(160deg, #1e1e72 0%, #2d2d9f 55%, #1e1e72 100%); }
+.var-name  { font-size: 0.72rem; font-weight: 700; color: var(--gray); letter-spacing: 0.06em; margin-bottom: 6px; }
+.var-value { font-size: 1.3rem; font-weight: 900; color: var(--indigo); letter-spacing: -0.02em; margin-bottom: 4px; }
+.var-card.gold .var-value { color: var(--gold); }
+.var-card.navy .var-value { color: var(--gold); }
+.var-desc  { font-size: 0.75rem; color: var(--gray); line-height: 1.5; }
+
+/* ── Right 증서 흐름 ── */
+.cert-flow { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0; margin: 20px 0; position: relative; }
+.cert-step { text-align: center; padding: 20px 12px; position: relative; }
+.cert-step:not(:last-child)::after {
+  content: '→'; position: absolute; right: -8px; top: 50%;
+  transform: translateY(-50%); font-size: 1.2rem; color: var(--indigo); font-weight: 900;
+}
+.cert-icon { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin: 0 auto 10px; }
+.cert-step h4 { font-size: 0.82rem; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.cert-step p { font-size: 0.75rem; color: var(--gray); margin: 0; line-height: 1.5; }
+
+/* ── 복리 바 ── */
+.compound-bars { display: flex; flex-direction: column; gap: 10px; margin: 20px 0; }
+.bar-row { display: flex; align-items: center; gap: 12px; }
+.bar-label { font-size: 0.78rem; font-weight: 700; color: var(--gray); min-width: 52px; text-align: right; }
+.bar-track { flex: 1; height: 28px; background: var(--gray-lt); border-radius: 6px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 6px; display: flex; align-items: center; padding-left: 10px; font-size: 0.75rem; font-weight: 700; color: white; background: linear-gradient(90deg, var(--mint), var(--mint-dk)); white-space: nowrap; }
+.bar-val { font-size: 0.78rem; font-weight: 700; color: var(--navy); min-width: 80px; }
+
+/* ── 실시간 연동 강조 ── */
+.live-val {
+  display: inline-block;
+  background: var(--indigo-lt);
+  color: var(--indigo);
+  font-weight: 900;
+  padding: 1px 6px;
+  border-radius: 6px;
+  font-size: 0.9em;
+  border: 1px solid rgba(0,147,138,0.2);
+  cursor: help;
+}
+.live-val::after {
+  content: ' ●';
+  font-size: 0.6em;
+  color: var(--indigo);
+  vertical-align: super;
+}
+
+/* ── 푸터 ── */
+.footer { text-align: center; padding: 32px 16px; font-size: 0.75rem; color: var(--gray); }
+
+@media (max-width: 600px) {
+  .section { padding: 24px 18px; }
+  .cert-step:not(:last-child)::after { display: none; }
+  .cert-flow { grid-template-columns: 1fr; }
+  .live-ticker { border-radius: 0; }
+}
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 999;
+    background: white; border-top: 1px solid #e2e8ef;
+    display: flex; height: 60px;
+    box-shadow: 0 -4px 16px rgba(15,31,53,0.08);
+    max-width: 860px; margin: 0 auto;
+  }
+  /* iOS 홈 인디케이터 대응 */
+  @supports (padding-bottom: env(safe-area-inset-bottom)) {
+    .bottom-nav { padding-bottom: env(safe-area-inset-bottom); height: calc(60px + env(safe-area-inset-bottom)); }
+  }
+  .nav-item {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 3px; text-decoration: none; color: #9aa5b4; font-size: 0.65rem; font-weight: 600;
+    transition: color 0.15s;
+  }
+  .nav-item svg { width: 22px; height: 22px; stroke: currentColor; }
+  .nav-item.active, .nav-item:hover { color: var(--indigo); }
+  body { padding-bottom: 68px; }
+
+  :root {
+    --indigo-deep: #1e1e72;
+    --indigo:      #2d2d9f;
+    --indigo-mid:  #3d3dbb;
+    --indigo-lt:   #f0f0ff;
+    --indigo-bg:   #f4f4ff;
+    --gold:        #FFD700;
+    --border:      #e0e0f4;
+    --text-main:   #1e1e72;
+    --text-sub:    #8888bb;
+  }
+  body { background: var(--indigo-bg) !important; padding-bottom: 68px !important; }
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
+    background: white; border-top: 1px solid var(--border);
+    display: flex; height: 60px;
+    box-shadow: 0 -4px 20px rgba(30,30,114,0.08);
+    max-width: 100%;
+  }
+  @supports (padding-bottom: env(safe-area-inset-bottom)) {
+    .bottom-nav { padding-bottom: env(safe-area-inset-bottom); height: calc(60px + env(safe-area-inset-bottom)); }
+  }
+  .nav-item {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 3px; text-decoration: none; color: #bbbbdd; font-size: 0.63rem; font-weight: 700;
+    transition: color 0.15s;
+  }
+  .nav-item svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; }
+  .nav-item.active { color: var(--indigo); }
+
+
+@media (max-width: 430px) {
+  .ticker-usdt { font-size: 0.85rem; }
+  .ticker-krw  { font-size: 0.7rem; }
+  .ticker-change { font-size: 0.65rem; padding: 2px 5px; }
+  .ticker-time { display: none; }
+  .live-ticker { padding: 8px 12px; }
+}
+
+
+/* ── 계산기 CSS ── */
+
+        :root {
+            --tether-mint: #2d2d9f;
+            --tether-mint-light: #f0f0ff;
+            --tether-navy: #1e1e72;
+            --tether-gray: #5e6c7c;
+            --bg: #f4f4ff;
+            --accent: #d93025;
+            --warning-bg: #fff3f3;
+        }
+
+        body { font-family: 'Pretendard', sans-serif; background: var(--indigo-bg, #f4f4ff); display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; margin: 0; padding-top: 10px; color: var(--tether-navy); -webkit-text-size-adjust: none; }
+        .card { background: white; padding: 15px 18px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); width: 100%; max-width: 600px; box-sizing: border-box; position: relative; }
+        
+        .header-row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 12px; }
+        h2 { margin: 0; font-weight: 800; font-size: 1.2rem; color: var(--tether-navy); }
+        
+        .variable-panel { display: flex; flex-direction: column; gap: 4px; text-align: right; }
+        .v-input-group { display: flex; align-items: center; justify-content: flex-end; gap: 5px; }
+        .v-input-group label { font-size: 0.65rem; color: var(--tether-gray); font-weight: 600; }
+        .v-input-group input { width: 55px; border: 1px solid #ddd; border-radius: 4px; font-size: 0.8rem; padding: 1px 3px; font-weight: bold; color: var(--tether-navy); text-align: right; }
+        .v-input-group .highlight-input { color: var(--accent); border-color: #ffcccc; }
+
+        .input-container { margin-bottom: 12px; background: var(--tether-mint-light); padding: 10px; border-radius: 12px; }
+        label.main-label { display: block; margin-bottom: 8px; font-size: 0.85rem; font-weight: 900; color: var(--tether-mint); text-align: center; }
+        
+        .stepper { display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-step { width: 38px; height: 38px; border-radius: 10px; border: none; background: var(--tether-mint); color: white; font-size: 1.2rem; font-weight: bold; cursor: pointer; }
+        input.main-input { width: 110px; height: 38px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 1.2rem; font-weight: 800; color: var(--tether-mint); text-align: center; outline: none; }
+
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; margin-bottom: 5px; }
+        .section-title { font-size: 0.75rem; color: var(--tether-gray); font-weight: 700; border-left: 3px solid var(--tether-mint); padding-left: 6px; }
+        .ratio-input { width: 40px; border: 1px solid #ddd; border-radius: 4px; font-size: 0.75rem; padding: 1px 3px; font-weight: 800; color: var(--accent); text-align: center; }
+
+        .result-container { background: #fff; border-radius: 12px; border: 1px solid #f0f0f0; overflow: hidden; margin-bottom: 3px; }
+        .row { display: flex; justify-content: space-between; padding: 7px 12px; border-bottom: 1px solid #f9f9f9; align-items: center; }
+        .label { color: var(--tether-gray); font-size: 0.8rem; }
+        .value { font-weight: 900; color: var(--tether-navy); font-size: 1rem; text-align: right; line-height: 1.1; }
+        
+        /* 매수 비용 표시 스타일 */
+        .buy-val { display: block; font-size: 0.65rem; color: var(--tether-mint); font-weight: 600; margin-top: 2px; }
+
+        .sub-row { background: #fafafa; padding: 5px 12px; display: flex; justify-content: space-between; font-size: 0.75rem; color: #888; border-bottom: 1px solid #f0f0f0; }
+        .sub-val { font-weight: 800; color: var(--tether-mint); }
+
+        .total-row { background: #f1f7ff; padding: 7px 12px; display: flex; justify-content: space-between; align-items: center; }
+        .total-label { color: var(--tether-mint); font-weight: 800; font-size: 0.85rem; }
+        .total-value { color: var(--accent); font-size: 1.1rem; font-weight: 900; text-align: right; line-height: 1.1; }
+        
+        .margin-info { text-align: right; padding-right: 8px; margin-bottom: 8px; }
+        .margin-text { font-size: 0.85rem; font-weight: 900; color: var(--tether-mint); }
+
+        .notice-card { background: var(--warning-bg); border-radius: 10px; padding: 10px; margin-top: 15px; border: 1px solid #ffeded; }
+        .notice-title { font-size: 0.75rem; font-weight: 800; color: var(--accent); margin-bottom: 5px; display: flex; align-items: center; gap: 4px; padding-left: 2px; }
+        .notice-content { font-size: 0.68rem; color: #777; line-height: 1.5; font-weight: 500; }
+        .notice-content ul { margin: 0; padding-left: 14px; list-style-type: none; }
+        .notice-content li { position: relative; margin-bottom: 3px; padding-left: 12px; }
+        .notice-content li::before { content: '•'; position: absolute; left: 0; color: #ccc; }
+
+        .copyright { margin-top: 12px; font-size: 0.75rem; color: #bbb; text-align: right; border-top: 1px solid #eee; padding-top: 8px; font-weight: 600; }
+    
+        h2 { font-size: 1.2rem; font-weight: 800; text-align: center; color: var(--tether-navy); margin-bottom: 3px; }
+        .badge { display: inline-block; background: var(--tether-mint); color: white; font-size: 0.6rem; font-weight: 700; padding: 2px 7px; border-radius: 20px; vertical-align: middle; margin-left: 5px; }
+        .sub { font-size: 0.7rem; text-align: center; color: var(--tether-gray); margin-bottom: 12px; }
+        .live-synced { border-color: var(--tether-mint) !important; background: #f0f0ff !important; }
+    
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
+            background: white; border-top: 1px solid #e0e0f4;
+            display: flex; height: 60px;
+            box-shadow: 0 -4px 20px rgba(30,30,114,0.08);
+        }
+        @supports (padding-bottom: env(safe-area-inset-bottom)) {
+            .bottom-nav { padding-bottom: env(safe-area-inset-bottom); height: calc(60px + env(safe-area-inset-bottom)); }
+        }
+        .nav-item {
+            flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            gap: 3px; text-decoration: none; color: #bbbbdd; font-size: 0.63rem; font-weight: 700;
+        }
+        .nav-item svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; }
+        .nav-item.active { color: #2d2d9f; }
+        body { padding-bottom: 68px !important; }
+    
+        .price-banner {
+            background: linear-gradient(135deg, #f0f0ff, #f4f4ff);
+            border: 1px solid #d0d0f4; border-radius: 14px;
+            padding: 10px 14px; margin-bottom: 14px;
+            display: flex; flex-direction: column; gap: 6px;
+            overflow: hidden; box-sizing: border-box;
+        }
+        .banner-sut-label { font-size: 0.62rem; font-weight: 700; color: var(--tether-mint); letter-spacing: 0.08em; background: var(--tether-mint-light); padding: 2px 8px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+        .banner-price { font-size: 0.95rem; font-weight: 900; color: var(--tether-mint); white-space: nowrap; }
+        .banner-krw   { font-size: 0.75rem; font-weight: 600; color: var(--tether-gray); white-space: nowrap; }
+        .banner-change { font-size: 0.7rem; font-weight: 700; padding: 2px 7px; border-radius: 10px; white-space: nowrap; }
+        .banner-change.up { background: #e8f5e9; color: #2e7d32; }
+        .banner-change.dn { background: #ffebee; color: #c62828; }
+        .banner-change.flat { background: #f5f5f5; color: var(--tether-gray); }
+        .banner-time { font-size: 0.62rem; color: var(--tether-gray); white-space: nowrap; }
+        .apply-btn { padding: 5px 10px; background: var(--tether-mint); color: white; border: none; border-radius: 8px; font-size: 0.72rem; font-weight: 700; cursor: pointer; white-space: nowrap; font-family: 'Pretendard', sans-serif; }
+        .apply-btn:active { opacity: 0.85; }
+        .refresh-btn-sm { width: 28px; height: 28px; background: white; border: 1px solid #d0d0f4; border-radius: 8px; color: var(--tether-mint); font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; justify-content: center; font-family: 'Pretendard', sans-serif; }
+        .refresh-btn-sm.spinning { animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    
+@media (max-width: 430px) {
+  .banner-price { font-size: 0.85rem; }
+  .banner-krw   { font-size: 0.7rem; }
+  .banner-change { font-size: 0.65rem; padding: 2px 5px; }
+  .banner-time { display: none; }
+  .price-banner { padding: 8px 12px; }
+}
+
+        
+
+/* ── 시뮬레이터 CSS ── */
+
+        :root {
+            --mint:  #2d2d9f;
+            --navy:  #1e1e72;
+            --gray:  #5e6c7c;
+            --bg:    #f4f4ff;
+            --accent:#d93025;
+            --boost: #ff9800;
+            --purple:#7b5ea7;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background: var(--bg);
+            padding: 10px;
+            color: var(--navy);
+            -webkit-text-size-adjust: none;
+        }
+        .card {
+            background: white;
+            padding: 16px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            max-width: 860px;
+            margin: auto auto 12px;
+        }
+        h2 { font-size: 1.2rem; font-weight: 800; text-align: center; color: var(--indigo); margin-bottom: 3px; }
+        .badge {
+            display: inline-block; background: var(--indigo); color: white;
+            font-size: 0.6rem; font-weight: 700; padding: 2px 7px;
+            border-radius: 20px; vertical-align: middle; margin-left: 5px;
+        }
+        .sub { font-size: 0.7rem; text-align: center; color: var(--gray); margin-bottom: 14px; }
+
+        /* ── 실시간 시세 배너 ── */
+        .price-banner {
+            background: linear-gradient(135deg, #f0f0ff, #f4f4ff);
+            border: 1px solid #d0d0f0;
+            border-radius: 12px;
+            padding: 10px 14px;
+            margin-bottom: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+        .price-banner-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            flex: 1;
+            min-width: 0;
+        }
+        .price-tag {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--gray);
+            letter-spacing: 0.04em;
+            white-space: nowrap;
+        }
+        .price-live {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+        }
+        .price-usdt { font-size: 0.95rem; font-weight: 900; color: var(--indigo, #2d2d9f); letter-spacing: -0.01em; white-space: nowrap; }
+        .price-krw {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--gray);
+            white-space: nowrap; white-space: nowrap;
+        }
+        .price-change {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 8px;
+        }
+        .price-change.up { background: #e8f5e9; color: #2e7d32; }
+        .price-change.dn { background: #ffebee; color: #c62828; }
+        .price-change.flat { background: #f5f5f5; color: var(--gray); }
+        .price-time { font-size: 0.65rem; color: var(--gray); white-space: nowrap; }
+
+        .price-right {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .apply-btn {
+            padding: 5px 10px;
+            background: var(--indigo, #2d2d9f);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            flex-shrink: 0;
+            font-family: 'Pretendard', sans-serif;
+        }
+        .apply-btn:active { opacity: 0.85; transform: scale(0.97); }
+
+        .refresh-btn {
+            width: 30px; height: 30px;
+            background: white;
+            border: 1px solid #d0d0f0;
+            border-radius: 8px;
+            color: var(--indigo, #2d2d9f);
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .refresh-btn:active { opacity: 0.75; }
+        .refresh-btn.spinning { animation: spin 0.8s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        .price-loading { font-size: 0.75rem; color: var(--gray); }
+        .price-error { font-size: 0.72rem; color: var(--accent); }
+
+        /* ── 입력 영역 ── */
+        .input-group {
+            background: #f8f9fa;
+            padding: 11px 13px;
+            border-radius: 14px;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+        .irow2 {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .irow2:last-child { margin-bottom: 0; }
+        .ifield {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            width: 100%;
+        }
+        .ifield label {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--gray);
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .ifield input, .ifield select {
+            max-width: 120px;
+        }
+        .ifield input.live-synced { border-color: var(--indigo); background: var(--indigo-lt); }
+        .ifield select {
+            max-width: 120px;
+        }
+        .price-pair { display: flex; align-items: center; gap: 4px; }
+        .price-pair input { width: 46px; }
+        .price-pair span { font-size: 0.78rem; color: var(--gray); font-weight: 600; }
+        .stepper { display: inline-flex; align-items: center; gap: 4px; }
+        .btn-step {
+            width: 26px; height: 26px; border-radius: 6px; border: 1px solid #ddd;
+            background: white; color: var(--indigo); font-weight: 900; cursor: pointer;
+            font-size: 1rem; font-family: 'Pretendard', sans-serif;
+        }
+        .stepper input { width: 40px; text-align: center; }
+
+        /* ── 변동 시나리오 ── */
+        .scenario-group {
+            background: #f0f0ff;
+            border: 1px solid #d0d0f0;
+            padding: 11px 13px;
+            border-radius: 14px;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+        .scenario-title { font-size: 0.8rem; font-weight: 800; color: var(--indigo); margin-bottom: 10px; }
+        .scenario-row {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .scenario-row:last-child { margin-bottom: 0; }
+        .sch-field {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            width: 100%;
+        }
+        .sch-field label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--gray);
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .sch-field input {
+            padding: 5px 7px;
+            border: 1px solid #d0d0f0;
+            border-radius: 7px;
+            text-align: right;
+            font-weight: 800;
+            color: var(--indigo, #2d2d9f);
+            background: white;
+            outline: none;
+            font-size: 0.82rem;
+            width: auto;
+            max-width: 100px;
+            flex-shrink: 0;
+            font-family: 'Pretendard', sans-serif;
+        }
+        .sch-note { font-size: 0.68rem; color: var(--gray); margin-top: 6px; line-height: 1.5; }
+
+        /* ── 요약 카드 ── */
+        .summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+        .sum-card { background: #f8f9fa; border-radius: 12px; padding: 10px 12px; }
+        .sum-label { font-size: 0.65rem; color: var(--gray); margin-bottom: 3px; line-height: 1.4; }
+        .sum-val { font-size: 1.0rem; font-weight: 800; color: var(--navy); }
+        .sum-val.green  { color: #2e7d32; }
+        .sum-val.mint   { color: var(--indigo); }
+        .sum-val.purple { color: var(--purple); }
+
+        /* ── 테이블 ── */
+        .tbl-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid #eee; -webkit-overflow-scrolling: touch; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.8rem; text-align: right; white-space: nowrap; table-layout: auto; }
+        th { background: var(--navy); color: white; padding: 8px 6px; font-weight: 600; text-align: center; font-size: 0.78rem; }
+        td { padding: 7px 6px; border-bottom: 1px solid #f0f0f0; font-size: 0.8rem; text-align: right; }
+        tr:last-child td { border-bottom: none; }
+        tr.month-start td { border-top: 2px solid #d0d0f0; }
+        th:first-child, td:first-child {
+            position: sticky; left: 0; z-index: 2;
+            text-align: center; padding-left: 10px; padding-right: 10px;
+        }
+        th:first-child { background: var(--navy); }
+        td:first-child { background: #fcfcfc; font-weight: 700; border-right: 1px solid #eee; }
+
+        .c-date     { color: var(--gray); text-align: center; font-size: 0.75rem; }
+        .c-contract { color: var(--indigo);   font-weight: 800; }
+        .c-cost     { color: var(--boost);  font-weight: 700; }
+        .c-daily    { color: var(--accent); font-weight: 800; }
+        .c-weekly   { color: #2e7d32;       font-weight: 800; }
+        .c-approved { color: var(--navy);   font-weight: 800; }
+        .c-none     { color: #ccc; }
+
+        .th-add { width: 110px; }
+        .td-add { text-align: center; padding-left: 4px; padding-right: 4px; }
+        .boost-ctrl { display: inline-flex; align-items: center; gap: 3px; }
+        .btn-mini {
+            width: 22px; height: 22px; border-radius: 5px;
+            border: 1px solid #ffe0b2; background: #fff3e0;
+            color: var(--boost); font-weight: 900; cursor: pointer; font-size: 0.85rem;
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+            font-family: 'Pretendard', sans-serif;
+        }
+        .add-input {
+            width: 50px; border: 1px solid #eee; border-radius: 5px;
+            text-align: center; font-size: 0.8rem; font-weight: 800;
+            color: var(--boost); background: white; outline: none; padding: 3px 2px;
+            font-family: 'Pretendard', sans-serif;
+        }
+        .price-input {
+            width: 46px; border: none; border-bottom: 1px dashed #b2dfdb;
+            text-align: center; font-size: 0.72rem; font-weight: 700;
+            color: var(--purple); background: transparent; outline: none; padding: 1px 0;
+            font-family: 'Pretendard', sans-serif;
+        }
+
+        /* ── 차트 ── */
+        .chart-title { font-size: 0.88rem; font-weight: 800; color: var(--navy); margin-bottom: 10px; }
+        .chart-wrap { position: relative; width: 100%; height: 260px; }
+        .legend { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 10px; font-size: 0.72rem; }
+        .legend-item { display: flex; align-items: center; gap: 5px; color: var(--gray); }
+        .legend-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+        /* ── 저장 버튼 ── */
+        .save-btn {
+            width: 100%; height: 46px; background: var(--navy); color: white;
+            border: none; border-radius: 14px; font-weight: 800; font-size: 0.95rem;
+            margin-top: 14px; cursor: pointer; font-family: 'Pretendard', sans-serif;
+            box-shadow: 0 4px 10px rgba(26,42,64,0.2);
+        }
+        .save-btn:active { transform: scale(0.98); opacity: 0.9; }
+        .notice { font-size: 0.67rem; color: #aaa; margin-top: 12px; line-height: 1.6; padding-left: 4px; }
+
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
+        input[type=number] { -moz-appearance: textfield; }
+      .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 999;
+    background: white; border-top: 1px solid #e2e8ef;
+    display: flex; height: 60px;
+    box-shadow: 0 -4px 16px rgba(15,31,53,0.08);
+    max-width: 860px; margin: 0 auto;
+  }
+  /* iOS 홈 인디케이터 대응 */
+  @supports (padding-bottom: env(safe-area-inset-bottom)) {
+    .bottom-nav { padding-bottom: env(safe-area-inset-bottom); height: calc(60px + env(safe-area-inset-bottom)); }
+  }
+  .nav-item {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 3px; text-decoration: none; color: #9aa5b4; font-size: 0.65rem; font-weight: 600;
+    transition: color 0.15s;
+  }
+  .nav-item svg { width: 22px; height: 22px; stroke: currentColor; }
+  .nav-item.active, .nav-item:hover { color: #00938a; }
+  body { padding-bottom: 68px; }
+
+  :root {
+    --indigo-deep: #1e1e72;
+    --indigo:      #2d2d9f;
+    --indigo-mid:  #3d3dbb;
+    --indigo-lt:   #f0f0ff;
+    --indigo-bg:   #f4f4ff;
+    --gold:        #FFD700;
+    --border:      #e0e0f4;
+    --text-main:   #1e1e72;
+    --text-sub:    #8888bb;
+  }
+  body { background: var(--indigo-bg) !important; padding-bottom: 68px !important; }
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
+    background: white; border-top: 1px solid var(--border);
+    display: flex; height: 60px;
+    box-shadow: 0 -4px 20px rgba(30,30,114,0.08);
+    max-width: 100%;
+  }
+  @supports (padding-bottom: env(safe-area-inset-bottom)) {
+    .bottom-nav { padding-bottom: env(safe-area-inset-bottom); height: calc(60px + env(safe-area-inset-bottom)); }
+  }
+  .nav-item {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 3px; text-decoration: none; color: #bbbbdd; font-size: 0.63rem; font-weight: 700;
+    transition: color 0.15s;
+  }
+  .nav-item svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; }
+  .nav-item.active { color: var(--indigo); }
+
+
+@media (max-width: 430px) {
+  .price-usdt { font-size: 0.85rem; }
+  .price-krw  { font-size: 0.7rem; }
+  .price-change { font-size: 0.65rem; padding: 2px 5px; }
+  .price-time { display: none; }
+  .price-banner { padding: 8px 12px; }
+  .apply-btn { padding: 4px 8px; font-size: 0.68rem; }
+}
+
+    
 </style>
 </head>
 <body>
 
+<!-- 홈 -->
+<div id="page-home" class="tab-page active">
 <div class="hero">
   <!-- 상단 인디고 밴드 -->
   <div class="hero-band">
   <div class="hero-header">
     <div class="logo-wrap">
-      <img src="icon.png" alt="SuperTrust" style="width:60px;height:60px;object-fit:contain;">
+      <img src="data:image/png;base64,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" alt="SuperTrust" style="width:60px;height:60px;object-fit:contain;">
       <div class="live-dot"></div>
     </div>
     <div class="hero-title-group">
@@ -222,23 +1039,721 @@ body {
   </div>
   </div><!-- /cards-section -->
 </div>
+</div>
 
+<!-- 해설집 -->
+<div id="page-guide" class="tab-page">
+<!-- 헤더 -->
+<div class="hero">
+  
+  <h1>SuperSave <em>가이드</em></h1>
+  <p class="hero-sub">DeCT 신용거래 구조부터 Right 보상, 복리 재참여까지 — 슈퍼세이버가 알아야 할 모든 것.</p>
+</div>
+
+<!-- 실시간 시세 위젯 -->
+<div class="live-ticker">
+  <!-- 1행: SUT시세 + 새로고침 -->
+  <div class="ticker-row1">
+    <div class="ticker-left">
+      <span class="ticker-label">SUT 실시간 시세</span>
+      <div id="tickerDisplay">
+        <span class="ticker-loading">시세 조회 중...</span>
+      </div>
+    </div>
+    <button class="refresh-btn" onclick="fetchPrice()" id="refreshBtn" title="새로고침">↺</button>
+  </div>
+  <!-- 2행: 신용매수가 입력 + 연동 표시 -->
+  <div class="ticker-row2">
+    <div style="display:flex;align-items:center;gap:6px;background:var(--indigo-lt);border:1px solid var(--border);border-radius:10px;padding:5px 12px;">
+      <span style="font-size:0.65rem;font-weight:700;color:var(--indigo);letter-spacing:0.06em;white-space:nowrap;">신용매수가</span>
+      <input id="inputCreditPrice" type="number" value="3.24" step="0.01" min="0.01"
+        oninput="updateLiveValues()"
+        style="width:52px;font-size:0.92rem;font-weight:900;color:var(--indigo);background:transparent;
+               border:none;outline:none;text-align:right;font-family:inherit;padding:0;">
+      <span style="font-size:0.75rem;font-weight:700;color:var(--indigo);">USDT</span>
+    </div>
+    <span style="font-size:0.65rem; color:var(--gray); display:none" id="tickerNote">● 본문 시세 연동됨</span>
+  </div>
+</div>
+  </div>
+  
+</div>
+
+<div class="container">
+
+<!-- 1. 슈퍼세이브란 -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">1</div>
+    <h2 class="section-title">슈퍼세이브란 <span>무엇인가</span></h2>
+  </div>
+  <p>(주)슈퍼트러스트가 운영하는 코인 금융 플랫폼. SUT 토큰을 매개로 회사와 신용거래 계약을 체결하고, 승인된 신용대금을 <strong>365일 분할 수령</strong>하는 구조입니다.</p>
+  <div class="highlight-box">
+    <strong>DeCT(Decentralized Credit Transaction)</strong> — 탈중앙화 신용거래.<br>
+    시세보다 높은 신용매수가로 SUT를 평가 → 신용대금 승인. 이 차이가 수익의 핵심입니다.
+  </div>
+  <p>전용 앱을 통해 진행하며, 준비금은 USDT 기준 <strong>100 USDT 단위</strong>로 참여합니다.</p>
+</div>
+
+<!-- 2. SUT 토큰 -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">2</div>
+    <h2 class="section-title">SUT <span>토큰 기본 정보</span></h2>
+  </div>
+  <div class="var-grid">
+    <div class="var-card">
+      <div class="var-name">네트워크</div>
+      <div class="var-value" style="font-size:1.0rem">Polygon</div>
+      <div class="var-desc">폴리곤 네트워크에서 발행된 ERC-20 계열 토큰</div>
+    </div>
+    <div class="var-card gold">
+      <div class="var-name">거래소 시세 (실시간)</div>
+      <div class="var-value" id="v_market">조회 중...</div>
+      <div class="var-desc">GATE·KuCoin 거래소 기준 시장 유통 가격</div>
+    </div>
+    <div class="var-card navy">
+      <div class="var-name">신용매수가</div>
+      <div class="var-value" id="v_credit">3.24 USDT</div>
+      <div class="var-desc">상단에서 직접 입력 · 회사가 미래가치로 인정하는 SUT 기준가격</div>
+    </div>
+  </div>
+  <div class="gold-box">
+    <strong>핵심 원리:</strong> 시장 시세(<span id="t_market1" class="live-val">조회 중</span>)와 신용매수가(3.24 USDT)의 차이가 수익의 원천입니다. 회사는 시세보다 <span id="t_ratio" class="live-val">-</span>배 높은 가격으로 SUT를 평가하여 신용대금을 승인합니다.
+  </div>
+
+  <!-- 토큰 공급량 정보 (폴리곤스캔 기준) -->
+  <div style="margin-top:16px;">
+    <div style="font-size:0.72rem;font-weight:700;color:var(--gray);letter-spacing:0.06em;margin-bottom:10px;display:flex;align-items:center;gap:8px;">
+      <span style="background:var(--indigo-lt);color:var(--indigo);padding:3px 10px;border-radius:20px;font-size:0.65rem;font-weight:700;">POLYGON SCAN</span>
+      토큰 공급 현황
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;">
+      <div style="background:var(--indigo-lt);border:1px solid var(--border);border-radius:12px;padding:12px 14px;">
+        <div style="font-size:0.65rem;font-weight:700;color:var(--indigo);letter-spacing:0.06em;margin-bottom:4px;">총 발행량</div>
+        <div style="font-size:0.95rem;font-weight:900;color:var(--indigo-deep);">238,403,732</div>
+        <div style="font-size:0.65rem;color:var(--text-sub);margin-top:2px;">SUT</div>
+      </div>
+      <div style="background:#fff3f3;border:1px solid #ffd0d0;border-radius:12px;padding:12px 14px;">
+        <div style="font-size:0.65rem;font-weight:700;color:#c62828;letter-spacing:0.06em;margin-bottom:4px;">소각량</div>
+        <div style="font-size:0.95rem;font-weight:900;color:#c62828;">50,000,000</div>
+        <div style="font-size:0.65rem;color:var(--text-sub);margin-top:2px;">SUT · Dead 주소 이전</div>
+      </div>
+      <div style="background:#fff8e1;border:1px solid #ffe082;border-radius:12px;padding:12px 14px;">
+        <div style="font-size:0.65rem;font-weight:700;color:#7a5a10;letter-spacing:0.06em;margin-bottom:4px;">락업량</div>
+        <div style="font-size:0.95rem;font-weight:900;color:#7a5a10;">50,000,000</div>
+        <div style="font-size:0.65rem;color:var(--text-sub);margin-top:2px;">SUT · 0xbC0E5Cf0...494066144</div>
+      </div>
+      <div style="background:#e8f5e9;border:1px solid #a5d6a7;border-radius:12px;padding:12px 14px;">
+        <div style="font-size:0.65rem;font-weight:700;color:#2e7d32;letter-spacing:0.06em;margin-bottom:4px;">유통량</div>
+        <div style="font-size:0.95rem;font-weight:900;color:#2e7d32;">138,403,732</div>
+        <div style="font-size:0.65rem;color:var(--text-sub);margin-top:2px;">SUT · 총 발행량 − 소각 − 락업</div>
+      </div>
+    </div>
+    <div style="margin-top:8px;font-size:0.65rem;color:var(--text-sub);text-align:right;">
+      * 폴리곤스캔(Polygonscan) 온체인 데이터 기준 · 락업 지갑: 0xbC0E5Cf0...494066144
+    </div>
+  </div>
+</div>
+
+<!-- 3. 신용거래 계약 구조 -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">3</div>
+    <h2 class="section-title">신용거래 계약 <span>구조</span></h2>
+  </div>
+  <p>1건의 신용거래 계약은 <strong>Step 1과 Step 2</strong>, 두 가지로 구성됩니다. 두 Step 모두 동일한 SUT 수량을 기준으로 하며, 각각 동일한 신용대금이 승인됩니다.</p>
+
+  <div class="flow">
+    <div class="flow-item">
+      <div class="flow-dot step1">S1</div>
+      <div class="flow-content">
+        <h4>Step 1 — 회사 보유분 SUT 자동 매수·매도</h4>
+        <p>준비금 USDT를 회사 지갑으로 전송 후 TXID를 앱에 입력. 회사 보유 SUT를 내부 기준가로 자동 처리하며 신용대금 승인. 별도 SUT 전송 불필요.</p>
+        <div class="amount">신용대금 = 준비금 × 1.2 승인</div>
+      </div>
+    </div>
+    <div class="flow-item">
+      <div class="flow-dot step2">S2</div>
+      <div class="flow-content">
+        <h4>Step 2 — 시중 SUT 매수 후 전송</h4>
+        <p>앱이 안내하는 SUT 수량을 거래소에서 시장 시세(<span id="t_market2" class="live-val">조회 중</span>)로 매수 후 회사 지갑으로 전송. 준비금과 별도 비용이며, <strong>시세가 낮을수록 비용 감소</strong>.</p>
+        <div class="amount">신용대금 = Step 1과 동일 금액 추가 승인</div>
+      </div>
+    </div>
+    <div class="flow-item">
+      <div class="flow-dot stepG">✓</div>
+      <div class="flow-content">
+        <h4>계약 완료 — 총 신용대금 확정</h4>
+        <p>Step 1 + Step 2 신용대금 합산 승인.</p>
+        <div class="amount">총 신용대금 = 준비금 × 2.4</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="navy-box" id="exampleBox">
+    <div style="font-size:0.8rem;font-weight:800;color:#4dd9d2;margin-bottom:12px;letter-spacing:-0.01em;">
+      예시 계산 (준비금 1,000 USDT)
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+      <div style="background:rgba(255,255,255,0.08);border-radius:8px;padding:8px 10px;">
+        <div style="font-size:0.62rem;color:rgba(255,255,255,0.5);margin-bottom:2px;">신용매수가</div>
+        <div style="font-size:0.88rem;font-weight:900;color:#4dd9d2;"><span id="t_ex_cr">3.24</span> USDT</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.08);border-radius:8px;padding:8px 10px;">
+        <div style="font-size:0.62rem;color:rgba(255,255,255,0.5);margin-bottom:2px;">SUT 시세</div>
+        <div style="font-size:0.88rem;font-weight:900;color:#4dd9d2;"><span id="t_ex_price">조회 중</span></div>
+      </div>
+      <div style="background:rgba(255,255,255,0.08);border-radius:8px;padding:8px 10px;">
+        <div style="font-size:0.62rem;color:rgba(255,255,255,0.5);margin-bottom:2px;">회사보유분 매수가</div>
+        <div style="font-size:0.88rem;font-weight:900;color:white;"><span id="t_ex_co">2.70</span> USDT</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.08);border-radius:8px;padding:8px 10px;">
+        <div style="font-size:0.62rem;color:rgba(255,255,255,0.5);margin-bottom:2px;">SUT 수량 (올림)</div>
+        <div style="font-size:0.88rem;font-weight:900;color:white;"><span id="t_ex_sut">370.4</span> SUT</div>
+      </div>
+    </div>
+    <div style="border-top:1px solid rgba(255,255,255,0.15);padding-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      <div style="background:rgba(77,217,210,0.12);border-radius:8px;padding:8px 10px;">
+        <div style="font-size:0.62rem;color:rgba(255,255,255,0.5);margin-bottom:2px;">Step 1 신용대금</div>
+        <div style="font-size:0.88rem;font-weight:900;color:#4dd9d2;">1,200 USDT</div>
+      </div>
+      <div style="background:rgba(255,152,0,0.15);border-radius:8px;padding:8px 10px;">
+        <div style="font-size:0.62rem;color:rgba(255,255,255,0.5);margin-bottom:2px;">Step 2 비용</div>
+        <div style="font-size:0.88rem;font-weight:900;color:#ffb74d;"><span id="t_ex_step2cost">-</span> USDT</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.12);border-radius:8px;padding:8px 10px;grid-column:1/-1;">
+        <div style="font-size:0.62rem;color:rgba(255,255,255,0.5);margin-bottom:2px;">총 신용대금 (Step1 + Step2)</div>
+        <div style="font-size:1.05rem;font-weight:900;color:white;">2,400 USDT</div>
+      </div>
+    </div>
+    <div style="font-size:0.62rem;color:rgba(255,255,255,0.35);margin-top:8px;text-align:right;">
+      <span id="t_ex_price2" style="display:none"></span>
+    </div>
+  </div>
+</div>
+
+<!-- 4. 수익 발생 원리 -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">4</div>
+    <h2 class="section-title">수익 발생 <span>원리</span></h2>
+  </div>
+  <p>승인된 신용대금은 365일에 걸쳐 매일 균등하게 지급됩니다. 정해진 요일에 7일치를 한꺼번에 주정산으로 수령하는 방식입니다.</p>
+  <div class="formula-grid">
+    <div class="formula-card">
+      <div class="formula-label">일 지급금</div>
+      <div class="formula-expr">신용대금 <em>÷ 365</em></div>
+      <div class="formula-note">예: 2,400 ÷ 365 = 6.58 USDT/일</div>
+    </div>
+    <div class="formula-card">
+      <div class="formula-label">주 정산 (7일치)</div>
+      <div class="formula-expr">일지급 <em>× 7</em></div>
+      <div class="formula-note">예: 6.58 × 7 = 46.1 USDT/주</div>
+    </div>
+    <div class="formula-card">
+      <div class="formula-label">주정산 요일</div>
+      <div class="formula-expr"><em>월~금</em> 중 배정</div>
+      <div class="formula-note">회원마다 분산 배정, 고정 요일 수령</div>
+    </div>
+    <div class="formula-card">
+      <div class="formula-label">잔여 신용대금</div>
+      <div class="formula-expr">지급 시 <em>감소</em></div>
+      <div class="formula-note">주정산 수령 시 신용대금이 차감됨</div>
+    </div>
+  </div>
+  <div class="highlight-box">
+    <strong>재참여(복리 효과):</strong> 주정산으로 받은 USDT가 100 USDT 단위를 넘으면 다시 신용거래 계약에 재참여할 수 있습니다. 재참여 시 신용대금이 추가로 쌓이면서 일지급금도 함께 증가합니다. 이것이 주복리 효과를 만들어냅니다.
+  </div>
+</div>
+
+<!-- 5. 가격 구조 -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">5</div>
+    <h2 class="section-title">가격 구조와 <span>마진 원리</span></h2>
+  </div>
+  <p>슈퍼세이브의 수익 구조는 <strong>두 가지 가격 차이</strong>에서 발생합니다.</p>
+  <div class="compare-table-wrap"><table class="compare-table">
+    <thead>
+      <tr><th>구분</th><th>가격</th><th>역할</th><th>마진 발생</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="tag-mint">신용매수가</span></td>
+        <td><strong><span id="tbl_cr">3.24</span> USDT</strong></td>
+        <td>회사가 SUT를 평가하는 기준가. 신용대금 산정 기준.</td>
+        <td>시세 대비 <span id="t_ratio2">-</span>배 프리미엄 (<span id="tbl_cr2">3.24</span> USDT 기준)</td>
+      </tr>
+      <tr>
+        <td><span class="tag-gold">회사보유분 매수가</span></td>
+        <td><strong><span id="tbl_co">2.70</span> USDT</strong></td>
+        <td>신용매수가 ÷ 1.2. Step 1에서 준비금으로 SUT를 매수하는 가격. 앱 내부에서만 적용.</td>
+        <td>신용매수가 대비 20% 마진 제공</td>
+      </tr>
+      <tr>
+        <td><span class="tag-mint">거래소 시세 (실시간)</span></td>
+        <td><strong><span id="t_market3" class="live-val">조회 중</span></strong></td>
+        <td>시장에서 SUT를 매수할 때 지불하는 실제 가격. Step 2 비용 계산 기준.</td>
+        <td>신용매수가 대비 <span id="t_ratio3">-</span>배 차이가 레버리지 원천</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+  <div class="formula-grid">
+    <div class="formula-card">
+      <div class="formula-label">가격 관계식</div>
+      <div class="formula-expr">신용매수가 = 회사매수가 <em>× 1.2</em></div>
+      <div class="formula-note">회사보유분 매수가는 외부에 노출되지 않음</div>
+    </div>
+    <div class="formula-card">
+      <div class="formula-label">레버리지 원리</div>
+      <div class="formula-expr">신용대금 = 준비금 <em>× 2.4</em></div>
+      <div class="formula-note">Step1·Step2 각각 ×1.2 → 합산 ×2.4</div>
+    </div>
+  </div>
+</div>
+
+<!-- 6. Right 증서 -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">6</div>
+    <h2 class="section-title">Right 증서 <span>시스템</span></h2>
+  </div>
+  <p>Right 증서는 슈퍼세이브의 <strong>1:1 소개 구조</strong>에서 발생하는 신용거래 계약권입니다. 현금 수당이 아니라 신용대금 계약 자격을 증서 형태로 부여하는 방식입니다.</p>
+  <div class="cert-flow">
+    <div class="cert-step">
+      <div class="cert-icon" style="background:#e0f5f4">👤</div>
+      <h4>피소개인 계약 체결</h4>
+      <p>새 회원이 준비금으로 신용거래 계약을 완료</p>
+    </div>
+    <div class="cert-step">
+      <div class="cert-icon" style="background:#fdf3dc">📄</div>
+      <h4>Right 증서 발행</h4>
+      <p>소개자 지분%에 따라 증서 자동 발행 (준비금의 최대 100%)</p>
+    </div>
+    <div class="cert-step">
+      <div class="cert-icon" style="background:#e8f5e9">💰</div>
+      <h4>SUT 매수 후 전송</h4>
+      <p>증서액×1.2 ÷ 신용매수가 = 필요 SUT<br>시장에서 매수 후 전송</p>
+    </div>
+    <div class="cert-step">
+      <div class="cert-icon" style="background:#e3f2fd">✅</div>
+      <h4>신용대금 승인</h4>
+      <p>증서액×1.2 신용대금 승인<br>일지급·주정산 개시</p>
+    </div>
+  </div>
+
+  <div class="navy-box">
+    <strong>예시: 피소개인 준비금 1,000 USDT, 소개자 A 100% 등록 시</strong><br>
+    증서 발행액 = 1,000 USDT<br>
+    신용대금 = 1,000 × 1.2 = <strong>1,200 USDT</strong><br>
+    필요 SUT = 1,200 ÷ <span id="t_cert_cr">3.24</span> = ... → <strong><span id="t_cert_sut">371</span> SUT</strong> (소수점 올림 처리)<br>
+    SUT 매수 비용 = 371 × <span id="t_cert_price" class="live-val">조회 중</span> = <strong id="t_cert_cost">-</strong> USDT<br>
+    → 소개 활동으로 얻은 증서로, SUT 매수비용만 부담하면 1,200 USDT 신용대금 계약 체결
+  </div>
+
+  <div class="gold-box">
+    <strong>일반 계약 vs Right 증서 비교:</strong> 동일 1,000 USDT 기준, 일반 계약은 준비금 1,000 USDT + Step2 약 <span id="t_compare_step2">-</span> USDT = 총 약 <span id="t_compare_total">-</span> USDT 필요. Right 증서는 SUT 매수 비용 약 <span id="t_compare_cert">-</span> USDT만 부담하면 1,200 USDT 신용대금 계약 가능. 소개 활동이 준비금을 대체하는 구조입니다.
+  </div>
+</div>
+
+<!-- 7. 재참여 복리 효과 -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">7</div>
+    <h2 class="section-title">재참여의 <span>복리 효과</span></h2>
+  </div>
+  <p>주정산으로 받은 USDT를 다시 재참여에 사용하면 신용대금이 누적되어 주정산이 점점 증가합니다. 준비금과 신용매수가를 직접 입력해 복리 성장을 확인해보세요.</p>
+
+  <!-- 입력 컨트롤 -->
+  <div style="display:flex;flex-wrap:wrap;gap:10px;margin:16px 0;padding:14px 16px;background:var(--indigo-lt);border-radius:14px;border:1px solid var(--border);align-items:center;">
+    <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:160px;">
+      <label style="font-size:0.72rem;font-weight:700;color:var(--indigo);white-space:nowrap;">준비금</label>
+      <input id="cr_reserve" type="number" value="1000" min="100" step="100"
+        oninput="calcCompound()"
+        style="flex:1;min-width:80px;padding:7px 10px;border:1px solid var(--border);border-radius:8px;
+               font-size:0.9rem;font-weight:900;color:var(--indigo);text-align:right;font-family:inherit;outline:none;">
+      <span style="font-size:0.75rem;font-weight:700;color:var(--indigo);">USDT</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:160px;">
+      <label style="font-size:0.72rem;font-weight:700;color:var(--indigo);white-space:nowrap;">신용매수가</label>
+      <input id="cr_creditprice" type="number" value="3.24" min="0.01" step="0.01"
+        oninput="calcCompound()"
+        style="flex:1;min-width:70px;padding:7px 10px;border:1px solid var(--border);border-radius:8px;
+               font-size:0.9rem;font-weight:900;color:var(--indigo);text-align:right;font-family:inherit;outline:none;">
+      <span style="font-size:0.75rem;font-weight:700;color:var(--indigo);">USDT</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:160px;">
+      <label style="font-size:0.72rem;font-weight:700;color:var(--indigo);white-space:nowrap;">SUT 시세</label>
+      <input id="cr_sutprice" type="number" value="0.70" min="0.01" step="0.01"
+        oninput="calcCompound()"
+        style="flex:1;min-width:70px;padding:7px 10px;border:1px solid var(--border);border-radius:8px;
+               font-size:0.9rem;font-weight:900;color:var(--indigo);text-align:right;font-family:inherit;outline:none;">
+      <span style="font-size:0.75rem;font-weight:700;color:var(--indigo);">USDT</span>
+    </div>
+  </div>
+
+  <!-- 요약 카드 -->
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;" id="cr_summary">
+    <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:10px 12px;">
+      <div style="font-size:0.62rem;font-weight:700;color:var(--gray);margin-bottom:3px;">초기 주정산</div>
+      <div style="font-size:0.95rem;font-weight:900;color:var(--indigo)" id="cr_week1">—</div>
+    </div>
+    <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:10px 12px;">
+      <div style="font-size:0.62rem;font-weight:700;color:var(--gray);margin-bottom:3px;">12주 주정산</div>
+      <div style="font-size:0.95rem;font-weight:900;color:#2e7d32" id="cr_week12">—</div>
+    </div>
+    <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:10px 12px;">
+      <div style="font-size:0.62rem;font-weight:700;color:var(--gray);margin-bottom:3px;">24주 주정산</div>
+      <div style="font-size:0.95rem;font-weight:900;color:var(--indigo)" id="cr_week24">—</div>
+    </div>
+  </div>
+
+  <!-- 바 차트 -->
+  <div class="compound-bars" id="cr_bars"></div>
+
+  <div class="highlight-box" style="margin-top:14px;">
+    재참여 조건: 가용합계(주정산 + 이월금)가 단위 비용(100 USDT + Step2 SUT 매수비용)을 초과할 때마다 자동 재계약 발생. <strong>SUT 시세가 낮을수록 재참여 빈도↑</strong>
+  </div>
+</div>
+
+
+<!-- 8. 주요 변수 요약 -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">8</div>
+    <h2 class="section-title">주요 변수 <span>요약</span></h2>
+  </div>
+  <div class="compare-table-wrap"><table class="compare-table">
+    <thead>
+      <tr><th>변수</th><th>역할</th><th>변동 방향</th><th>수익 영향</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>신용매수가</strong></td><td>신용대금 산정 기준</td><td>회사가 조정 (상향 가능)</td><td>상승 시 동일 SUT로 더 많은 신용대금 승인</td></tr>
+      <tr><td><strong>SUT 시세</strong><br><small style="color:var(--mint)">현재: <span id="t_var_price">조회 중</span></small></td><td>Step2 비용 결정</td><td>시장 변동</td><td>하락 시 Step2 비용 감소 → 재참여 용이</td></tr>
+      <tr><td><strong>준비금</strong></td><td>Step1 기준금액</td><td>회원 선택</td><td>클수록 신용대금 및 일지급금 비례 증가</td></tr>
+      <tr><td><strong>재참여 주기</strong></td><td>복리 속도</td><td>자동 (가용합계 기준)</td><td>빠를수록 신용대금 누적 속도 증가</td></tr>
+    </tbody>
+  </table>
+</div>
+  <div class="gold-box">
+    <strong>생태계 지속성:</strong> SUT 시세가 상승하면 Step2 비용이 증가하여 재참여 부담이 커집니다. 이때 회사는 신용매수가를 적절히 인상하여 마진을 유지하고 참여 유인을 제공합니다. 시세 변동에 따른 신용매수가 조정이 플랫폼 지속성의 핵심입니다.
+  </div>
+</div>
+
+</div>
+
+<div class="footer">
+  SuperSave 구조 가이드 · 단순 참조용 — 실제 운영 조건은 앱 및 공식 안내를 기준으로 하십시오.<br>
+  시세 데이터 제공: CoinGecko Public API
+</div>
+</div>
+
+<!-- 계산기 -->
+<div id="page-calc" class="tab-page">
+<div class="card">
+    <h2>SuperSave Calculator</h2>
+    <div class="sub" id="todayStr"></div>
+
+    <!-- 실시간 시세 배너 -->
+    <div class="price-banner">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;flex-wrap:nowrap;overflow:hidden;min-width:0;">
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:nowrap;flex:1;min-width:0;">
+                <span class="banner-sut-label">SUT 실시간 시세</span>
+                <div id="priceDisplay" style="display:flex;align-items:baseline;gap:5px;flex-wrap:nowrap;overflow:hidden;min-width:0;flex:1;">
+                    <span style="font-size:0.8rem;color:var(--tether-gray)">조회 중...</span>
+                </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+                <button class="apply-btn" id="applyBtn" onclick="applyLivePrice()" style="display:none">계산에 적용</button>
+                <button class="refresh-btn-sm" id="refreshBtn" onclick="fetchSutPrice()">↺</button>
+            </div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <div style="display:flex;align-items:center;gap:6px;background:var(--tether-mint-light);border:1px solid #b2dfdb;border-radius:10px;padding:5px 10px;">
+                <span style="font-size:0.62rem;font-weight:700;color:var(--tether-mint);white-space:nowrap;">신용매수가</span>
+                <input type="number" id="creditPrice" step="0.01" value="3.24" oninput="calculate()" class="highlight-input"
+                    style="width:46px;font-size:0.9rem;font-weight:900;color:var(--tether-navy);background:transparent;border:none;outline:none;text-align:right;font-family:inherit;padding:0;">
+                <span style="font-size:0.72rem;font-weight:700;color:var(--tether-mint);">USDT</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;background:#f4f4ff;border:1px solid #d0d0f4;border-radius:10px;padding:5px 10px;">
+                <span style="font-size:0.62rem;font-weight:700;color:var(--tether-gray);white-space:nowrap;">SUT 시세</span>
+                <input type="number" id="marketPrice" step="0.0001" value="1.00" oninput="onSutManual()"
+                    style="width:54px;font-size:0.9rem;font-weight:900;color:var(--tether-navy);background:transparent;border:none;outline:none;text-align:right;font-family:inherit;padding:0;" class="live-synced">
+                <span style="font-size:0.72rem;font-weight:700;color:var(--tether-gray);">USDT</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="input-container">
+        <label class="main-label">USDT 준비금 (100 단위)</label>
+        <div class="stepper">
+            <button class="btn-step" onclick="stepChange(-100)">−</button>
+            <input type="text" id="usdtInput" class="main-input" value="1,000" oninput="handleInput(this)">
+            <button class="btn-step" onclick="stepChange(100)">+</button>
+        </div>
+    </div>
+
+    <div class="section-header">
+        <div class="section-title">Step 1. 기본 재참여</div>
+    </div>
+    <div class="result-container">
+        <div class="row">
+            <span class="label">SUT 필요수량</span>
+            <span class="value">
+                <span id="baseSut">0 SUT</span>
+                <span id="baseBuy" class="buy-val">(매수: 0 USDT)</span>
+            </span>
+        </div>
+        <div class="row"><span class="label">신용대금 승인</span><span class="value" id="app_base">0 USDT</span></div>
+        <div class="sub-row"><span>일지급: <span id="d_base" class="sub-val">0</span></span><span>주정산: <span id="w_base" class="sub-val">0</span></span></div>
+    </div>
+    <div class="margin-info"><span class="margin-text" id="m_base">순마진율: +0%</span></div>
+
+    <div class="section-header">
+        <div class="section-title">Step 2. Right 보상 (A)</div>
+        <div><input type="number" id="ratioA" class="ratio-input" value="50" oninput="calculate()"> <span style="font-size:0.7rem; font-weight:bold; color:var(--accent);">%</span></div>
+    </div>
+    <div class="result-container">
+        <div class="row"><span class="label">총 승인액</span><span class="value" id="app_50">0 USDT</span></div>
+        <div class="sub-row"><span>일지급: <span id="d_50" class="sub-val">0</span></span><span>주정산: <span id="w_50" class="sub-val">0</span></span></div>
+        <div class="total-row">
+            <span class="total-label">SUT 필요수량 합계</span>
+            <span class="total-value">
+                <span id="total50">0 SUT</span>
+                <span id="total50Buy" class="buy-val">(매수: 0 USDT)</span>
+            </span>
+        </div>
+    </div>
+    <div class="margin-info"><span class="margin-text" id="m_50">순마진율: +0%</span></div>
+
+    <div class="section-header">
+        <div class="section-title">Step 3. Right 보상 (B)</div>
+        <div><input type="number" id="ratioB" class="ratio-input" value="100" oninput="calculate()"> <span style="font-size:0.7rem; font-weight:bold; color:var(--accent);">%</span></div>
+    </div>
+    <div class="result-container">
+        <div class="row"><span class="label">총 승인액</span><span class="value" id="app_100">0 USDT</span></div>
+        <div class="sub-row"><span>일지급: <span id="d_100" class="sub-val">0</span></span><span>주정산: <span id="w_100" class="sub-val">0</span></span></div>
+        <div class="total-row">
+            <span class="total-label">SUT 필요수량 합계</span>
+            <span class="total-value">
+                <span id="total100">0 SUT</span>
+                <span id="total100Buy" class="buy-val">(매수: 0 USDT)</span>
+            </span>
+        </div>
+    </div>
+    <div class="margin-info"><span class="margin-text" id="m_100">순마진율: +0%</span></div>
+
+    <div class="notice-card">
+        <div class="notice-title">⚠️ 주의사항</div>
+        <div class="notice-content">
+            <ul>
+                <li>Right 보상 액면가가 100 USDT 미만일 경우 절사 적용됩니다.</li>
+                <li>연산 오차가 발생할 수 있으니 단순 참조용으로만 활용하십시오.</li>
+                <li>신용매수가, SUT 시세 등 변수 값을 반드시 확인하십시오.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="copyright">© 테너남. All Rights Reserved.</div>
+</div>
+
+<!-- 하단 탭바 -->
+</div>
+
+<!-- 시뮬레이터 -->
+<div id="page-sim" class="tab-page">
+<div class="card" id="captureArea">
+    <h2>SuperSave Simulator</h2>
+    <div class="sub" id="todayStr"></div>
+
+    <!-- 실시간 시세 배너 -->
+    <div class="price-banner" id="priceBanner">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;flex-wrap:nowrap;overflow:hidden;min-width:0;">
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:nowrap;flex:1;min-width:0;">
+                <span class="price-tag">SUT 실시간 시세</span>
+                <div id="priceDisplay" style="display:flex;align-items:baseline;gap:5px;flex-wrap:nowrap;overflow:hidden;min-width:0;flex:1;"><span style="font-size:0.8rem;color:var(--gray)">조회 중...</span></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+                <button class="apply-btn" onclick="applyLivePrice()" id="applyBtn" style="display:none">계산에 적용</button>
+                <button class="refresh-btn" onclick="fetchSutPrice()" id="refreshBtn">↺</button>
+            </div>
+        </div>
+        <span id="tickerNote" style="font-size:0.62rem;color:var(--gray);display:none">● 시세 연동됨</span>
+    </div>
+
+    <!-- 기본 입력 -->
+    <div class="input-group">
+        <div class="irow2">
+            <div class="ifield">
+                <label>잔여 신용대금</label>
+                <input type="text" id="baseApproved" value="2,400" oninput="fmtInput(this); run()">
+            </div>
+            <div class="ifield">
+                <label>현재 일지급금</label>
+                <input type="text" id="baseDaily" value="6.58" oninput="fmtInput(this); run()">
+            </div>
+        </div>
+        <div class="irow2">
+            <div class="ifield">
+                <label>주정산 요일</label>
+                <select id="targetDay" onchange="saveData(); run()">
+                    <option value="1">월요일</option><option value="2">화요일</option>
+                    <option value="3">수요일</option><option value="4">목요일</option>
+                    <option value="5">금요일</option><option value="6">토요일</option>
+                    <option value="0">일요일</option>
+                </select>
+            </div>
+            <div class="ifield">
+                <label>시뮬레이션 기간</label>
+                <div class="stepper">
+                    <button class="btn-step" onclick="chgWeeks(-4)">−</button>
+                    <input type="number" id="weeks" value="12" min="1" max="104" oninput="saveData(); initAndRun()">
+                    <button class="btn-step" onclick="chgWeeks(4)">+</button>
+                </div>
+            </div>
+        </div>
+        <div class="irow2">
+            <div class="ifield">
+                <label>신용매수가 / SUT시세</label>
+                <div class="price-pair">
+                    <input type="number" id="creditPrice" value="3.24" step="0.01" oninput="saveData(); run()">
+                    <span>/</span>
+                    <input type="number" id="sutPrice" value="0.7091" step="0.0001" oninput="onSutManual()">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 변동 시나리오 -->
+    <div class="scenario-group">
+        <div class="scenario-title">📈 변동 시나리오 설정</div>
+        <div class="scenario-row">
+            <div class="sch-field">
+                <label>SUT시세 주간 변동률</label>
+                <div class="price-pair">
+                    <input type="number" id="sutChangeRate" value="0" step="0.1" oninput="saveData(); initAndRun()">
+                    <span>%</span>
+                </div>
+            </div>
+            <div class="sch-field">
+                <label>신용매수가 주간 변동률</label>
+                <div class="price-pair">
+                    <input type="number" id="crChangeRate" value="0" step="0.1" oninput="saveData(); initAndRun()">
+                    <span>%</span>
+                </div>
+            </div>
+        </div>
+        <div class="scenario-row">
+            <div class="sch-field">
+                <label>변동 시작 주차</label>
+                <input type="number" id="changeStartWeek" value="1" min="1" oninput="saveData(); initAndRun()">
+            </div>
+            <div class="sch-field">
+                <label>주차별 직접 입력</label>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <span style="font-size:0.72rem; color:var(--gray);">표에서 수정</span>
+                    <input type="checkbox" id="inlineEdit" onchange="saveData(); toggleInlineEdit(); run()"
+                        style="width:18px; height:18px; accent-color:var(--mint); cursor:pointer;">
+                </div>
+            </div>
+        </div>
+        <div class="sch-note">
+            * 변동률: 시작 주차부터 매주 누적 적용<br>
+            * 주차별 직접 입력 체크 시 표 안에서 각 주차의 신용매수가 / SUT시세를 개별 수정 가능
+        </div>
+    </div>
+
+    <!-- 요약 카드 -->
+    <div class="summary">
+        <div class="sum-card"><div class="sum-label">최종 잔여 신용대금</div><div class="sum-val mint" id="s_approved">-</div></div>
+        <div class="sum-card"><div class="sum-label">최종 일지급금</div><div class="sum-val green" id="s_daily">-</div></div>
+        <div class="sum-card"><div class="sum-label">최종 주정산</div><div class="sum-val green" id="s_weekly">-</div></div>
+        <div class="sum-card"><div class="sum-label">기간 내 총 주정산 수령</div><div class="sum-val purple" id="s_totalWeekly">-</div></div>
+        <div class="sum-card"><div class="sum-label">기간 내 총 재참여금</div><div class="sum-val mint" id="s_totalContract">-</div></div>
+        <div class="sum-card"><div class="sum-label">기간 내 총 SUT매수비용<br>(Step2 별도비용 합계)</div><div class="sum-val" id="s_totalCost">-</div></div>
+    </div>
+
+    <!-- 시뮬레이션 테이블 -->
+    <div class="tbl-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>차수</th>
+                    <th>날짜</th>
+                    <th id="th-price" style="display:none">신용매수가<br>/ SUT시세</th>
+                    <th class="th-add">추가투입</th>
+                    <th>가용합계</th>
+                    <th>재참여</th>
+                    <th>SUT매수</th>
+                    <th>일지급</th>
+                    <th>주정산</th>
+                    <th>잔여대금</th>
+                </tr>
+            </thead>
+            <tbody id="simBody"></tbody>
+        </table>
+    </div>
+
+    <div class="notice">
+        * 단위: USDT &nbsp;|&nbsp; 재참여: 가용합계 도달 시 100 USDT 단위 자동 재참여<br>
+        * 잔여대금: 주정산 지급만큼 감소, 재참여(준비금×2.4)만큼 증가 &nbsp;|&nbsp; 단순 참조용
+    </div>
+</div>
+
+<!-- 월별 차트 -->
+<div class="card">
+    <div class="chart-title">📊 월별 수익 요약</div>
+    <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#2e7d32"></div>월 주정산 수령액</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#ff9800"></div>월 재참여금</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#00938a; border-radius:50%"></div>잔여 신용대금 (우축)</div>
+    </div>
+    <div class="chart-wrap">
+        <canvas id="monthlyChart" role="img" aria-label="월별 주정산 수령액, 재참여금, 잔여 신용대금 차트">월별 수익 요약 차트</canvas>
+    </div>
+</div>
+
+<!-- 저장 버튼 -->
+<div style="max-width: 860px; margin: auto; padding: 0 10px;">
+    <button class="save-btn" onclick="captureScreen()">📸 시뮬레이션 결과 이미지로 저장</button>
+</div>
+</div>
+
+<!-- 하단 탭바 (공통) -->
 <nav class="bottom-nav">
-  <div class="nav-item active" onclick="goto('index.html')">
+  <div class="nav-item active" id="tab-home" onclick="showTab('home')">
     <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>홈
   </div>
-  <div class="nav-item" onclick="goto('guide.html')">
+  <div class="nav-item" id="tab-guide" onclick="showTab('guide')">
     <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>해설집
   </div>
-  <div class="nav-item" onclick="goto('calculator.html')">
+  <div class="nav-item" id="tab-calc" onclick="showTab('calc')">
     <svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="16" y2="10"/></svg>계산기
   </div>
-  <div class="nav-item" onclick="goto('simulator.html')">
+  <div class="nav-item" id="tab-sim" onclick="showTab('sim')">
     <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>시뮬레이터
   </div>
 </nav>
 
 <script>
+/* ── 탭 전환 ── */
+var currentTab = 'home';
+function showTab(tab) {
+  // 이전 탭 숨기기
+  document.getElementById('page-' + currentTab).classList.remove('active');
+  document.getElementById('tab-' + currentTab).classList.remove('active');
+  // 새 탭 보이기
+  document.getElementById('page-' + tab).classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+  // 스크롤 맨 위로
+  document.getElementById('page-' + tab).scrollTop = 0;
+  currentTab = tab;
+}
+
+/* ── 홈 JS ── */
+
 
 function goto(url) {
     window.location.replace(url);
@@ -273,6 +1788,725 @@ async function fetchPrice() {
 }
 fetchPrice();
 setInterval(fetchPrice, 5 * 60 * 1000);
+
+
+/* ── 해설집 JS ── */
+
+let liveSUT = null;
+function getCreditPrice() { const el = document.getElementById("inputCreditPrice"); return el ? (parseFloat(el.value) || 3.24) : 3.24; }
+
+/* ── 시세 조회 ── */
+async function fetchPrice() {
+    const refreshBtn = document.getElementById('refreshBtn');
+    if (refreshBtn) refreshBtn.classList.add('spinning');
+    const display = document.getElementById('tickerDisplay');
+    try {
+        const res = await fetch(
+            'https://api.coingecko.com/api/v3/simple/price?ids=super-trust&vs_currencies=usd,krw&include_24hr_change=true',
+            { headers: { 'Accept': 'application/json' } }
+        );
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        const d = data['super-trust'];
+        if (!d) throw new Error('no data');
+        liveSUT = d.usd;
+        const change = d.usd_24h_change || 0;
+        const chgClass = change > 0 ? 'up' : change < 0 ? 'dn' : 'flat';
+        const chgSign  = change > 0 ? '+' : '';
+        const now = new Date();
+        const timeStr = now.getHours() + ':' + String(now.getMinutes()).padStart(2,'0') + ' 기준';
+        if (display) display.innerHTML =
+            '<div style="display:flex;align-items:baseline;gap:6px;flex-wrap:nowrap;overflow:hidden;min-width:0;">' +
+            '<span class="ticker-usdt">' + liveSUT.toFixed(4) + ' USDT</span>' +
+            '<span class="ticker-krw">≈ ₩' + Math.round(d.krw).toLocaleString('ko-KR') + '</span>' +
+            '<span class="ticker-change ' + chgClass + '">' + chgSign + change.toFixed(2) + '%</span>' +
+            '<span class="ticker-time">' + timeStr + '</span></div>';
+        const noteEl = document.getElementById('tickerNote');
+        if (noteEl) noteEl.style.display = '';
+        updateLiveValues();
+    } catch(e) {
+        if (display) display.innerHTML = '<span style="color:#d93025;font-size:0.75rem">시세 조회 실패</span>';
+        console.error('SUT fetch error:', e);
+    } finally {
+        if (refreshBtn) refreshBtn.classList.remove('spinning');
+    }
+}
+
+/* ── 본문 시세 값 업데이트 ── */
+function updateLiveValues() {
+  if (!liveSUT) return;
+  const p = liveSUT;
+  const cr = getCreditPrice();
+  const ratio = (cr / p).toFixed(1);
+  const fmt2 = v => v.toFixed(4);
+  const fmtN = v => v.toLocaleString('ko-KR', {minimumFractionDigits:1, maximumFractionDigits:1});
+
+  // 섹션2 변수 카드
+  const vm = document.getElementById('v_market');
+  if (vm) vm.textContent = fmt2(p) + ' USDT';
+  const vc = document.getElementById('v_credit');
+  if (vc) vc.textContent = cr.toFixed(2) + ' USDT';
+  // 섹션5 표 연동
+  const tblCr  = document.getElementById('tbl_cr');
+  const tblCr2 = document.getElementById('tbl_cr2');
+  const tblCo  = document.getElementById('tbl_co');
+  if (tblCr)  tblCr.textContent  = cr.toFixed(2);
+  if (tblCr2) tblCr2.textContent = cr.toFixed(2);
+  if (tblCo)  tblCo.textContent  = (cr / 1.2).toFixed(2);
+
+  // 시세 참조 live-val 태그들
+  const ids = ['t_market1','t_market2','t_market3','t_cert_price','t_var_price'];
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = fmt2(p) + ' USDT';
+  });
+
+  // 배율
+  ['t_ratio','t_ratio2','t_ratio3'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = ratio + '배';
+  });
+
+  // 예시 계산 (섹션3)
+  const exPrice = document.getElementById('t_ex_price');
+  const exPrice2 = document.getElementById('t_ex_price2');
+  const exStep2 = document.getElementById('t_ex_step2cost');
+  const step1CreditAmt = 1000 * 1.2; // 1,200
+  const coStep = cr / 1.2;
+  const sutPerStep = Math.ceil((step1CreditAmt / cr) * 10) / 10; // ceilOne
+  if (exPrice)  exPrice.textContent  = fmt2(p);
+  if (exPrice2) exPrice2.textContent = fmt2(p);
+  if (exStep2)  exStep2.textContent  = fmtN(sutPerStep * p);
+  // 예시 내 SUT 수량 업데이트
+  ['t_ex_sut','t_ex_sut_show'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent = sutPerStep.toFixed(1); });
+  const exCo = document.getElementById('t_ex_co');
+  if (exCo) exCo.textContent = (cr / 1.2).toFixed(2);
+  ['t_ex_cr','t_ex_cr_show','t_ex_cr_show2'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent = cr.toFixed(2); });
+
+  // Right 증서 예시 (섹션6) — 동적
+  const certSut = Math.ceil(1000 * 1.2 / cr); // 정수 올림
+  const certCost = document.getElementById('t_cert_cost');
+  if (certCost) certCost.textContent = fmtN(certSut * p) + ' USDT';
+  const certSutEl = document.getElementById('t_cert_sut');
+  if (certSutEl) certSutEl.textContent = certSut;
+  const certCrEl = document.getElementById('t_cert_cr');
+  if (certCrEl) certCrEl.textContent = cr.toFixed(2);
+
+  // 비교 (섹션6)
+  const co = cr / 1.2;
+  const sut = Math.ceil((1000 / co * 10)) / 10;
+  const step2_1000 = fmtN(sut * p);
+  const total_1000 = fmtN(1000 + sut * p);
+  const cert_cost  = fmtN(certSut * p);
+
+  const cs2 = document.getElementById('t_compare_step2');
+  const ct  = document.getElementById('t_compare_total');
+  const cc  = document.getElementById('t_compare_cert');
+  if (cs2) cs2.textContent = step2_1000;
+  if (ct)  ct.textContent  = total_1000;
+  if (cc)  cc.textContent  = cert_cost;
+}
+
+/* ── 초기화 ── */
+fetchPrice();
+setInterval(fetchPrice, 5 * 60 * 1000);
+updateLiveValues();
+calcCompound(); // 5분마다 자동 갱신
+
+/* ── 섹션7 복리 시뮬레이션 ── */
+function calcCompound() {
+    const reserve    = parseFloat(document.getElementById('cr_reserve')?.value)    || 1000;
+    const creditP    = parseFloat(document.getElementById('cr_creditprice')?.value) || getCreditPrice();
+    const sutP       = parseFloat(document.getElementById('cr_sutprice')?.value)    || (liveSUT || 0.70);
+
+    // 단위 재참여 비용: 100 USDT + Step2 (SUT수량 × SUT시세)
+    const co         = creditP / 1.2;                          // 회사보유분 매수가
+    const sutPerUnit = Math.ceil((100 * 1.2 / creditP) * 10) / 10; // 100USDT 기준 SUT (올림)
+    const step2Cost  = sutPerUnit * sutP;
+    const unitCost   = 100 + step2Cost;                        // 재참여 1단위 총비용
+
+    // 초기 신용대금 & 일지급
+    let approved = reserve * 2.4;
+    let daily    = approved / 365;
+    let carry    = 0;
+
+    const WEEKS  = 24;
+    const results = [];
+
+    for (let w = 1; w <= WEEKS; w++) {
+        const weekly = daily * 7;
+        approved -= weekly;
+        if (approved < 0) approved = 0;
+
+        const avail  = weekly + carry;
+        const units  = unitCost > 0 ? Math.floor(avail / unitCost) : 0;
+        const cont   = units * 100;
+
+        if (cont > 0) {
+            const newCredit = cont * 2.4;
+            approved += newCredit;
+            daily    += newCredit / 365;
+            carry     = avail - units * unitCost;
+        } else {
+            carry = avail;
+        }
+        results.push({ w, weekly: parseFloat(weekly.toFixed(2)), daily: parseFloat(daily.toFixed(4)) });
+    }
+
+    // 요약 카드
+    const fmt = v => v.toFixed(1) + ' USDT';
+    const el = id => document.getElementById(id);
+    if (el('cr_week1'))  el('cr_week1').textContent  = fmt(results[0].weekly);
+    if (el('cr_week12')) el('cr_week12').textContent = fmt(results[11].weekly);
+    if (el('cr_week24')) el('cr_week24').textContent = fmt(results[23].weekly);
+
+    // 바 차트 (1, 2, 4, 8, 12, 16, 20, 24주)
+    const showWeeks = [1, 2, 4, 8, 12, 16, 20, 24];
+    const maxVal = Math.max(...showWeeks.map(w => results[w-1].weekly));
+    const barsEl = document.getElementById('cr_bars');
+    if (!barsEl) return;
+
+    barsEl.innerHTML = showWeeks.map(function(w) {
+        var val = results[w-1].weekly;
+        var pct = maxVal > 0 ? Math.max(4, (val / maxVal * 100).toFixed(1)) : 4;
+        return '<div class="bar-row">' +
+            '<div class="bar-label">' + w + '주</div>' +
+            '<div class="bar-track">' +
+            '<div class="bar-fill" style="width:' + pct + '%;min-width:4px;">' +
+            (val >= 10 ? val.toFixed(1) : '') +
+            '</div></div>' +
+            '<div class="bar-val">' + val.toFixed(1) + ' USDT</div>' +
+            '</div>';
+    }).join('');
+}
+
+/* SUT 시세 조회 후 cr_sutprice 자동 반영 */
+const _origUpdateLive = typeof updateLiveValues === 'function' ? updateLiveValues : null;
+function updateLiveValuesWithCompound() {
+    if (_origUpdateLive) _origUpdateLive();
+    const sutEl = document.getElementById('cr_sutprice');
+    if (sutEl && liveSUT && !sutEl._manual) {
+        sutEl.value = liveSUT.toFixed(4);
+        sutEl.style.borderColor = 'var(--indigo)';
+    }
+    const crEl = document.getElementById('cr_creditprice');
+    if (crEl) crEl.value = getCreditPrice().toFixed(2);
+    calcCompound();
+}
+// cr_sutprice 수동 수정 감지
+document.addEventListener('DOMContentLoaded', function() {
+    const sutEl = document.getElementById('cr_sutprice');
+    if (sutEl) sutEl.addEventListener('input', () => { sutEl._manual = true; });
+    calcCompound();
+});
+
+
+function goto(url) { window.location.replace(url); }
+
+
+document.getElementById('nav-guide').classList.add('active');
+
+
+(function(){
+  var el = document.getElementById('nav-guide');
+  if(el) el.classList.add('active');
+})();
+
+
+/* ── 계산기 JS ── */
+
+    const input = document.getElementById('usdtInput');
+    const marketPriceInput = document.getElementById('marketPrice');
+    const creditPriceInput = document.getElementById('creditPrice');
+    const ratioAInput = document.getElementById('ratioA');
+    const ratioBInput = document.getElementById('ratioB');
+
+    const f = (n, d = 0) => n.toLocaleString(undefined, {minimumFractionDigits: d, maximumFractionDigits: d});
+    function formatComma(val) { return val.toString().replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
+    function getRawNum(val) { return parseFloat(val.replace(/,/g, "")) || 0; }
+    function handleInput(el) { el.value = formatComma(getRawNum(el.value)); calculate(); }
+    function stepChange(val) { input.value = formatComma(Math.max(0, getRawNum(input.value) + val)); calculate(); }
+
+    function calculate() {
+        const reserveUsdt = getRawNum(input.value);
+        const marketPrice = parseFloat(marketPriceInput.value) || 0;
+        const creditPrice = parseFloat(creditPriceInput.value) || 0;
+        const ratioA = (parseFloat(ratioAInput.value) / 100) || 0;
+        const ratioB = (parseFloat(ratioBInput.value) / 100) || 0;
+        if (reserveUsdt === 0 || creditPrice === 0) return;
+
+        const baseSutQuantity = (reserveUsdt * 1.2) / creditPrice;
+        const appBase = reserveUsdt * 2.4;
+
+        const updateUI = (app, totalSut, ids) => {
+            const sutCostUsdt = totalSut * marketPrice;
+            const principal = reserveUsdt + sutCostUsdt;
+            const margin = ((app / principal) - 1) * 100;
+            const daily = app / 365;
+            document.getElementById(ids.app).innerText = f(app) + ' USDT';
+            document.getElementById(ids.daily).innerText = f(daily, 3);
+            document.getElementById(ids.weekly).innerText = f(daily * 7, 2);
+            document.getElementById(ids.margin).innerText = '순마진율: +' + f(margin, 1) + '%';
+            if(ids.total) {
+                document.getElementById(ids.total).innerText = f(totalSut, 1) + ' SUT';
+                document.getElementById(ids.total + 'Buy').innerText = '(매수: ' + f(sutCostUsdt, 1) + ' USDT)';
+            }
+            if(ids.baseBuy) {
+                document.getElementById(ids.baseBuy).innerText = '(매수: ' + f(sutCostUsdt, 1) + ' USDT)';
+            }
+        };
+
+        document.getElementById('baseSut').innerText = f(baseSutQuantity, 1) + ' SUT';
+        updateUI(appBase, baseSutQuantity, {app: 'app_base', daily: 'd_base', weekly: 'w_base', margin: 'm_base', baseBuy: 'baseBuy'});
+
+        const contractableBonusA = Math.floor((reserveUsdt * ratioA) / 100) * 100;
+        const sutBonusA = (contractableBonusA * 1.2) / creditPrice;
+        const appBonusA = contractableBonusA * 1.2;
+        updateUI(appBase + appBonusA, baseSutQuantity + sutBonusA, {app: 'app_50', daily: 'd_50', weekly: 'w_50', margin: 'm_50', total: 'total50'});
+
+        const contractableBonusB = Math.floor((reserveUsdt * ratioB) / 100) * 100;
+        const sutBonusB = (contractableBonusB * 1.2) / creditPrice;
+        const appBonusB = contractableBonusB * 1.2;
+        updateUI(appBase + appBonusB, baseSutQuantity + sutBonusB, {app: 'app_100', daily: 'd_100', weekly: 'w_100', margin: 'm_100', total: 'total100'});
+    }
+
+    /* ── 날짜 표시 ── */
+    (function() {
+        var d = new Date(); var days = ['일','월','화','수','목','금','토'];
+        var el = document.getElementById('todayStr');
+        if(el) el.textContent = d.getFullYear() + '년 ' + (d.getMonth()+1) + '월 ' + d.getDate() + '일 (' + days[d.getDay()] + '요일)';
+    })();
+
+    /* ── SUT 실시간 시세 ── */
+    let liveUSDT = null;
+    let isManualSut = false;
+
+    async function fetchSutPrice() {
+        const btn = document.getElementById('refreshBtn');
+        const display = document.getElementById('priceDisplay');
+        const applyBtn = document.getElementById('applyBtn');
+        if (btn) btn.classList.add('spinning');
+        display.innerHTML = '<span style="font-size:0.8rem;color:var(--tether-gray)">조회 중...</span>';
+        applyBtn.style.display = 'none';
+        try {
+            const res = await fetch(
+                'https://api.coingecko.com/api/v3/simple/price?ids=super-trust&vs_currencies=usd,krw&include_24hr_change=true',
+                { headers: { 'Accept': 'application/json' } }
+            );
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            const data = await res.json();
+            const d = data['super-trust'];
+            if (!d) throw new Error('no data');
+            liveUSDT = d.usd;
+            const change = d.usd_24h_change || 0;
+            const cls = change > 0 ? 'up' : change < 0 ? 'dn' : 'flat';
+            const sign = change > 0 ? '+' : '';
+            const now = new Date();
+            const t = now.getHours() + ':' + String(now.getMinutes()).padStart(2,'0');
+            display.innerHTML =
+                '<span class="banner-price" style="white-space:nowrap;">' + liveUSDT.toFixed(4) + ' USDT</span>' +
+                ' <span class="banner-krw">≈ ₩' + Math.round(d.krw).toLocaleString('ko-KR') + '</span>' +
+                ' <span class="banner-change ' + cls + '">' + sign + change.toFixed(2) + '%</span>' +
+                ' <span class="banner-time">' + t + '</span>';
+            applyBtn.style.display = '';
+            if (!isManualSut) applyLivePrice(true);
+        } catch(e) {
+            display.innerHTML = '<span style="color:#d93025;font-size:0.78rem">조회 실패</span>';
+            console.error('SUT fetch error:', e);
+        } finally {
+            if (btn) btn.classList.remove('spinning');
+        }
+    }
+
+    function applyLivePrice(silent) {
+        if (!liveUSDT) return;
+        const inp = document.getElementById('marketPrice');
+        inp.value = liveUSDT.toFixed(4);
+        inp.classList.add('live-synced');
+        isManualSut = false;
+        calculate();
+        if (!silent) {
+            const btn = document.getElementById('applyBtn');
+            btn.textContent = '✓ 적용됨';
+            setTimeout(() => { btn.textContent = '계산에 적용'; }, 1500);
+        }
+    }
+
+    function onSutManual() {
+        isManualSut = true;
+        document.getElementById('marketPrice').classList.remove('live-synced');
+        calculate();
+    }
+
+    calculate();
+    fetchSutPrice();
+    setInterval(fetchSutPrice, 5 * 60 * 1000);
+
+function goto(url) { window.location.replace(url); }
+
+
+/* ── 시뮬레이터 JS ── */
+
+/* ════════════════════════════════
+   기본 설정
+════════════════════════════════ */
+const today = new Date();
+const weekNames = ['일','월','화','수','목','금','토'];
+document.getElementById('todayStr').textContent =
+    `${today.getFullYear()}년 ${today.getMonth()+1}월 ${today.getDate()}일 (${weekNames[today.getDay()]}요일)`;
+
+const f = (n, d=0) => Number(n).toLocaleString('ko-KR', {minimumFractionDigits:d, maximumFractionDigits:d});
+const ceilOne = n => Math.ceil(n * 10) / 10;
+function raw(id) { return parseFloat(document.getElementById(id).value.replace(/,/g,'')) || 0; }
+function fmtInput(el) {
+    let v = el.value.replace(/[^0-9.]/g,'');
+    let p = v.split('.');
+    p[0] = p[0].replace(/\B(?=(\d{3})+(?!\d))/g,',');
+    el.value = p.join('.');
+    saveData();
+}
+
+/* ════════════════════════════════
+   SUT 실시간 시세 조회 (CoinGecko)
+════════════════════════════════ */
+let liveUSDT = null;
+let liveKRW  = null;
+let isManualSut = false; // 사용자가 수동으로 수정했는지
+
+async function fetchSutPrice() {
+    const refreshBtn = document.getElementById('refreshBtn');
+    if (refreshBtn) refreshBtn.classList.add('spinning');
+    try {
+        const res = await fetch(
+            'https://api.coingecko.com/api/v3/simple/price?ids=super-trust&vs_currencies=usd,krw&include_24hr_change=true',
+            { headers: { 'Accept': 'application/json' } }
+        );
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        const d = data['super-trust'];
+        if (!d) throw new Error('no data');
+
+        liveUSDT = d.usd;
+        const change = d.usd_24h_change || 0;
+        const chgClass = change > 0 ? 'up' : change < 0 ? 'dn' : 'flat';
+        const chgSign  = change > 0 ? '+' : '';
+        const now = new Date();
+        const timeStr = now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0');
+
+        const display = document.getElementById('priceDisplay');
+        if (display) {
+            display.innerHTML =
+                '<span class="price-usdt" style="white-space:nowrap;">' + liveUSDT.toFixed(4) + ' USDT</span>' +
+                ' <span class="price-krw" style="white-space:nowrap;">≈ ₩' + Math.round(d.krw).toLocaleString('ko-KR') + '</span>' +
+                ' <span class="price-change ' + chgClass + '" style="white-space:nowrap;">' + chgSign + change.toFixed(2) + '%</span>' +
+                ' <span class="price-time" style="white-space:nowrap;">' + timeStr + '</span>';
+        }
+        const applyBtn = document.getElementById('applyBtn');
+        if (applyBtn) applyBtn.style.display = '';
+        const noteEl = document.getElementById('tickerNote');
+        if (noteEl) noteEl.style.display = '';
+        if (!isManualSut && typeof applyLivePrice === 'function') applyLivePrice(true);
+    } catch (e) {
+        const display = document.getElementById('priceDisplay');
+        if (display) display.innerHTML = '<span style="color:#d93025;font-size:0.8rem">조회 실패</span>';
+        console.error('SUT price fetch error:', e);
+    } finally {
+        if (refreshBtn) refreshBtn.classList.remove('spinning');
+    }
+}
+
+function applyLivePrice(silent = false) {
+    if (liveUSDT === null) return;
+    const sutInput = document.getElementById('sutPrice');
+    sutInput.value = liveUSDT.toFixed(4);
+    sutInput.classList.add('live-synced');
+    isManualSut = false;
+    saveData();
+    initAndRun();
+    if (!silent) {
+        // 적용 확인 피드백 (잠깐 버튼 텍스트 변경)
+        const btn = document.getElementById('applyBtn');
+        btn.textContent = '✓ 적용됨';
+        setTimeout(() => { btn.textContent = '계산에 적용'; }, 1500);
+    }
+}
+
+function onSutManual() {
+    // 사용자가 SUT시세를 직접 수정하면 live sync 해제
+    isManualSut = true;
+    document.getElementById('sutPrice').classList.remove('live-synced');
+    saveData();
+    run();
+}
+
+/* ════════════════════════════════
+   localStorage
+════════════════════════════════ */
+function saveData() {
+    localStorage.setItem('ss2', JSON.stringify({
+        baseApproved:    document.getElementById('baseApproved').value,
+        baseDaily:       document.getElementById('baseDaily').value,
+        targetDay:       document.getElementById('targetDay').value,
+        creditPrice:     document.getElementById('creditPrice').value,
+        sutPrice:        document.getElementById('sutPrice').value,
+        weeks:           document.getElementById('weeks').value,
+        sutChangeRate:   document.getElementById('sutChangeRate').value,
+        crChangeRate:    document.getElementById('crChangeRate').value,
+        changeStartWeek: document.getElementById('changeStartWeek').value,
+        inlineEdit:      document.getElementById('inlineEdit').checked
+    }));
+}
+
+function loadData() {
+    const s = localStorage.getItem('ss2');
+    if (!s) return;
+    const d = JSON.parse(s);
+    const sv = (id, v) => { if (v !== undefined) document.getElementById(id).value = v; };
+    sv('baseApproved',    d.baseApproved    || '2,400');
+    sv('baseDaily',       d.baseDaily       || '6.58');
+    sv('targetDay',       d.targetDay       || '1');
+    sv('creditPrice',     d.creditPrice     || '3.24');
+    sv('sutPrice',        d.sutPrice        || '0.7091');
+    sv('weeks',           d.weeks           || '12');
+    sv('sutChangeRate',   d.sutChangeRate   || '0');
+    sv('crChangeRate',    d.crChangeRate    || '0');
+    sv('changeStartWeek', d.changeStartWeek || '1');
+    if (d.inlineEdit) document.getElementById('inlineEdit').checked = true;
+}
+
+/* ════════════════════════════════
+   주 수 조절
+════════════════════════════════ */
+function chgWeeks(delta) {
+    const el = document.getElementById('weeks');
+    el.value = Math.min(104, Math.max(1, (parseInt(el.value)||0) + delta));
+    saveData(); initAndRun();
+}
+function initAndRun() { initTable(); run(); }
+
+/* ════════════════════════════════
+   인라인 편집 토글
+════════════════════════════════ */
+function toggleInlineEdit() {
+    const on = document.getElementById('inlineEdit').checked;
+    document.getElementById('th-price').style.display = on ? '' : 'none';
+    document.querySelectorAll('.price-cell-td').forEach(td => td.style.display = on ? '' : 'none');
+}
+
+/* ════════════════════════════════
+   테이블 초기화
+════════════════════════════════ */
+function initTable() {
+    const weeks    = parseInt(document.getElementById('weeks').value) || 12;
+    const inlineOn = document.getElementById('inlineEdit').checked;
+    const baseCr   = parseFloat(document.getElementById('creditPrice').value) || 3.24;
+    const baseSut  = parseFloat(document.getElementById('sutPrice').value) || 0.7091;
+    const crRate   = parseFloat(document.getElementById('crChangeRate').value) || 0;
+    const sutRate  = parseFloat(document.getElementById('sutChangeRate').value) || 0;
+    const startW   = parseInt(document.getElementById('changeStartWeek').value) || 1;
+    const tbody    = document.getElementById('simBody');
+    tbody.innerHTML = '';
+
+    for (let i = 1; i <= weeks; i++) {
+        const steps  = Math.max(0, i - startW);
+        const crVal  = +(baseCr  * Math.pow(1 + crRate/100,  steps)).toFixed(4);
+        const sutVal = +(baseSut * Math.pow(1 + sutRate/100, steps)).toFixed(4);
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${i}</td>
+            <td class="c-date" id="d_date_${i}">-</td>
+            <td class="price-cell-td" style="display:${inlineOn?'':'none'}; text-align:center; padding:4px 3px;">
+                <div style="display:flex;flex-direction:column;gap:3px;align-items:center;">
+                    <input class="price-input" type="number" id="cr_${i}" value="${crVal}" step="0.01" oninput="run()" placeholder="신용매수가">
+                    <input class="price-input" type="number" id="sut_${i}" value="${sutVal}" step="0.0001" oninput="run()" placeholder="SUT시세">
+                </div>
+            </td>
+            <td class="td-add">
+                <div class="boost-ctrl">
+                    <button class="btn-mini" onclick="chgBoost(${i},-100)">−</button>
+                    <input class="add-input" type="number" id="add_${i}" value="0" oninput="run()">
+                    <button class="btn-mini" onclick="chgBoost(${i},100)">+</button>
+                </div>
+            </td>
+            <td id="d_total_${i}">-</td>
+            <td id="d_contract_${i}" class="c-none">-</td>
+            <td id="d_cost_${i}" class="c-none">-</td>
+            <td class="c-daily" id="d_daily_${i}">-</td>
+            <td class="c-weekly" id="d_weekly_${i}">-</td>
+            <td class="c-approved" id="d_approved_${i}">-</td>`;
+        tbody.appendChild(tr);
+    }
+}
+
+function chgBoost(i, delta) {
+    const el = document.getElementById(`add_${i}`);
+    el.value = Math.max(0, (parseFloat(el.value)||0) + delta);
+    run();
+}
+
+/* ════════════════════════════════
+   차트
+════════════════════════════════ */
+let myChart = null;
+function updateChart(monthData) {
+    if (myChart) myChart.destroy();
+    myChart = new Chart(document.getElementById('monthlyChart'), {
+        data: {
+            labels: monthData.map(m => m.label),
+            datasets: [
+                { type:'bar', label:'월 주정산', yAxisID:'y', data:monthData.map(m=>Math.round(m.weekly)), backgroundColor:'#2e7d3299', borderColor:'#2e7d32', borderWidth:1 },
+                { type:'bar', label:'월 재참여금', yAxisID:'y', data:monthData.map(m=>Math.round(m.contract)), backgroundColor:'#ff980099', borderColor:'#ff9800', borderWidth:1 },
+                { type:'line', label:'잔여 신용대금', yAxisID:'y2', data:monthData.map(m=>Math.round(m.approved)), borderColor:'#00938a', backgroundColor:'#00938a22', borderWidth:2, pointRadius:3, fill:false, tension:0.3 }
+            ]
+        },
+        options: {
+            responsive:true, maintainAspectRatio:false,
+            interaction:{ mode:'index', intersect:false },
+            plugins:{ legend:{ display:false } },
+            scales:{
+                x:{ ticks:{font:{size:11}}, grid:{display:false} },
+                y:{ position:'left', grid:{color:'#f0f0f0'}, ticks:{font:{size:11}, callback:v=>f(v)}, title:{display:true, text:'수령 / 재참여 (USDT)', font:{size:10}} },
+                y2:{ position:'right', grid:{drawOnChartArea:false}, ticks:{font:{size:11}, callback:v=>f(v)}, title:{display:true, text:'잔여 신용대금 (USDT)', font:{size:10}} }
+            }
+        }
+    });
+}
+
+/* ════════════════════════════════
+   핵심 시뮬레이션
+════════════════════════════════ */
+function run() {
+    let approved = raw('baseApproved');
+    let daily    = raw('baseDaily');
+    const baseCr   = parseFloat(document.getElementById('creditPrice').value) || 3.24;
+    const baseSut  = parseFloat(document.getElementById('sutPrice').value)    || 0.7091;
+    const crRate   = parseFloat(document.getElementById('crChangeRate').value)  || 0;
+    const sutRate  = parseFloat(document.getElementById('sutChangeRate').value) || 0;
+    const startW   = parseInt(document.getElementById('changeStartWeek').value) || 1;
+    const inlineOn = document.getElementById('inlineEdit').checked;
+    const targetDay = parseInt(document.getElementById('targetDay').value);
+    const weeks     = parseInt(document.getElementById('weeks').value) || 12;
+
+    let diff = targetDay - today.getDay();
+    if (diff <= 0) diff += 7;
+    const firstDate = new Date(today);
+    firstDate.setDate(today.getDate() + diff);
+
+    let carry = 0, totalWeekly = 0, totalContract = 0, totalCost = 0;
+    const monthMap = {};
+
+    for (let i = 1; i <= weeks; i++) {
+        const dt = new Date(firstDate);
+        dt.setDate(firstDate.getDate() + (i-1)*7);
+
+        let crPrice, sPrice;
+        if (inlineOn) {
+            crPrice = parseFloat(document.getElementById(`cr_${i}`)?.value)  || baseCr;
+            sPrice  = parseFloat(document.getElementById(`sut_${i}`)?.value) || baseSut;
+        } else {
+            const steps = Math.max(0, i - startW);
+            crPrice = +(baseCr  * Math.pow(1 + crRate/100,  steps)).toFixed(4);
+            sPrice  = +(baseSut * Math.pow(1 + sutRate/100, steps)).toFixed(4);
+        }
+
+        const co           = crPrice / 1.2;
+        const sutPerUnit   = ceilOne(100 / co);
+        const step2PerUnit = sutPerUnit * sPrice;
+        const costPerUnit  = 100 + step2PerUnit;
+        const extra        = parseFloat(document.getElementById(`add_${i}`)?.value) || 0;
+
+        const weeklyPay = daily * 7;
+        approved -= weeklyPay;
+        if (approved < 0) approved = 0;
+
+        const available   = weeklyPay + carry + extra;
+        const units       = costPerUnit > 0 ? Math.floor(available / costPerUnit) : 0;
+        const contractAmt = units * 100;
+        const step2Cost   = units * step2PerUnit;
+
+        if (contractAmt > 0) {
+            const newCredit = contractAmt * 2.4;
+            approved += newCredit;
+            daily    += newCredit / 365;
+            carry     = available - (contractAmt + step2Cost);
+        } else {
+            carry = available;
+        }
+
+        totalWeekly   += weeklyPay;
+        totalContract += contractAmt;
+        totalCost     += step2Cost;
+
+        const mKey = `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}`;
+        if (!monthMap[mKey]) monthMap[mKey] = { label:`${dt.getMonth()+1}월`, weekly:0, contract:0, approved:0 };
+        monthMap[mKey].weekly   += weeklyPay;
+        monthMap[mKey].contract += contractAmt;
+        monthMap[mKey].approved  = approved;
+
+        const prevDt = new Date(firstDate);
+        prevDt.setDate(firstDate.getDate() + (i-2)*7);
+        const trEl = document.getElementById(`d_date_${i}`)?.closest('tr');
+        if (trEl) trEl.className = (i > 1 && prevDt.getMonth() !== dt.getMonth()) ? 'month-start' : '';
+
+        const set = (id, val) => { const el=document.getElementById(id); if(el) el.textContent=val; };
+        const cls = (id, c)   => { const el=document.getElementById(id); if(el) el.className=c; };
+        set(`d_date_${i}`,     `${dt.getMonth()+1}/${dt.getDate()}`);
+        set(`d_total_${i}`,    f(available,0));
+        set(`d_contract_${i}`, contractAmt>0 ? f(contractAmt)  : '-');
+        set(`d_cost_${i}`,     contractAmt>0 ? f(step2Cost,1)  : '-');
+        set(`d_daily_${i}`,    f(daily,2));
+        set(`d_weekly_${i}`,   f(daily*7,1));
+        set(`d_approved_${i}`, f(approved,0));
+        cls(`d_contract_${i}`, contractAmt>0 ? 'c-contract' : 'c-none');
+        cls(`d_cost_${i}`,     contractAmt>0 ? 'c-cost'     : 'c-none');
+    }
+
+    document.getElementById('s_approved').textContent      = f(approved,0)       + ' USDT';
+    document.getElementById('s_daily').textContent         = f(daily,2)           + ' USDT';
+    document.getElementById('s_weekly').textContent        = f(daily*7,1)         + ' USDT';
+    document.getElementById('s_totalWeekly').textContent   = f(totalWeekly,0)     + ' USDT';
+    document.getElementById('s_totalContract').textContent = f(totalContract,0)   + ' USDT';
+    document.getElementById('s_totalCost').textContent     = f(totalCost,1)       + ' USDT';
+
+    updateChart(Object.values(monthMap));
+}
+
+/* ════════════════════════════════
+   이미지 저장
+════════════════════════════════ */
+function captureScreen() {
+    html2canvas(document.getElementById('captureArea'), {
+        scale:3, useCORS:true, backgroundColor:'#f4f7f9', logging:false, allowTaint:true
+    }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = `SuperSave_Sim2_${new Date().toISOString().slice(0,10)}.png`;
+        link.href = canvas.toDataURL();
+        link.click();
+    });
+}
+
+/* ════════════════════════════════
+   초기화
+════════════════════════════════ */
+window.onload = function() {
+    loadData();
+    initAndRun();
+    toggleInlineEdit();
+    // 실시간 시세 조회 (페이지 로드 시 자동)
+    fetchSutPrice();
+    // 5분마다 자동 갱신
+    setInterval(fetchSutPrice, 5 * 60 * 1000);
+};
+
+
+document.getElementById('nav-sim').classList.add('active');
+
+
+(function(){
+  var el = document.getElementById('nav-sim');
+  if(el) el.classList.add('active');
+})();
+
 </script>
 </body>
 </html>
