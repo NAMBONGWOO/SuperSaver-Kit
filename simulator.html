@@ -309,7 +309,9 @@
         .save-btn:active { transform: scale(0.98); opacity: 0.9; }
         .notice { font-size: 0.67rem; color: #aaa; margin-top: 12px; line-height: 1.6; padding-left: 4px; }
 
-        input[type=number]::-webkit-inner-spin-button,
+        .skip-row { opacity: 0.45; background: #fff5f5 !important; }
+        .skip-row td { color: #ccc; }
+                input[type=number]::-webkit-inner-spin-button,
         input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
         input[type=number] { -moz-appearance: textfield; }
       .bottom-nav {
@@ -390,11 +392,11 @@
         <div class="irow2">
             <div class="ifield">
                 <label>잔여 신용대금</label>
-                <input type="text" id="baseApproved" value="" placeholder="0" oninput="fmtInput(this); run()" style="text-align:right;">
+                <input type="text" id="baseApproved" value="2,400" oninput="fmtInput(this); run()">
             </div>
             <div class="ifield">
                 <label>현재 일지급금</label>
-                <input type="text" id="baseDaily" value="" placeholder="0" oninput="fmtInput(this); run()" style="text-align:right;">
+                <input type="text" id="baseDaily" value="6.58" oninput="fmtInput(this); run()">
             </div>
         </div>
         <div class="irow2">
@@ -485,6 +487,7 @@
                     <th>차수</th>
                     <th>날짜</th>
                     <th id="th-price" style="display:none">신용매수가<br>/ SUT시세</th>
+                    <th style="width:44px;">💳건너뜀</th>
                     <th class="th-add">추가투입</th>
                     <th>가용합계</th>
                     <th>재참여</th>
@@ -697,6 +700,10 @@ function initTable() {
                     <input class="price-input" type="number" id="sut_${i}" value="${sutVal}" step="0.0001" oninput="run()" placeholder="SUT시세">
                 </div>
             </td>
+            <td style="text-align:center;padding:4px;">
+                <input type="checkbox" id="skip_${i}" onchange="run()"
+                    style="width:18px;height:18px;accent-color:#d93025;cursor:pointer;">
+            </td>
             <td class="td-add">
                 <div class="boost-ctrl">
                     <button class="btn-mini" onclick="chgBoost(${i},-100)">−</button>
@@ -792,10 +799,12 @@ function run() {
         const extra        = parseFloat(document.getElementById(`add_${i}`)?.value) || 0;
 
         const weeklyPay = daily * 7;
+        const skipped   = document.getElementById(`skip_${i}`)?.checked || false;
         approved -= weeklyPay;
         if (approved < 0) approved = 0;
 
-        const available   = weeklyPay + carry + extra;
+        // 💳 건너뜀 체크 시 주정산을 가용합계에 포함하지 않음
+        const available   = (skipped ? 0 : weeklyPay) + carry + extra;
         const units       = costPerUnit > 0 ? Math.floor(available / costPerUnit) : 0;
         const contractAmt = units * 100;
         const step2Cost   = units * step2PerUnit;
@@ -822,7 +831,12 @@ function run() {
         const prevDt = new Date(firstDate);
         prevDt.setDate(firstDate.getDate() + (i-2)*7);
         const trEl = document.getElementById(`d_date_${i}`)?.closest('tr');
-        if (trEl) trEl.className = (i > 1 && prevDt.getMonth() !== dt.getMonth()) ? 'month-start' : '';
+        if (trEl) {
+            let cls = (i > 1 && prevDt.getMonth() !== dt.getMonth()) ? 'month-start' : '';
+            trEl.className = cls;
+            trEl.style.opacity = skipped ? '0.45' : '1';
+            trEl.style.background = skipped ? '#fff5f5' : '';
+        }
 
         const set = (id, val) => { const el=document.getElementById(id); if(el) el.textContent=val; };
         const cls = (id, c)   => { const el=document.getElementById(id); if(el) el.className=c; };
@@ -831,7 +845,7 @@ function run() {
         set(`d_contract_${i}`, contractAmt>0 ? f(contractAmt)  : '-');
         set(`d_cost_${i}`,     contractAmt>0 ? f(step2Cost,1)  : '-');
         set(`d_daily_${i}`,    f(daily,2));
-        set(`d_weekly_${i}`,   f(daily*7,1));
+        set(`d_weekly_${i}`,   skipped ? '💳' : f(daily*7,1));
         set(`d_approved_${i}`, f(approved,0));
         cls(`d_contract_${i}`, contractAmt>0 ? 'c-contract' : 'c-none');
         cls(`d_cost_${i}`,     contractAmt>0 ? 'c-cost'     : 'c-none');
