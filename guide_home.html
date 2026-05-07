@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192x192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icon-180x180.png">
+<link rel="manifest" href="manifest.json">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SuperSaver Kit">
+<meta name="theme-color" content="#1e1e72">
+<title>SuperSaver Kit — 가이드</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
+<style>
+:root {
+  --indigo-deep: #1e1e72;
+  --indigo:      #2d2d9f;
+  --indigo-mid:  #3d3dbb;
+  --indigo-lt:   #f0f0ff;
+  --indigo-bg:   #f4f4ff;
+  --mint:        #00938a;
+  --mint-lt:     #e0f5f4;
+  --mint-dk:     #006b63;
+  --gold:        #FFD700;
+  --gold-muted:  #c9a84c;
+  --gold-lt:     #fdf3dc;
+  --border:      #e0e0f4;
+  --text-main:   #1e1e72;
+  --text-sub:    #8888bb;
+  --gray-lt:     #f4f7f9;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Pretendard', sans-serif;
+  background: var(--indigo-bg);
+  color: var(--text-main);
+  padding-bottom: 80px;
+  overflow-x: hidden;
+  -webkit-text-size-adjust: none;
+}
+
+/* ── 헤더 밴드 ── */
+.hero-band {
+  width: 100%;
+  background: linear-gradient(160deg, #15156a 0%, #2525a0 60%, #15156a 100%);
+  padding: 52px 24px 28px;
+  position: relative; overflow: hidden;
+}
+.hero-band::before {
+  content: '';
+  position: absolute; top: -60px; left: -60px;
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(0,147,138,0.18) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-band::after {
+  content: '';
+  position: absolute; bottom: -40px; right: -40px;
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, rgba(201,168,76,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.back-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  color: rgba(255,255,255,0.55); font-size: 0.72rem; font-weight: 600;
+  text-decoration: none; margin-bottom: 20px;
+  position: relative; z-index: 10;
+  letter-spacing: 0.03em;
+}
+.back-btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.5; }
+.hero-tag {
+  display: inline-block;
+  background: rgba(0,147,138,0.25); color: rgba(255,215,0,0.85);
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.15em;
+  padding: 4px 12px; border-radius: 20px;
+  border: 1px solid rgba(0,147,138,0.4);
+  margin-bottom: 14px;
+  position: relative; z-index: 10;
+}
+.hero-title {
+  font-size: 1.7rem; font-weight: 900; color: white;
+  line-height: 1.2; letter-spacing: -0.03em;
+  margin-bottom: 8px;
+  position: relative; z-index: 10;
+}
+.hero-title em { color: var(--gold); font-style: normal; }
+.hero-sub {
+  font-size: 0.82rem; color: rgba(255,255,255,0.6);
+  line-height: 1.6; position: relative; z-index: 10;
+}
+
+/* ── 컨테이너 ── */
+.container {
+  max-width: 480px; margin: 0 auto;
+  padding: 20px 18px 0;
+}
+
+/* ── 섹션 레이블 ── */
+.section-label {
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em;
+  color: var(--text-sub); text-transform: uppercase;
+  margin-bottom: 10px; padding-left: 2px;
+}
+
+/* ── 가이드 선택 카드 (메인 2개) ── */
+.guide-card {
+  background: white;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  text-decoration: none;
+  display: block;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 16px rgba(30,30,114,0.07);
+  transition: transform 0.15s, box-shadow 0.15s;
+  position: relative;
+}
+.guide-card:active { transform: scale(0.985); box-shadow: 0 1px 8px rgba(30,30,114,0.05); }
+
+.guide-card-band {
+  height: 5px;
+  width: 100%;
+}
+.band-indigo { background: linear-gradient(90deg, #1e1e72, #3d3dbb); }
+.band-mint   { background: linear-gradient(90deg, #00938a, #00bfa5); }
+
+.guide-card-body {
+  padding: 20px 20px 18px;
+  display: flex; align-items: flex-start; gap: 16px;
+}
+.guide-card-icon {
+  width: 52px; height: 52px; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem; flex-shrink: 0;
+}
+.icon-indigo { background: var(--indigo-lt); }
+.icon-mint   { background: var(--mint-lt); }
+
+.guide-card-text { flex: 1; min-width: 0; }
+.guide-card-name {
+  font-size: 1.05rem; font-weight: 900;
+  color: var(--indigo-deep); letter-spacing: -0.02em;
+  margin-bottom: 4px;
+}
+.guide-card-desc {
+  font-size: 0.78rem; color: var(--text-sub);
+  line-height: 1.55;
+}
+.guide-card-tags {
+  display: flex; gap: 5px; flex-wrap: wrap;
+  margin-top: 10px;
+}
+.guide-tag {
+  font-size: 0.6rem; font-weight: 700; letter-spacing: 0.04em;
+  padding: 3px 9px; border-radius: 20px;
+}
+.gtag-indigo { background: var(--indigo-lt); color: var(--indigo); }
+.gtag-mint   { background: var(--mint-lt);   color: var(--mint-dk); }
+.gtag-gold   { background: var(--gold-lt);   color: #7a5a10; }
+
+.guide-card-footer {
+  border-top: 1px solid var(--border);
+  padding: 11px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.guide-card-progress {
+  display: flex; align-items: center; gap: 8px;
+}
+.progress-track {
+  width: 80px; height: 4px;
+  background: var(--indigo-lt); border-radius: 2px; overflow: hidden;
+}
+.progress-fill-indigo { height: 100%; border-radius: 2px; background: var(--indigo); }
+.progress-fill-mint   { height: 100%; border-radius: 2px; background: var(--mint); }
+.progress-txt {
+  font-size: 0.65rem; font-weight: 700; color: var(--text-sub);
+}
+.guide-card-arrow {
+  font-size: 1.1rem; color: var(--text-sub); font-weight: 300;
+}
+
+/* ── 업데이트 안내 ── */
+.update-notice {
+  background: white; border-radius: 14px;
+  border: 1px solid var(--border);
+  padding: 14px 16px;
+  display: flex; align-items: flex-start; gap: 10px;
+  margin-bottom: 20px;
+}
+.notice-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+.notice-text { font-size: 0.75rem; color: var(--text-sub); line-height: 1.6; }
+.notice-text strong { color: var(--indigo-deep); }
+
+/* ── 하단 네비게이션 ── */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
+  background: white; border-top: 1px solid var(--border);
+  display: flex; height: 60px;
+  box-shadow: 0 -4px 20px rgba(30,30,114,0.08);
+}
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .bottom-nav { padding-bottom: env(safe-area-inset-bottom); height: calc(60px + env(safe-area-inset-bottom)); }
+}
+.nav-item {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 3px; text-decoration: none; color: #bbbbdd; font-size: 0.63rem; font-weight: 700;
+  transition: color 0.15s;
+}
+.nav-item svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; }
+.nav-item.active { color: var(--indigo); }
+</style>
+</head>
+<body>
+
+<!-- ── 헤더 ── -->
+<div class="hero-band">
+  <a class="back-btn" href="index.html">
+    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    홈으로
+  </a>
+  <div class="hero-tag">📚 SUPERSAVE KIT · GUIDE</div>
+  <h1 class="hero-title">가이드 <em>센터</em></h1>
+  <p class="hero-sub">슈퍼세이브 해설집과 STO 증권형 토큰 가이드를<br>단계별로 학습하세요.</p>
+</div>
+
+<div class="container">
+
+  <div class="section-label">가이드 선택</div>
+
+  <!-- ── 슈퍼세이브 해설집 ── -->
+  <a class="guide-card" href="guide.html">
+    <div class="guide-card-band band-indigo"></div>
+    <div class="guide-card-body">
+      <div class="guide-card-icon icon-indigo">📖</div>
+      <div class="guide-card-text">
+        <div class="guide-card-name">슈퍼세이브 해설집</div>
+        <div class="guide-card-desc">DeCT 신용거래 구조부터 Right 보상, 복리 재참여까지 — 슈퍼세이버가 알아야 할 모든 것.</div>
+        <div class="guide-card-tags">
+          <span class="guide-tag gtag-indigo">신용거래</span>
+          <span class="guide-tag gtag-indigo">Right 증서</span>
+          <span class="guide-tag gtag-gold">복리 시뮬레이션</span>
+        </div>
+      </div>
+    </div>
+    <div class="guide-card-footer">
+      <div class="guide-card-progress">
+        <div class="progress-track">
+          <div class="progress-fill-indigo" style="width:100%"></div>
+        </div>
+        <span class="progress-txt">전체 공개</span>
+      </div>
+      <span class="guide-card-arrow">›</span>
+    </div>
+  </a>
+
+  <!-- ── STO 가이드 ── -->
+  <a class="guide-card" href="sto_guide.html">
+    <div class="guide-card-band band-mint"></div>
+    <div class="guide-card-body">
+      <div class="guide-card-icon icon-mint">🔐</div>
+      <div class="guide-card-text">
+        <div class="guide-card-name">STO 증권형 토큰 가이드</div>
+        <div class="guide-card-desc">기초 개념부터 기술 구조·발행 프로세스·실전 적용까지 — 5단계 빌드업 커리큘럼.</div>
+        <div class="guide-card-tags">
+          <span class="guide-tag gtag-mint">토큰증권</span>
+          <span class="guide-tag gtag-mint">자본시장법</span>
+          <span class="guide-tag gtag-mint">RWA</span>
+        </div>
+      </div>
+    </div>
+    <div class="guide-card-footer">
+      <div class="guide-card-progress">
+        <div class="progress-track">
+          <div class="progress-fill-mint" style="width:20%"></div>
+        </div>
+        <span class="progress-txt">1단계 공개 중 (20%)</span>
+      </div>
+      <span class="guide-card-arrow">›</span>
+    </div>
+  </a>
+
+  <!-- ── 업데이트 안내 ── -->
+  <div class="update-notice">
+    <div class="notice-icon">💡</div>
+    <div class="notice-text">
+      <strong>STO 가이드</strong>는 단계별로 순차 업데이트됩니다.<br>
+      현재 <strong>1단계 · 기초 개념</strong>이 공개되었으며, 이후 단계는 준비 완료 시 추가됩니다.
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<!-- ── 하단 네비게이션 ── -->
+<nav class="bottom-nav">
+  <a class="nav-item" href="index.html">
+    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>홈
+  </a>
+  <a class="nav-item active" href="guide_home.html">
+    <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>가이드
+  </a>
+  <a class="nav-item" href="calculator.html">
+    <svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="16" y2="10"/></svg>계산기
+  </a>
+  <a class="nav-item" href="simulator.html">
+    <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>시뮬레이터
+  </a>
+</nav>
+
+</body>
+</html>
