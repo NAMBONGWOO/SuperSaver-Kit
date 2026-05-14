@@ -48,10 +48,15 @@ body{font-family:'Pretendard',sans-serif;background:var(--indigo-bg);padding-bot
 <body>
 
 <div class="hero" id="hero">
-  <div class="hero-avatar" id="hero-avatar">?</div>
+  <div style="position:relative; display:inline-block;">
+    <div class="hero-avatar" id="hero-avatar">?</div>
+  </div>
   <div class="hero-name" id="hero-name">로딩 중...</div>
   <div class="hero-email" id="hero-email"></div>
-  <div class="hero-badge" id="hero-badge">승인 완료</div>
+  <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-top:8px;">
+    <div class="hero-badge" id="hero-badge">승인 완료</div>
+    <a id="admin-link" href="../admin.html" style="display:none; background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.25); border-radius:20px; padding:3px 10px; font-size:0.9rem; text-decoration:none;" title="관리자 페이지">⚙️</a>
+  </div>
 </div>
 
 <div class="container">
@@ -203,7 +208,9 @@ onAuthStateChanged(auth, async (user) => {
   document.getElementById('info-email').textContent = data.email||'-';
   document.body.style.visibility = 'visible';
   window._auth = auth;
-  // 시뮬레이션 목록 로드
+  if (data.role === 'admin') {
+    document.getElementById('admin-link').style.display = 'inline-block';
+  }
   loadSimulations(user.uid);
 });
 
