@@ -90,7 +90,11 @@ input:focus{border-color:var(--indigo);}
       <div class="topbar-title">⚙️ SuperSaver Kit — 관리자</div>
       <div class="topbar-sub" id="admin-name-display"></div>
     </div>
-    <button class="logout-btn" onclick="adminLogout()">로그아웃</button>
+    <div style="display:flex; gap:8px; align-items:center;">
+      <a href="index.html" class="logout-btn" style="text-decoration:none;">🏠 홈</a>
+      <a href="pages/mypage.html" class="logout-btn" style="text-decoration:none;">👤 내 정보</a>
+      <button class="logout-btn" onclick="adminLogout()">로그아웃</button>
+    </div>
   </div>
 
   <div class="container">
@@ -122,8 +126,8 @@ input:focus{border-color:var(--indigo);}
 <!-- Firebase SDK -->
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getAuth, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-import { getFirestore, collection, getDocs, getDoc, doc, updateDoc, deleteDoc, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, collection, getDocs, getDoc, doc, updateDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyCV4elOllJXF-Rx6qrYNDAwSSfVHKAQelQ",
@@ -145,9 +149,25 @@ window._getDocs = getDocs;
 window._getDoc = getDoc;
 window._doc = doc;
 window._updateDoc = updateDoc;
-window._deleteDoc = deleteDoc;
-window._query = query;
-window._orderBy = orderBy;
+
+// ── 새로고침 시 로그인 상태 복원 ──
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    document.getElementById('login-wrap').style.display = 'flex';
+    document.getElementById('admin-wrap').style.display = 'none';
+    return;
+  }
+  try {
+    const snap = await getDoc(doc(db,'users',user.uid));
+    if (!snap.exists() || snap.data().role !== 'admin') {
+      await signOut(auth); return;
+    }
+    document.getElementById('login-wrap').style.display = 'none';
+    document.getElementById('admin-wrap').style.display = 'block';
+    document.getElementById('admin-name-display').textContent = snap.data().name + ' 님';
+    loadUsers();
+  } catch(e) { console.error(e); }
+});
 </script>
 
 <script>
@@ -158,7 +178,7 @@ function showMsg(id, text, type) {
   el.textContent = text; el.className = 'msg show ' + type;
 }
 
-async function adminLogin() {
+window.adminLogin = async function() {
   const email = document.getElementById('admin-email').value.trim();
   const pw = document.getElementById('admin-pw').value;
   if (!email || !pw) { showMsg('msg-admin-login','이메일과 비밀번호를 입력해주세요.','error'); return; }
@@ -184,13 +204,13 @@ async function adminLogin() {
   }
 }
 
-async function adminLogout() {
+window.adminLogout = async function() {
   await window._signOut(window._auth);
   document.getElementById('login-wrap').style.display = 'flex';
   document.getElementById('admin-wrap').style.display = 'none';
 }
 
-async function loadUsers() {
+window.loadUsers = async function() {
   try {
     const snap = await window._getDocs(window._collection(window._db,'users'));
     const users = snap.docs.map(d => ({id:d.id, ...d.data()})).filter(u => u.role !== 'admin');
@@ -243,7 +263,7 @@ function userCard(u, isPending) {
   </div>`;
 }
 
-async function approveUser(uid, name) {
+window.approveUser = async function(uid, name) {
   if (!confirm(`"${name}" 님을 승인하시겠습니까?`)) return;
   try {
     await window._updateDoc(window._doc(window._db,'users',uid), {status:'approved'});
@@ -252,7 +272,7 @@ async function approveUser(uid, name) {
   } catch(e) { alert('오류가 발생했습니다.'); }
 }
 
-async function rejectUser(uid, name) {
+window.rejectUser = async function(uid, name) {
   if (!confirm(`"${name}" 님의 접근을 거절/취소하시겠습니까?\n계정이 비활성화됩니다.`)) return;
   try {
     await window._updateDoc(window._doc(window._db,'users',uid), {status:'rejected'});
