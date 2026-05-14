@@ -269,6 +269,8 @@ async function doSignup() {
     // 관리자 이메일 알림
     try {
       await emailjs.send('service_1rgzqkc','template_8hhwyre',{
+        name: name,
+        message: `새 회원 가입 신청\n이름: ${name}\n이메일: ${email}\n신청시각: ${new Date().toLocaleString('ko-KR')}`,
         user_name: name,
         user_email: email,
         request_time: new Date().toLocaleString('ko-KR')

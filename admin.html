@@ -66,7 +66,7 @@ input:focus{border-color:var(--indigo);}
 <body>
 
 <!-- 로그인 화면 -->
-<div class="login-wrap" id="login-wrap">
+<div class="login-wrap" id="login-wrap" style="display:none;">
   <div class="login-card">
     <h2>🔐 관리자 로그인</h2>
     <p>SuperSaver Kit 관리자 전용 페이지입니다.</p>
@@ -157,6 +157,7 @@ onAuthStateChanged(auth, async (user) => {
     document.getElementById('admin-wrap').style.display = 'none';
     return;
   }
+  document.getElementById('login-wrap').style.display = 'none';
   try {
     const snap = await getDoc(doc(db,'users',user.uid));
     if (!snap.exists() || snap.data().role !== 'admin') {
