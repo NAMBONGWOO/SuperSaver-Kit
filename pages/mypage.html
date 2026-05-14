@@ -203,6 +203,8 @@ onAuthStateChanged(auth, async (user) => {
   document.getElementById('info-email').textContent = data.email||'-';
   document.body.style.visibility = 'visible';
   window._auth = auth;
+  // 시뮬레이션 목록 로드
+  loadSimulations(user.uid);
 });
 
 window.doLogout = async function() {
