@@ -276,6 +276,14 @@ async function doSignup() {
             reappliedAt: window._serverTimestamp()
           });
           await sendAdminEmail(name, email);
+
+          // 폼 초기화
+          document.getElementById('signup-name').value = '';
+          document.getElementById('signup-email').value = '';
+          document.getElementById('signup-pw').value = '';
+          document.getElementById('signup-pw2').value = '';
+          btn.disabled=false; btn.textContent='가입 신청';
+
           showPendingCard();
           return;
         } else if (status === 'pending') {
@@ -307,6 +315,14 @@ async function doSignup() {
     });
 
     await sendAdminEmail(name, email);
+
+    // 폼 초기화
+    document.getElementById('signup-name').value = '';
+    document.getElementById('signup-email').value = '';
+    document.getElementById('signup-pw').value = '';
+    document.getElementById('signup-pw2').value = '';
+    btn.disabled=false; btn.textContent='가입 신청';
+
     showPendingCard();
 
   } catch(e) {
@@ -322,13 +338,12 @@ async function doSignup() {
 async function sendAdminEmail(name, email) {
   try {
     await emailjs.send('service_1rgzqkc','template_8hhwyre',{
-      name: name,
-      message: `새 회원 가입 신청\n이름: ${name}\n이메일: ${email}\n신청시각: ${new Date().toLocaleString('ko-KR')}`,
       user_name: name,
       user_email: email,
       request_time: new Date().toLocaleString('ko-KR')
     });
-  } catch(e) { console.log('EmailJS error:', e); }
+    console.log('Email sent OK');
+  } catch(e) { console.error('EmailJS error:', e); }
 }
 </script>
 </body>
