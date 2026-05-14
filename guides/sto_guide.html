@@ -476,7 +476,7 @@ p:last-child { margin-bottom: 0; }
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getFirestore, doc, getDoc, setDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 const app = initializeApp({
   apiKey: "AIzaSyCV4elOllJXF-Rx6qrYNDAwSSfVHKAQelQ",
   authDomain: "supersaver-kit.firebaseapp.com",
@@ -496,6 +496,8 @@ onAuthStateChanged(auth, async (user) => {
   document.body.style.visibility='visible';
   const d=snap.data();
   sessionStorage.setItem('ssk_user',JSON.stringify({uid:user.uid,name:d.name,email:d.email,role:d.role||'user'}));
+  if (true) loadProgress();
+  else saveProgress('visited');
 });
 </script>
 
