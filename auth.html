@@ -258,34 +258,77 @@ async function doSignup() {
 
   try {
     await new Promise(r => setTimeout(r, 500));
+
+    // ── 거절된 계정 재신청 처리 ──
+    // 기존 계정으로 로그인 시도해서 rejected 여부 확인
+    let uid = null;
+    try {
+      const cred = await window._signIn(window._auth, email, pw);
+      uid = cred.user.uid;
+      const snap = await window._getDoc(window._doc(window._db,'users',uid));
+      if (snap.exists()) {
+        const status = snap.data().status;
+        if (status === 'rejected') {
+          // 거절된 계정 → 재신청으로 처리
+          await window._setDoc(window._doc(window._db,'users',uid), {
+            name, email, role:'user', status:'pending',
+            createdAt: window._serverTimestamp(),
+            reappliedAt: window._serverTimestamp()
+          });
+          await sendAdminEmail(name, email);
+          showPendingCard();
+          return;
+        } else if (status === 'pending') {
+          showMsg('msg-signup','이미 승인 대기 중입니다.','pending');
+          btn.disabled=false; btn.textContent='가입 신청';
+          return;
+        } else if (status === 'approved') {
+          showMsg('msg-signup','이미 가입된 계정입니다. 로그인해주세요.','error');
+          btn.disabled=false; btn.textContent='가입 신청';
+          return;
+        }
+      }
+    } catch(loginErr) {
+      // 로그인 실패 = 신규 계정 → 아래에서 신규 생성
+      if (loginErr.code !== 'auth/user-not-found' &&
+          loginErr.code !== 'auth/wrong-password' &&
+          loginErr.code !== 'auth/invalid-credential') {
+        throw loginErr;
+      }
+    }
+
+    // ── 신규 계정 생성 ──
     const cred = await window._createUser(window._auth, email, pw);
-    const uid = cred.user.uid;
+    uid = cred.user.uid;
 
     await window._setDoc(window._doc(window._db,'users',uid), {
       name, email, role:'user', status:'pending',
       createdAt: window._serverTimestamp()
     });
 
-    // 관리자 이메일 알림
-    try {
-      await emailjs.send('service_1rgzqkc','template_8hhwyre',{
-        name: name,
-        message: `새 회원 가입 신청\n이름: ${name}\n이메일: ${email}\n신청시각: ${new Date().toLocaleString('ko-KR')}`,
-        user_name: name,
-        user_email: email,
-        request_time: new Date().toLocaleString('ko-KR')
-      });
-    } catch(e) { console.log('EmailJS error:', e); }
-
+    await sendAdminEmail(name, email);
     showPendingCard();
 
   } catch(e) {
+    console.error(e);
     const msg = e.code==='auth/email-already-in-use'
       ? '이미 가입된 이메일입니다.'
       : '가입 신청 중 오류가 발생했습니다. 다시 시도해주세요.';
     showMsg('msg-signup', msg, 'error');
     btn.disabled=false; btn.textContent='가입 신청';
   }
+}
+
+async function sendAdminEmail(name, email) {
+  try {
+    await emailjs.send('service_1rgzqkc','template_8hhwyre',{
+      name: name,
+      message: `새 회원 가입 신청\n이름: ${name}\n이메일: ${email}\n신청시각: ${new Date().toLocaleString('ko-KR')}`,
+      user_name: name,
+      user_email: email,
+      request_time: new Date().toLocaleString('ko-KR')
+    });
+  } catch(e) { console.log('EmailJS error:', e); }
 }
 </script>
 </body>
