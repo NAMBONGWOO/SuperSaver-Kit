@@ -280,7 +280,7 @@ async function loadSimulations(uid) {
   }
 }
 
-function showSimDetail(id) {
+window.showSimDetail = function(id) {
   const s = window._simData[id];
   if (!s) return;
   window._currentSimId = id;
@@ -334,7 +334,7 @@ function showSimDetail(id) {
   document.getElementById('sim-modal').scrollTop = 0;
 }
 
-async function deleteSimulation(id) {
+window.deleteSimulation = async function(id) {
   if (!confirm('이 시뮬레이션 기록을 삭제하시겠습니까?')) return;
   try {
     await window._deleteDoc(window._doc(window._db,'simulations',id));
