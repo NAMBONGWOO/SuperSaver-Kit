@@ -600,9 +600,38 @@ onAuthStateChanged(auth, async (user) => {
     </div>
 </div>
 
-<!-- 저장 버튼 -->
-<div style="max-width: 860px; margin: auto; padding: 0 10px;">
-    <button class="save-btn" onclick="captureScreen()">📸 시뮬레이션 결과 이미지로 저장</button>
+<!-- 저장 버튼 영역 -->
+<div style="max-width:860px; margin:auto; padding:0 10px; display:flex; gap:8px; flex-wrap:wrap;">
+    <button class="save-btn" onclick="captureScreen()" style="flex:1; min-width:160px;">📸 이미지로 저장</button>
+    <button class="save-btn" onclick="saveToFirebase()" id="btn-save-firebase"
+      style="flex:1; min-width:160px; background:linear-gradient(135deg,#1e1e72,#2d2d9f); color:white; border:none;">
+      ☁️ 클라우드에 저장
+    </button>
+</div>
+
+<!-- 저장 모달 -->
+<div id="save-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center;">
+  <div style="background:white; border-radius:20px; padding:28px 24px; width:90%; max-width:360px; margin:auto;">
+    <h3 style="font-size:1.0rem; font-weight:900; color:#1e1e72; margin-bottom:6px;">시뮬레이션 저장</h3>
+    <p style="font-size:0.78rem; color:#8888bb; margin-bottom:16px;">나중에 다시 불러올 수 있도록 이름을 붙여주세요.</p>
+    <input type="text" id="save-title" placeholder="예: 5월 2차 시뮬, 원금 1000만 12주"
+      style="width:100%; padding:11px 14px; border:1.5px solid #e0e0f4; border-radius:10px;
+             font-size:0.88rem; font-family:'Pretendard',sans-serif; color:#1e1e72; outline:none; margin-bottom:14px;">
+    <div style="display:flex; gap:8px;">
+      <button onclick="document.getElementById('save-modal').style.display='none'"
+        style="flex:1; padding:12px; border-radius:10px; border:1px solid #e0e0f4; background:white;
+               font-family:'Pretendard',sans-serif; font-size:0.88rem; font-weight:700; color:#8888bb; cursor:pointer;">
+        취소
+      </button>
+      <button onclick="confirmSave()"
+        style="flex:1; padding:12px; border-radius:10px; border:none;
+               background:linear-gradient(135deg,#1e1e72,#2d2d9f); color:white;
+               font-family:'Pretendard',sans-serif; font-size:0.88rem; font-weight:700; cursor:pointer;">
+        저장
+      </button>
+    </div>
+    <div id="save-msg" style="display:none; margin-top:12px; padding:10px 14px; border-radius:8px; font-size:0.78rem;"></div>
+  </div>
 </div>
 
 <script>
@@ -953,6 +982,124 @@ function captureScreen() {
         link.href = canvas.toDataURL();
         link.click();
     });
+}
+
+
+/* ════════════════════════════════
+   Firebase 시뮬레이션 저장
+════════════════════════════════ */
+let _pendingSaveData = null;
+
+function saveToFirebase() {
+  const user = JSON.parse(sessionStorage.getItem('ssk_user') || 'null');
+  if (!user) { alert('로그인이 필요합니다.'); return; }
+
+  // 현재 입력값·결과값 수집
+  const weeks = parseInt(document.getElementById('weeks').value) || 12;
+  const weeklyData = [];
+  for (let i = 1; i <= weeks; i++) {
+    weeklyData.push({
+      week: i,
+      date:     document.getElementById(`d_date_${i}`)?.textContent || '',
+      total:    document.getElementById(`d_total_${i}`)?.textContent || '',
+      contract: document.getElementById(`d_contract_${i}`)?.textContent || '',
+      cost:     document.getElementById(`d_cost_${i}`)?.textContent || '',
+      daily:    document.getElementById(`d_daily_${i}`)?.textContent || '',
+      weekly:   document.getElementById(`d_weekly_${i}`)?.textContent || '',
+      approved: document.getElementById(`d_approved_${i}`)?.textContent || '',
+    });
+  }
+
+  _pendingSaveData = {
+    userId: user.uid,
+    savedAt: new Date().toISOString(),
+    inputs: {
+      baseApproved:    document.getElementById('baseApproved').value,
+      baseDaily:       document.getElementById('baseDaily').value,
+      creditPrice:     document.getElementById('creditPrice').value,
+      sutPrice:        document.getElementById('sutPrice').value,
+      weeks:           document.getElementById('weeks').value,
+      sutChangeRate:   document.getElementById('sutChangeRate').value,
+      crChangeRate:    document.getElementById('crChangeRate').value,
+      changeStartWeek: document.getElementById('changeStartWeek').value,
+      targetDay:       document.getElementById('targetDay').value,
+    },
+    summary: {
+      finalApproved: document.getElementById('s_approved')?.textContent || '',
+      finalDaily:    document.getElementById('s_daily')?.textContent || '',
+      finalWeekly:   document.getElementById('s_weekly')?.textContent || '',
+      totalWeekly:   document.getElementById('s_totalWeekly')?.textContent || '',
+      totalContract: document.getElementById('s_totalContract')?.textContent || '',
+      totalCost:     document.getElementById('s_totalCost')?.textContent || '',
+    },
+    weeklyData,
+  };
+
+  // 제목 입력 모달 열기
+  document.getElementById('save-title').value = '';
+  document.getElementById('save-msg').style.display = 'none';
+  document.getElementById('save-modal').style.display = 'flex';
+  setTimeout(() => document.getElementById('save-title').focus(), 100);
+}
+
+async function confirmSave() {
+  const title = document.getElementById('save-title').value.trim();
+  if (!title) {
+    const msg = document.getElementById('save-msg');
+    msg.style.display = 'block';
+    msg.style.background = '#ffebee';
+    msg.style.color = '#d93025';
+    msg.textContent = '이름을 입력해주세요.';
+    return;
+  }
+
+  const btn = document.querySelector('#save-modal button:last-of-type');
+  btn.textContent = '저장 중...'; btn.disabled = true;
+
+  try {
+    _pendingSaveData.title = title;
+
+    // Firestore에 저장
+    const { initializeApp, getApps } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
+    const { getFirestore, collection, addDoc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+
+    const firebaseConfig = {
+      apiKey:"AIzaSyCV4elOllJXF-Rx6qrYNDAwSSfVHKAQelQ",
+      authDomain:"supersaver-kit.firebaseapp.com",
+      projectId:"supersaver-kit",
+      storageBucket:"supersaver-kit.firebasestorage.app",
+      messagingSenderId:"800388848026",
+      appId:"1:800388848026:web:1d64b6ffebf8544ecb0223"
+    };
+    const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    await addDoc(collection(db, 'simulations'), {
+      ..._pendingSaveData,
+      createdAt: serverTimestamp(),
+    });
+
+    const msg = document.getElementById('save-msg');
+    msg.style.display = 'block';
+    msg.style.background = '#e0f5f4';
+    msg.style.color = '#006b63';
+    msg.textContent = '✅ 저장되었습니다!';
+    btn.textContent = '저장 완료';
+
+    setTimeout(() => {
+      document.getElementById('save-modal').style.display = 'none';
+      btn.textContent = '저장'; btn.disabled = false;
+    }, 1200);
+
+  } catch(e) {
+    console.error(e);
+    const msg = document.getElementById('save-msg');
+    msg.style.display = 'block';
+    msg.style.background = '#ffebee';
+    msg.style.color = '#d93025';
+    msg.textContent = '저장 중 오류가 발생했습니다.';
+    btn.textContent = '저장'; btn.disabled = false;
+  }
 }
 
 /* ════════════════════════════════
