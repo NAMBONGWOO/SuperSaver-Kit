@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<link rel="icon" type="image/png" sizes="192x192" href="../icons/icon-192x192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="../icons/icon-180x180.png">
+<link rel="manifest" href="../manifest.json">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SuperSaver Kit">
+<meta name="theme-color" content="#1e1e72">
+<title>SuperSaver Kit — MPC 토큰</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
+<style>
+/* ────────────────────────────────
+   DESIGN TOKENS (기존 앱 통일)
+──────────────────────────────── */
+:root {
+  --indigo-deep: #1e1e72;
+  --indigo:      #2d2d9f;
+  --indigo-mid:  #3d3dbb;
+  --indigo-lt:   #f0f0ff;
+  --indigo-bg:   #f4f4ff;
+  --mint:        #00938a;
+  --mint-lt:     #e0f5f4;
+  --mint-dk:     #006b63;
+  --gold:        #FFD700;
+  --gold-muted:  #c9a84c;
+  --gold-lt:     #fdf3dc;
+  --red:         #d93025;
+  --gray:        #5a6a7a;
+  --gray-lt:     #f4f7f9;
+  --white:       #ffffff;
+  --border:      #e0e0f4;
+  --text-main:   #1e1e72;
+  --text-sub:    #8888bb;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  visibility: hidden;
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--indigo-bg);
+  color: var(--indigo-deep);
+  line-height: 1.7;
+  padding-bottom: 80px;
+}
+
+/* ── 헤더 ── */
+.hero {
+  background: linear-gradient(160deg, #1e1e72 0%, #2d2d9f 55%, #1e1e72 100%);
+  color: white;
+  padding: 40px 24px 32px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; top: -80px; left: -80px;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(0,147,138,0.18) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero::after {
+  content: '';
+  position: absolute; bottom: -60px; right: -60px;
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(201,168,76,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-tag {
+  display: inline-block;
+  background: rgba(0,147,138,0.25);
+  color: rgba(255,215,0,0.85);
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.15em;
+  padding: 5px 14px; border-radius: 20px;
+  border: 1px solid rgba(0,147,138,0.4);
+  margin-bottom: 20px;
+}
+.hero h1 {
+  font-size: clamp(1.6rem, 4.5vw, 2.4rem);
+  font-weight: 900; line-height: 1.25;
+  margin-bottom: 16px; letter-spacing: -0.02em;
+}
+.hero h1 em { color: var(--gold); font-style: normal; }
+.hero-sub {
+  font-size: 0.95rem;
+  color: rgba(255,255,255,0.65);
+  max-width: 520px; margin: 0 auto;
+}
+
+/* ── 단계 네비게이션 바 ── */
+.stage-nav-wrap {
+  position: sticky; top: 0; z-index: 500;
+  background: white;
+  border-bottom: 1px solid var(--border);
+  padding: 10px 16px;
+  box-shadow: 0 2px 12px rgba(30,30,114,0.10);
+  text-align: center;
+}
+.stage-nav-label {
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em;
+  color: var(--text-sub); margin-bottom: 6px;
+}
+.stage-chips-wrap {
+  position: relative; width: 100%;
+}
+.stage-chips-wrap::after {
+  content: '';
+  position: absolute; top: 0; right: 0;
+  width: 48px; height: 100%;
+  background: linear-gradient(to right, transparent, white);
+  pointer-events: none; z-index: 1;
+}
+.stage-chips {
+  display: flex; gap: 6px;
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+  width: 100%;
+  padding-bottom: 2px; padding-right: 36px;
+  scrollbar-width: none;
+  justify-content: safe center;
+}
+.stage-chips::-webkit-scrollbar { display: none; }
+.stage-chip {
+  display: inline-flex; align-items: center;
+  font-size: 0.62rem; font-weight: 700; letter-spacing: 0.03em;
+  padding: 5px 12px; border-radius: 20px; cursor: pointer;
+  white-space: nowrap; border: 1px solid transparent; outline: none;
+  background: var(--indigo-lt); color: var(--text-sub);
+  transition: all 0.18s; flex-shrink: 0; font-family: inherit;
+}
+.stage-chip.active {
+  background: var(--indigo); color: white;
+  box-shadow: 0 2px 8px rgba(30,30,114,0.25);
+}
+.stage-chip:hover:not(.active) { background: #e4e4ff; color: var(--indigo); }
+.stage-chip.mpc-chip { background: rgba(0,147,138,0.1); color: var(--mint-dk); border-color: rgba(0,147,138,0.25); }
+.stage-chip.mpc-chip.active { background: var(--mint); color: white; border-color: var(--mint); }
+.stage-chip.mineral-chip { background: rgba(15,110,86,0.1); color: #0f6e56; border-color: rgba(15,110,86,0.25); }
+.stage-chip.mineral-chip.active { background: #0f6e56; color: white; border-color: #0f6e56; }
+
+
+
+.stage-chip:hover {
+  background: var(--indigo-mid); color: white;
+}
+.stage-chip.current {
+  background: var(--indigo); color: white;
+  border-color: var(--indigo);
+}
+.stage-chip.locked {
+  background: var(--gray-lt); color: var(--gray);
+  cursor: not-allowed;
+}
+
+/* ── 레이아웃 ── */
+.container { max-width: 860px; margin: 0 auto; padding: 0 16px 32px; }
+
+/* ── 단계 헤더 ── */
+.stage-header-block {
+  margin-top: 24px; margin-bottom: 4px;
+  display: flex; align-items: center; gap: 12px;
+  padding: 0 4px;
+}
+.stage-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em;
+  padding: 4px 12px; border-radius: 20px;
+  background: var(--indigo); color: white;
+  white-space: nowrap;
+}
+.stage-title-txt {
+  font-size: 1.05rem; font-weight: 900;
+  color: var(--indigo-deep); letter-spacing: -0.02em;
+}
+.stage-sub-txt {
+  font-size: 0.78rem; color: var(--text-sub); font-weight: 500;
+}
+
+/* ── 섹션 카드 ── */
+.section {
+  background: white; border-radius: 20px; padding: 28px 24px;
+  margin-top: 12px;
+  box-shadow: 0 2px 16px rgba(15,31,53,0.06);
+  border: 1px solid var(--border);
+}
+.section-header {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 18px; padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+.section-num {
+  width: 32px; height: 32px; min-width: 32px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--indigo); color: white;
+  border-radius: 50%; font-size: 0.8rem; font-weight: 900;
+  line-height: 1; flex-shrink: 0;
+}
+.section-num.mint-num { background: var(--mint); }
+.section-title {
+  font-size: 1.15rem; font-weight: 700;
+  color: var(--indigo-deep); letter-spacing: -0.02em; line-height: 1.3;
+}
+.section-title span { color: var(--indigo); }
+
+p { font-size: 0.92rem; color: #3a4a5c; line-height: 1.8; margin-bottom: 12px; }
+p:last-child { margin-bottom: 0; }
+
+/* ── 강조 박스 ── */
+.highlight-box {
+  background: var(--indigo-lt); border-left: 4px solid var(--indigo);
+  border-radius: 0 12px 12px 0; padding: 16px 20px; margin: 16px 0;
+  font-size: 0.9rem; color: var(--indigo); font-weight: 500; line-height: 1.7;
+}
+.gold-box {
+  background: var(--gold-lt); border-left: 4px solid var(--gold-muted);
+  border-radius: 0 12px 12px 0; padding: 16px 20px; margin: 16px 0;
+  font-size: 0.9rem; color: #7a5a10; font-weight: 500; line-height: 1.7;
+}
+.mint-box {
+  background: var(--mint-lt); border-left: 4px solid var(--mint);
+  border-radius: 0 12px 12px 0; padding: 16px 20px; margin: 16px 0;
+  font-size: 0.9rem; color: var(--mint-dk); font-weight: 500; line-height: 1.7;
+}
+.navy-box {
+  background: linear-gradient(160deg, #1e1e72 0%, #2d2d9f 55%, #1e1e72 100%);
+  border-radius: 14px; padding: 20px 24px; margin: 16px 0;
+  color: rgba(255,255,255,0.9); font-size: 0.88rem; line-height: 1.8;
+}
+.navy-box strong { color: var(--gold); }
+
+/* ── 비교 카드 그리드 ── */
+.compare-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px; margin: 16px 0;
+}
+.compare-card {
+  border: 1px solid var(--border); border-radius: 14px;
+  padding: 16px; position: relative; overflow: hidden;
+  background: white;
+}
+.compare-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 3px;
+}
+.compare-card.indigo::before { background: var(--indigo); }
+.compare-card.gold::before   { background: var(--gold-muted); }
+.compare-card.mint::before   { background: var(--mint); }
+.compare-card.red::before    { background: var(--red); }
+.compare-card-icon { font-size: 1.4rem; margin-bottom: 8px; }
+.compare-card-name {
+  font-size: 0.8rem; font-weight: 900; color: var(--indigo-deep);
+  margin-bottom: 6px;
+}
+.compare-card-desc {
+  font-size: 0.75rem; color: var(--gray); line-height: 1.55;
+}
+.compare-card-tag {
+  display: inline-block; margin-top: 8px;
+  font-size: 0.62rem; font-weight: 700;
+  padding: 2px 8px; border-radius: 10px;
+}
+.tag-indigo { background: var(--indigo-lt); color: var(--indigo); }
+.tag-gold   { background: var(--gold-lt);   color: #7a5a10; }
+.tag-mint   { background: var(--mint-lt);   color: var(--mint-dk); }
+.tag-red    { background: #ffebee;          color: #c62828; }
+
+/* ── 비교 테이블 ── */
+.compare-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 10px; margin: 16px 0; }
+.compare-table { width: 100%; min-width: 480px; border-collapse: collapse; font-size: 0.85rem; }
+.compare-table th {
+  background: linear-gradient(160deg, #1e1e72 0%, #2d2d9f 55%, #1e1e72 100%);
+  color: white; padding: 10px 14px; text-align: left;
+  font-weight: 700; font-size: 0.8rem;
+}
+.compare-table th:first-child { border-radius: 10px 0 0 0; }
+.compare-table th:last-child  { border-radius: 0 10px 0 0; }
+.compare-table td {
+  padding: 10px 14px; border-bottom: 1px solid var(--border);
+  color: #3a4a5c; vertical-align: middle;
+}
+.compare-table tr:last-child td { border-bottom: none; }
+.compare-table tr:nth-child(even) td { background: transparent; }
+
+/* ── 흐름도 ── */
+.flow { display: flex; flex-direction: column; gap: 0; margin: 20px 0; }
+.flow-item {
+  display: flex; gap: 16px; align-items: flex-start; position: relative;
+}
+.flow-item:not(:last-child)::after {
+  content: ''; position: absolute; left: 19px; top: 42px;
+  width: 2px; height: calc(100% - 10px);
+  background: linear-gradient(to bottom, var(--mint), transparent);
+}
+.flow-dot {
+  width: 40px; height: 40px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 900; font-size: 0.82rem; flex-shrink: 0;
+  position: relative; z-index: 1;
+}
+.dot-indigo { background: var(--indigo); color: white; }
+.dot-gold   { background: var(--gold-muted); color: white; }
+.dot-mint   { background: var(--mint); color: white; }
+.dot-ok     { background: #2e7d32; color: white; }
+.flow-content {
+  flex: 1; background: var(--gray-lt); border-radius: 12px;
+  padding: 14px 18px; margin-bottom: 12px;
+}
+.flow-content h4 { font-size: 0.88rem; font-weight: 700; color: var(--indigo-deep); margin-bottom: 4px; }
+.flow-content p  { font-size: 0.82rem; color: var(--gray); margin: 0; line-height: 1.6; }
+.flow-content .amount { font-size: 0.92rem; font-weight: 900; color: var(--indigo); margin-top: 6px; }
+
+/* ── 변수 카드 ── */
+.var-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin: 16px 0; }
+.var-card { border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; position: relative; overflow: hidden; background: white; }
+.var-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--indigo); }
+.var-card.gold::before { background: var(--gold-muted); }
+.var-card.mint::before { background: var(--mint); }
+.var-name  { font-size: 0.68rem; font-weight: 700; color: var(--gray); letter-spacing: 0.06em; margin-bottom: 6px; }
+.var-value { font-size: 1.2rem; font-weight: 900; color: var(--indigo); letter-spacing: -0.02em; margin-bottom: 4px; }
+.var-card.gold .var-value { color: var(--gold-muted); }
+.var-card.mint .var-value { color: var(--mint); }
+.var-desc  { font-size: 0.72rem; color: var(--gray); line-height: 1.5; }
+
+/* ── 잠금 오버레이 ── */
+.stage-locked-wrap {
+  margin-top: 12px;
+  background: white; border-radius: 20px;
+  border: 1px dashed var(--border);
+  padding: 24px;
+  text-align: center;
+  opacity: 0.6;
+}
+.stage-locked-icon { font-size: 2rem; margin-bottom: 8px; }
+.stage-locked-title { font-size: 0.95rem; font-weight: 700; color: var(--indigo-deep); margin-bottom: 4px; }
+.stage-locked-sub   { font-size: 0.8rem; color: var(--gray); }
+
+/* ── 푸터 ── */
+.footer {
+  text-align: center; padding: 24px 16px;
+  font-size: 0.72rem; color: var(--text-sub);
+  line-height: 1.8;
+}
+
+/* ── 하단 네비게이션 ── */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
+  background: white; border-top: 1px solid var(--border);
+  display: flex; height: 60px;
+  box-shadow: 0 -4px 20px rgba(30,30,114,0.08);
+  max-width: 100%;
+}
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .bottom-nav { padding-bottom: env(safe-area-inset-bottom); height: calc(60px + env(safe-area-inset-bottom)); }
+}
+.nav-item {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 3px; text-decoration: none; color: #bbbbdd;
+  font-size: 0.63rem; font-weight: 700; transition: color 0.15s;
+}
+.nav-item svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; }
+.nav-item.active { color: var(--indigo); }
+
+@media (max-width: 600px) {
+  .section { padding: 22px 16px; }
+  .compare-grid { grid-template-columns: 1fr 1fr; }
+}
+
+
+/* ── 탭 패널 ── */
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ── 상단 칩 탭 버튼 ── */
+
+
+
+.stage-chip {
+  display: inline-flex; align-items: center;
+  font-size: 0.62rem; font-weight: 700; letter-spacing: 0.04em;
+  padding: 5px 12px; border-radius: 20px; cursor: pointer;
+  white-space: nowrap; border: none; outline: none;
+  background: var(--indigo-lt); color: var(--text-sub);
+  transition: all 0.18s; flex-shrink: 0;
+}
+.stage-chip.active {
+  background: var(--indigo); color: white;
+  box-shadow: 0 2px 8px rgba(30,30,114,0.25);
+}
+.stage-chip:hover:not(.active) {
+  background: #e4e4ff; color: var(--indigo);
+}
+.stage-chip.mpc-chip {
+  background: rgba(0,147,138,0.1); color: var(--mint-dk);
+  border: 1px solid rgba(0,147,138,0.25);
+}
+.stage-chip.mpc-chip.active {
+  background: var(--mint); color: white;
+  border-color: var(--mint);
+}
+.stage-chip.mineral-chip {
+  background: rgba(15,110,86,0.1); color: #0f6e56;
+  border: 1px solid rgba(15,110,86,0.25);
+}
+.stage-chip.mineral-chip.active {
+  background: #0f6e56; color: white;
+  border-color: #0f6e56;
+}
+
+/* ── 아코디언 용어 카드 ── */
+.term-accordion {
+  margin-top: 18px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  background: white;
+}
+.term-accordion-btn {
+  width: 100%; text-align: left; cursor: pointer;
+  background: var(--indigo-lt); border: none; outline: none;
+  padding: 12px 18px;
+  display: flex; align-items: center; gap: 8px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.8rem; font-weight: 700; color: var(--indigo);
+  letter-spacing: 0.03em; transition: background 0.15s;
+}
+.term-accordion-btn:hover { background: #e4e4ff; }
+.term-accordion-btn .acc-arrow {
+  margin-left: auto; font-size: 0.75rem;
+  transition: transform 0.25s; display: inline-block;
+}
+.term-accordion-btn.open .acc-arrow { transform: rotate(180deg); }
+.term-accordion-body {
+  display: none;
+  padding: 14px 18px;
+  border-top: 1px solid var(--border);
+  background: white;
+}
+.term-accordion-body.open { display: block; }
+.term-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+}
+.term-card {
+  border: 1px solid var(--border);
+  border-radius: 12px; padding: 12px 14px;
+  background: var(--gray-lt);
+  position: relative; overflow: hidden;
+}
+.term-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 3px; background: var(--mint);
+}
+.term-card.indigo-term::before { background: var(--indigo); }
+.term-card.gold-term::before   { background: var(--gold-muted); }
+.term-name {
+  font-size: 0.72rem; font-weight: 900;
+  color: var(--indigo-deep); margin-bottom: 5px;
+}
+.term-eng {
+  font-size: 0.62rem; color: var(--text-sub);
+  font-weight: 500; margin-bottom: 6px;
+}
+.term-desc {
+  font-size: 0.75rem; color: #3a4a5c; line-height: 1.6;
+}
+
+
+
+
+
+/* ── 단계 헤더 강조 ── */
+.stage-header-block {
+  background: linear-gradient(135deg, #1e1e72 0%, #2d2d9f 100%);
+  border-radius: 16px;
+  padding: 16px 20px;
+  margin-top: 24px;
+  margin-bottom: 4px;
+  display: flex; align-items: center; gap: 12px;
+  box-shadow: 0 4px 16px rgba(30,30,114,0.18);
+}
+.stage-header-block .stage-badge {
+  background: rgba(255,255,255,0.18);
+  color: #FFD700;
+  border: 1px solid rgba(255,215,0,0.35);
+}
+.stage-header-block .stage-title-txt {
+  color: white;
+}
+.stage-header-block .stage-sub-txt {
+  color: rgba(255,255,255,0.6);
+}
+
+</style>
+</head>
+<body>
+<!-- Firebase 로그인 상태 체크 -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+const app = initializeApp({
+  apiKey: "AIzaSyCV4elOllJXF-Rx6qrYNDAwSSfVHKAQelQ",
+  authDomain: "supersaver-kit.firebaseapp.com",
+  projectId: "supersaver-kit",
+  storageBucket: "supersaver-kit.firebasestorage.app",
+  messagingSenderId: "800388848026",
+  appId: "1:800388848026:web:1d64b6ffebf8544ecb0223"
+});
+const auth = getAuth(app);
+const db = getFirestore(app);
+onAuthStateChanged(auth, async (user) => {
+  if (!user) { window.location.href='../auth.html'; return; }
+  const snap = await getDoc(doc(db,'users',user.uid));
+  if (!snap.exists() || snap.data().status !== 'approved') {
+    await auth.signOut(); window.location.href='../auth.html'; return;
+  }
+  document.body.style.visibility='visible';
+  const d=snap.data();
+  sessionStorage.setItem('ssk_user',JSON.stringify({uid:user.uid,name:d.name,email:d.email,role:d.role||'user'}));
+});
+</script>
+<div class="hero">
+  <h1>MPC 토큰<br><em>Mineral Project Coin</em></h1>
+  <p class="hero-sub">ERC-20에서 STO로 — MPC 토큰의 전환 가능성 분석</p>
+</div>
+<div class="container" style="padding-top:16px;">
+
+<div class="section">
+  <div class="section-header">
+    <div class="section-num mint-num">1</div>
+    <h2 class="section-title">온체인 현황 — <span>PolygonScan 데이터</span></h2>
+  </div>
+  <p>MPC 토큰은 현재 Polygon 네트워크에 배포되어 있습니다. PolygonScan에서 누구나 실시간으로 확인할 수 있는 온체인 데이터입니다.</p>
+
+  <div class="var-grid">
+    <div class="var-card">
+      <div class="var-name">토큰명</div>
+      <div class="var-value" style="font-size:0.95rem;">Mineral Project Coin</div>
+      <div class="var-desc">심볼: MPC · 네트워크: Polygon</div>
+    </div>
+    <div class="var-card mint">
+      <div class="var-name">토큰 표준</div>
+      <div class="var-value" style="font-size:0.95rem;">ERC-20</div>
+      <div class="var-desc">Source Code (Proxy) — 프록시 패턴으로 설계됨</div>
+    </div>
+    <div class="var-card gold">
+      <div class="var-name">총 발행량</div>
+      <div class="var-value">300,000,000</div>
+      <div class="var-desc">3억 MPC · 고정 발행량</div>
+    </div>
+    <div class="var-card">
+      <div class="var-name">홀더 / 트랜스퍼</div>
+      <div class="var-value" style="font-size:0.95rem;">1 / 1건</div>
+      <div class="var-desc">민팅만 완료된 초기 상태 — 아직 유통 미시작</div>
+    </div>
+  </div>
+
+  <div class="gold-box">
+    <strong>핵심 단서 — "Source Code (Proxy)":</strong><br>
+    PolygonScan에 표시된 이 한 줄이 MPC 토큰의 핵심입니다. 일반 ERC-20이 아닌 <strong>프록시 패턴</strong>으로 설계되었다는 증거이며, 이것이 향후 STO 표준으로 전환 가능성을 열어두는 구조적 근거입니다.
+  </div>
+
+  <p><strong>현재 MPC는 엄밀히 말해 STO 표준(ERC-3643)이 아닙니다.</strong> 그러나 이 프록시 구조가 중요한 이유를 아래에서 살펴봅니다.</p>
+
+  
+  <div class="navy-box">
+    <strong>🔍 프록시 패턴이란?</strong><br><br>
+    일반 스마트 컨트랙트는 한 번 배포하면 <strong>수정이 불가능(Immutable)</strong>합니다. 프록시 패턴은 이를 우회하기 위해 두 개의 컨트랙트를 분리하는 설계입니다.<br><br>
+    <strong style="color:#FFD700;">① 프록시 컨트랙트 (Proxy — "겉껍데기")</strong><br>
+    사용자가 상호작용하는 주소. 토큰 잔액(Balances) 등 <u>데이터(State)</u>를 저장.<br><br>
+    <strong style="color:#FFD700;">② 구현 컨트랙트 (Implementation — "알맹이")</strong><br>
+    전송(transfer)·승인(approve) 등 실제 기능이 코딩된 곳. <u>로직(Logic)</u>만 담당.
+  </div>
+
+  <p style="margin-top:16px;"><strong>ERC-3643으로의 전환 시나리오</strong>는 이 구조를 활용합니다. 기존 홀더들의 토큰 잔액(Data)은 건드리지 않으면서, 동작 방식(Logic)만 교체하는 것이 기술적으로 가능합니다.</p>
+
+  <div class="flow">
+    <div class="flow-item">
+      <div class="flow-dot dot-indigo">1</div>
+      <div class="flow-content">
+        <h4>ERC-3643 로직 컨트랙트 새로 배포</h4>
+        <p>신원 확인(ONCHAINID)·컴플라이언스 훅이 포함된 새 구현 컨트랙트를 별도로 배포합니다. 기존 잔액 데이터에는 전혀 영향이 없습니다.</p>
+      </div>
+    </div>
+    <div class="flow-item">
+      <div class="flow-dot dot-gold">2</div>
+      <div class="flow-content">
+        <h4>프록시 주소 업데이트 (Upgrade)</h4>
+        <p>프록시 컨트랙트가 바라보는 구현 주소를 새 ERC-3643 컨트랙트로 교체합니다. 사용자 입장에서는 동일한 토큰 주소를 사용합니다.</p>
+      </div>
+    </div>
+    <div class="flow-item">
+      <div class="flow-dot dot-ok">3</div>
+      <div class="flow-content">
+        <h4>기존 잔액 그대로 · 새 규칙 적용</h4>
+        <p>전환 완료 후 모든 전송에 KYC 화이트리스트 검증이 자동 적용됩니다. 기존 300,000,000 MPC 잔액은 보존됩니다.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3가지 허들 -->
+  <p style="margin-top:8px;"><strong>ERC-3643 전환 시 넘어야 할 3가지 핵심 허들</strong></p>
+
+  <div class="compare-grid" style="margin-top:10px;">
+    <div class="compare-card mint" style="border-color:var(--mint);">
+      <div class="compare-card-icon">🔑</div>
+      <div class="compare-card-name">관리자 권한 (Admin Role)</div>
+      <div class="compare-card-desc">컨트랙트 업그레이드 버튼을 누를 수 있는 '마스터키'. 권한이 폐기(Renounced)되었거나 DAO화되면 전환이 복잡해집니다.</div>
+      <span class="compare-card-tag tag-mint">✅ 회사가 권한 보유 — 문제 없음</span>
+    </div>
+    <div class="compare-card mint" style="border-color:var(--mint);">
+      <div class="compare-card-icon">🪪</div>
+      <div class="compare-card-name">신원 데이터 확보 (KYC)</div>
+      <div class="compare-card-desc">전환 순간 KYC 미등록 지갑은 자산이 동결됩니다. 전환 전 모든 홀더의 신원을 미리 등록해두어야 합니다.</div>
+      <span class="compare-card-tag tag-mint">✅ 슈퍼세이브 KYC 지갑주소 보유</span>
+    </div>
+    <div class="compare-card gold">
+      <div class="compare-card-icon">⚙️</div>
+      <div class="compare-card-name">스토리지 충돌 (Storage Collision)</div>
+      <div class="compare-card-desc">새 로직이 기존 잔액 데이터 저장 위치를 덮어쓰면 잔액이 사라지거나 오류가 발생할 수 있는 설계 리스크입니다.</div>
+      <span class="compare-card-tag tag-gold">⚠️ 기술 감사(Audit) 필요</span>
+    </div>
+  </div>
+
+  <div class="gold-box" style="margin-top:14px;">
+    <strong>💡 왜 지금 바로 에어드랍하지 않는가?</strong><br>
+    스토리지 충돌 리스크가 바로 MPC를 현 시점에서 일괄 분배(에어드랍)하지 않고 추후 특정 시점에 전송하는 이유일 수 있습니다. ERC-3643 전환 후 데이터 무결성이 검증된 뒤 배분하는 것이 기술적으로 안전한 순서입니다.
+  </div>
+
+  <!-- 결론 -->
+  <div class="navy-box" style="margin-top:16px;">
+    <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
+      <div style="font-size:2rem; flex-shrink:0; letter-spacing:4px;">🐛→🦋</div>
+      <div style="flex:1; min-width:180px;">
+        <strong style="color:#FFD700; font-size:0.95rem;">MPC는 STO인가?</strong><br>
+        <span style="color:rgba(255,255,255,0.9); font-size:0.85rem; line-height:1.7;">
+          <strong style="color:white;">ERC-20 애벌레</strong>이지만, <strong style="color:#FFD700;">ERC-3643 나비가 될 토큰</strong>입니다.<br>
+          프록시 구조·관리자 권한·KYC 데이터 3가지 조건이 이미 갖춰져 있어 전환 가능성이 열려 있습니다.
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 남은 과제 -->
+  <p style="margin-top:16px;"><strong>MPC가 STO가 되기 위한 남은 과제 3가지</strong></p>
+  <div class="var-grid" style="margin-top:10px;">
+    <div class="var-card mint">
+      <div class="var-name">① 자산 구조화</div>
+      <div class="var-value" style="font-size:0.85rem;">Asset Structuring</div>
+      <div class="var-desc">기초 자산의 실재성과 법적 권리 구조화. 어떤 실물 자산이 MPC를 뒷받침하는지 명확히 해야 합니다.</div>
+    </div>
+    <div class="var-card gold">
+      <div class="var-name">② 법적 규제 준수</div>
+      <div class="var-value" style="font-size:0.85rem;">Legal & Compliance</div>
+      <div class="var-desc">자본시장법상 증권 여부 판단, 금융당국 가이드라인 충족, 공시 의무 이행 등 법적 성격 규명이 필요합니다.</div>
+    </div>
+    <div class="var-card indigo">
+      <div class="var-name">③ 온·오프체인 연결</div>
+      <div class="var-value" style="font-size:0.85rem;">Oracle & Custody</div>
+      <div class="var-desc">실물 자산의 수익 데이터를 온체인으로 연결하는 오라클, 기관급 수탁(커스터디) 인프라 구축이 필요합니다.</div>
+    </div>
+  </div>
+</div>
+</div>
+<nav class="bottom-nav">
+  <a class="nav-item" href="../index.html"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>홈</a>
+  <a class="nav-item active" href="../pages/guide_home.html"><svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>가이드</a>
+  <a class="nav-item" href="../pages/calculator.html"><svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="16" y2="10"/></svg>계산기</a>
+  <a class="nav-item" href="../pages/simulator.html"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>시뮬레이터</a>
+  <a class="nav-item" href="../pages/mypage.html">
+    <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>내 정보
+  </a>
+</nav>

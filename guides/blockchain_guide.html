@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<link rel="icon" type="image/png" sizes="192x192" href="../icons/icon-192x192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="../icons/icon-180x180.png">
+<link rel="manifest" href="../manifest.json">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SuperSaver Kit">
+<meta name="theme-color" content="#1e1e72">
+<title>SuperSaver Kit — 블록체인 가이드</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
+<style>
+:root {
+  --indigo-deep: #1e1e72;
+  --indigo:      #2d2d9f;
+  --indigo-mid:  #3d3dbb;
+  --indigo-lt:   #f0f0ff;
+  --indigo-bg:   #f4f4ff;
+  --mint:        #00938a;
+  --mint-lt:     #e0f5f4;
+  --mint-dk:     #006b63;
+  --gold:        #FFD700;
+  --gold-muted:  #c9a84c;
+  --gold-lt:     #fdf3dc;
+  --red:         #d93025;
+  --gray:        #5a6a7a;
+  --gray-lt:     #f4f7f9;
+  --white:       #ffffff;
+  --border:      #e0e0f4;
+  --text-main:   #1e1e72;
+  --text-sub:    #8888bb;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  visibility: hidden;
+  font-family: 'Pretendard', sans-serif;
+  background: var(--indigo-bg);
+  color: var(--indigo-deep);
+  line-height: 1.7;
+  padding-bottom: 80px;
+}
+
+/* ── 헤더 ── */
+.hero {
+  background: linear-gradient(160deg, #1e1e72 0%, #2d2d9f 55%, #1e1e72 100%);
+  color: white;
+  padding: 40px 24px 32px;
+  text-align: center;
+  position: relative; overflow: hidden;
+}
+.hero::before {
+  content: ''; position: absolute; top: -80px; left: -80px;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(0,147,138,0.18) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero::after {
+  content: ''; position: absolute; bottom: -60px; right: -60px;
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(201,168,76,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero h1 {
+  font-size: clamp(1.6rem, 4.5vw, 2.4rem);
+  font-weight: 900; line-height: 1.25;
+  margin-bottom: 12px; letter-spacing: -0.02em;
+  position: relative; z-index: 1;
+}
+.hero h1 em { color: var(--gold); font-style: normal; }
+.hero-sub {
+  font-size: 0.88rem; color: rgba(255,255,255,0.65);
+  position: relative; z-index: 1;
+}
+
+/* ── 탭 네비게이션 ── */
+.stage-nav-wrap {
+  position: sticky; top: 0; z-index: 500;
+  background: white;
+  border-bottom: 1px solid var(--border);
+  padding: 10px 16px;
+  box-shadow: 0 2px 12px rgba(30,30,114,0.10);
+  text-align: center;
+}
+.stage-nav-label {
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em;
+  color: var(--text-sub); margin-bottom: 6px;
+}
+.stage-chips-wrap { position: relative; width: 100%; }
+.stage-chips-wrap::after {
+  content: ''; position: absolute; top: 0; right: 0;
+  width: 48px; height: 100%;
+  background: linear-gradient(to right, transparent, white);
+  pointer-events: none; z-index: 1;
+}
+.stage-chips {
+  display: flex; gap: 6px;
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+  width: 100%; padding-bottom: 2px; padding-right: 36px;
+  scrollbar-width: none; justify-content: safe center;
+}
+.stage-chips::-webkit-scrollbar { display: none; }
+.stage-chip {
+  display: inline-flex; align-items: center;
+  font-size: 0.62rem; font-weight: 700; letter-spacing: 0.03em;
+  padding: 5px 12px; border-radius: 20px; cursor: pointer;
+  white-space: nowrap; border: 1px solid transparent; outline: none;
+  background: var(--indigo-lt); color: var(--text-sub);
+  transition: all 0.18s; flex-shrink: 0; font-family: inherit;
+}
+.stage-chip.active {
+  background: var(--indigo); color: white;
+  box-shadow: 0 2px 8px rgba(30,30,114,0.25);
+}
+.stage-chip:hover:not(.active) { background: #e4e4ff; color: var(--indigo); }
+
+/* ── 탭 패널 ── */
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ── 레이아웃 ── */
+.container { max-width: 860px; margin: 0 auto; padding: 0 16px 32px; }
+
+/* ── 단계 헤더 ── */
+.stage-header-block {
+  background: linear-gradient(135deg, #1e1e72 0%, #2d2d9f 100%);
+  border-radius: 16px; padding: 16px 20px;
+  margin-top: 24px; margin-bottom: 4px;
+  display: flex; align-items: center; gap: 12px;
+  box-shadow: 0 4px 16px rgba(30,30,114,0.18);
+}
+.stage-badge {
+  display: inline-flex; align-items: center;
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em;
+  padding: 4px 12px; border-radius: 20px;
+  background: rgba(255,255,255,0.18); color: #FFD700;
+  border: 1px solid rgba(255,215,0,0.35); white-space: nowrap;
+}
+.stage-title-txt { font-size: 1.05rem; font-weight: 900; color: white; letter-spacing: -0.02em; }
+.stage-sub-txt { font-size: 0.78rem; color: rgba(255,255,255,0.6); font-weight: 500; }
+
+/* ── 섹션 카드 ── */
+.section {
+  background: white; border-radius: 20px; padding: 28px 24px;
+  margin-top: 12px;
+  box-shadow: 0 2px 16px rgba(15,31,53,0.06);
+  border: 1px solid var(--border);
+}
+.section-header {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 18px; padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+.section-num {
+  width: 32px; height: 32px; min-width: 32px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--indigo); color: white;
+  border-radius: 50%; font-size: 0.8rem; font-weight: 900;
+  line-height: 1; flex-shrink: 0;
+}
+.section-num.mint-num { background: var(--mint); }
+.section-title { font-size: 1.1rem; font-weight: 700; color: var(--indigo-deep); letter-spacing: -0.02em; line-height: 1.3; }
+.section-title span { color: var(--indigo); }
+
+p { font-size: 0.92rem; color: #3a4a5c; line-height: 1.8; margin-bottom: 12px; }
+p:last-child { margin-bottom: 0; }
+
+/* ── 강조 박스 ── */
+.highlight-box {
+  background: var(--indigo-lt); border-left: 4px solid var(--indigo);
+  border-radius: 0 12px 12px 0; padding: 16px 20px; margin: 16px 0;
+  font-size: 0.9rem; color: var(--indigo); font-weight: 500; line-height: 1.7;
+}
+.gold-box {
+  background: var(--gold-lt); border-left: 4px solid var(--gold-muted);
+  border-radius: 0 12px 12px 0; padding: 16px 20px; margin: 16px 0;
+  font-size: 0.9rem; color: #7a5a10; font-weight: 500; line-height: 1.7;
+}
+.mint-box {
+  background: var(--mint-lt); border-left: 4px solid var(--mint);
+  border-radius: 0 12px 12px 0; padding: 16px 20px; margin: 16px 0;
+  font-size: 0.9rem; color: var(--mint-dk); font-weight: 500; line-height: 1.7;
+}
+.navy-box {
+  background: linear-gradient(160deg, #1e1e72 0%, #2d2d9f 55%, #1e1e72 100%);
+  border-radius: 14px; padding: 20px 24px; margin: 16px 0;
+  color: rgba(255,255,255,0.9); font-size: 0.88rem; line-height: 1.8;
+}
+.navy-box strong { color: var(--gold); }
+
+/* ── 비교 테이블 ── */
+.compare-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 10px; margin: 16px 0; }
+.compare-table { width: 100%; min-width: 420px; border-collapse: collapse; font-size: 0.85rem; }
+.compare-table th {
+  background: linear-gradient(160deg, #1e1e72 0%, #2d2d9f 55%, #1e1e72 100%);
+  color: white; padding: 10px 14px; text-align: left;
+  font-weight: 700; font-size: 0.8rem;
+}
+.compare-table th:first-child { border-radius: 10px 0 0 0; }
+.compare-table th:last-child  { border-radius: 0 10px 0 0; }
+.compare-table td {
+  padding: 10px 14px; border-bottom: 1px solid var(--border);
+  color: #3a4a5c; vertical-align: top;
+}
+.compare-table tr:last-child td { border-bottom: none; }
+
+/* ── 흐름도 ── */
+.flow { display: flex; flex-direction: column; gap: 0; margin: 20px 0; }
+.flow-item { display: flex; gap: 16px; align-items: flex-start; position: relative; }
+.flow-item:not(:last-child)::after {
+  content: ''; position: absolute; left: 19px; top: 42px;
+  width: 2px; height: calc(100% - 10px);
+  background: linear-gradient(to bottom, var(--mint), transparent);
+}
+.flow-dot {
+  width: 40px; height: 40px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 900; font-size: 0.82rem; flex-shrink: 0;
+  position: relative; z-index: 1;
+}
+.dot-indigo { background: var(--indigo); color: white; }
+.dot-gold   { background: var(--gold-muted); color: white; }
+.dot-mint   { background: var(--mint); color: white; }
+.dot-ok     { background: #2e7d32; color: white; }
+.flow-content {
+  flex: 1; background: var(--gray-lt); border-radius: 12px;
+  padding: 14px 18px; margin-bottom: 12px;
+}
+.flow-content h4 { font-size: 0.88rem; font-weight: 700; color: var(--indigo-deep); margin-bottom: 4px; }
+.flow-content p  { font-size: 0.82rem; color: var(--gray); margin: 0; line-height: 1.6; }
+
+/* ── var 카드 ── */
+.var-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin: 16px 0; }
+.var-card { border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; position: relative; overflow: hidden; background: white; }
+.var-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--indigo); }
+.var-card.gold::before { background: var(--gold-muted); }
+.var-card.mint::before { background: var(--mint); }
+.var-name  { font-size: 0.68rem; font-weight: 700; color: var(--gray); letter-spacing: 0.06em; margin-bottom: 6px; }
+.var-value { font-size: 1.1rem; font-weight: 900; color: var(--indigo); letter-spacing: -0.02em; margin-bottom: 4px; }
+.var-card.gold .var-value { color: var(--gold-muted); }
+.var-card.mint .var-value { color: var(--mint); }
+.var-desc  { font-size: 0.72rem; color: var(--gray); line-height: 1.5; }
+
+/* ── 아코디언 용어 카드 ── */
+.term-accordion { margin-top: 18px; border: 1px solid var(--border); border-radius: 14px; overflow: hidden; background: white; }
+.term-accordion-btn {
+  width: 100%; text-align: left; cursor: pointer;
+  background: var(--indigo-lt); border: none; outline: none;
+  padding: 12px 18px; display: flex; align-items: center; gap: 8px;
+  font-family: 'Pretendard', sans-serif;
+  font-size: 0.8rem; font-weight: 700; color: var(--indigo);
+  letter-spacing: 0.03em; transition: background 0.15s;
+}
+.term-accordion-btn:hover { background: #e4e4ff; }
+.term-accordion-btn .acc-arrow { margin-left: auto; font-size: 0.75rem; transition: transform 0.25s; display: inline-block; }
+.term-accordion-btn.open .acc-arrow { transform: rotate(180deg); }
+.term-accordion-body { display: none; padding: 14px 18px; border-top: 1px solid var(--border); background: white; }
+.term-accordion-body.open { display: block; }
+.term-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+.term-card { border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; background: var(--gray-lt); position: relative; overflow: hidden; }
+.term-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--mint); }
+.term-card.indigo-term::before { background: var(--indigo); }
+.term-card.gold-term::before   { background: var(--gold-muted); }
+.term-name { font-size: 0.72rem; font-weight: 900; color: var(--indigo-deep); margin-bottom: 5px; }
+.term-eng  { font-size: 0.62rem; color: var(--text-sub); font-weight: 500; margin-bottom: 6px; }
+.term-desc { font-size: 0.75rem; color: #3a4a5c; line-height: 1.6; }
+
+/* ── 중급 확장 잠금 ── */
+.advanced-locked {
+  margin-top: 16px;
+  border: 1px dashed var(--border);
+  border-radius: 14px; padding: 14px 18px;
+  background: var(--gray-lt); opacity: 0.65;
+}
+.advanced-locked-label {
+  font-size: 0.7rem; font-weight: 700; color: var(--text-sub);
+  letter-spacing: 0.06em; margin-bottom: 8px;
+  display: flex; align-items: center; gap: 6px;
+}
+.advanced-items { display: flex; flex-direction: column; gap: 4px; }
+.advanced-item {
+  font-size: 0.78rem; color: var(--gray);
+  display: flex; align-items: flex-start; gap: 6px; line-height: 1.5;
+}
+.advanced-item::before { content: '🔒'; font-size: 0.65rem; flex-shrink: 0; margin-top: 2px; }
+
+/* ── 하단 네비게이션 ── */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
+  background: white; border-top: 1px solid var(--border);
+  display: flex; height: 60px;
+  box-shadow: 0 -4px 20px rgba(30,30,114,0.08);
+}
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .bottom-nav { padding-bottom: env(safe-area-inset-bottom); height: calc(60px + env(safe-area-inset-bottom)); }
+}
+.nav-item {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 3px; text-decoration: none; color: #bbbbdd; font-size: 0.63rem; font-weight: 700;
+  transition: color 0.15s;
+}
+.nav-item svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; }
+.nav-item.active { color: var(--indigo); }
+
+@media (max-width: 600px) {
+  .section { padding: 22px 16px; }
+}
+</style>
+</head>
+<body>
+<!-- Firebase 로그인 상태 체크 -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+const app = initializeApp({
+  apiKey: "AIzaSyCV4elOllJXF-Rx6qrYNDAwSSfVHKAQelQ",
+  authDomain: "supersaver-kit.firebaseapp.com",
+  projectId: "supersaver-kit",
+  storageBucket: "supersaver-kit.firebasestorage.app",
+  messagingSenderId: "800388848026",
+  appId: "1:800388848026:web:1d64b6ffebf8544ecb0223"
+});
+const auth = getAuth(app);
+const db = getFirestore(app);
+onAuthStateChanged(auth, async (user) => {
+  if (!user) { window.location.href='../auth.html'; return; }
+  const snap = await getDoc(doc(db,'users',user.uid));
+  if (!snap.exists() || snap.data().status !== 'approved') {
+    await auth.signOut(); window.location.href='../auth.html'; return;
+  }
+  document.body.style.visibility='visible';
+  const d=snap.data();
+  sessionStorage.setItem('ssk_user',JSON.stringify({uid:user.uid,name:d.name,email:d.email,role:d.role||'user'}));
+});
+</script>
+
+<!-- ── 헤더 ── -->
+<div class="hero">
+  <h1>블록체인 <em>입문 가이드</em></h1>
+  <p class="hero-sub">정의·탄생·작동 원리·스마트 컨트랙트까지<br>4단계로 블록체인을 이해합니다.</p>
+</div>
+
+<!-- ── 탭 네비게이션 ── -->
+<div class="stage-nav-wrap">
+  <div class="stage-nav-label">📖 단계 바로가기</div>
+  <div class="stage-chips-wrap">
+    <div class="stage-chips">
+      <button class="stage-chip active" onclick="showTab('stage1', this)">1단계</button>
+      <button class="stage-chip"        onclick="showTab('stage2', this)">2단계</button>
+      <button class="stage-chip"        onclick="showTab('stage3', this)">3단계</button>
+      <button class="stage-chip"        onclick="showTab('stage4', this)">4단계</button>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ════════════════════════════
+     1단계
+════════════════════════════ -->
+<div class="tab-panel active" id="tab-stage1">
+
+<div class="stage-header-block" id="stage1">
+  <span class="stage-badge">1단계</span>
+  <div>
+    <div class="stage-title-txt">블록체인의 정의와 존재 이유</div>
+    <div class="stage-sub-txt">Why Blockchain?</div>
+  </div>
+</div>
+
+<!-- 1-1 중앙집중 vs 탈중앙화 -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">1</div>
+    <h2 class="section-title">중앙 집중형 vs <span>탈중앙화</span></h2>
+  </div>
+  <p>현재 우리가 쓰는 인터넷 금융 서비스는 거의 모두 소수의 거대 기업 서버가 관리합니다. 빠르고 편리하지만, 그 서버 하나가 문제가 생기면 모든 서비스가 멈춥니다. 이것이 <strong>단일 실패 지점(SPoF)</strong>입니다.</p>
+  <p>블록체인은 이 구조를 뒤집습니다. 하나의 서버 대신, 수천 개의 컴퓨터(노드)가 동일한 장부를 나눠 갖습니다. 한 곳이 망가져도 나머지가 계속 작동합니다.</p>
+
+  <div class="compare-table-wrap">
+    <table class="compare-table">
+      <thead>
+        <tr><th>구분</th><th>🏦 중앙 집중형 (은행)</th><th>🔗 탈중앙화 (블록체인)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>구조</strong></td><td>하나의 서버가 모든 정보 관리</td><td>수천 개의 노드가 동일한 장부 보유</td></tr>
+        <tr><td><strong>신뢰 대상</strong></td><td>은행·기관·사람</td><td>코드·수학적 증명</td></tr>
+        <tr><td><strong>장애 발생 시</strong></td><td>서버 다운 → 전체 서비스 중단</td><td>일부 노드 장애 → 네트워크 지속 운영</td></tr>
+        <tr><td><strong>해킹 위험</strong></td><td>중앙 서버 1곳 공격으로 전체 탈취 가능</td><td>전체 노드의 51% 이상 동시 공격 필요</td></tr>
+        <tr><td><strong>투명성</strong></td><td>내부 인원만 열람 가능</td><td>누구나 거래 내역 확인 가능</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="highlight-box">
+    💡 <strong>이렇게 이해하면:</strong><br>
+    은행 거래는 "직원이 장부를 잘 적었겠지"라고 믿는 것입니다. 블록체인은 "수만 개의 노드가 가진 장부가 모두 일치하니 이 거래는 진짜다"라고 수학적으로 확인하는 것입니다.
+  </div>
+</div>
+
+<!-- 1-2 신뢰의 기술 -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">2</div>
+    <h2 class="section-title">신뢰의 기술 — <span>3대 핵심 속성</span></h2>
+  </div>
+  <p>블록체인이 "신뢰의 기술"로 불리는 이유는 세 가지 속성 때문입니다. 기관이나 사람을 믿는 것이 아니라, 코드와 수학적 증명을 믿는 패러다임의 전환입니다.</p>
+
+  <div class="var-grid">
+    <div class="var-card">
+      <div class="var-name">불변성 (Immutability)</div>
+      <div class="var-value" style="font-size:1.0rem;">한 번 기록, 영구 보존</div>
+      <div class="var-desc">한 번 기록된 데이터는 수정·삭제가 불가능합니다. 공증된 계약서에 화이트를 칠할 수 없는 것처럼.</div>
+    </div>
+    <div class="var-card mint">
+      <div class="var-name">투명성 (Transparency)</div>
+      <div class="var-value" style="font-size:1.0rem;">누구나 확인 가능</div>
+      <div class="var-desc">누구나 온체인 거래 내역을 확인할 수 있습니다. 모든 거래가 유리 장부에 기록되는 것처럼.</div>
+    </div>
+    <div class="var-card gold">
+      <div class="var-name">탈중앙성 (Decentralization)</div>
+      <div class="var-value" style="font-size:1.0rem;">SPoF 없음</div>
+      <div class="var-desc">단일 실패 지점이 없습니다. 본사 없는 회사처럼, 지점 하나가 망해도 전체는 유지됩니다.</div>
+    </div>
+  </div>
+
+  <!-- 용어 아코디언 -->
+  <div class="term-accordion">
+    <button class="term-accordion-btn" onclick="toggleAccordion(this)">📖 용어 보기 <span class="acc-arrow">▼</span></button>
+    <div class="term-accordion-body">
+      <div class="term-grid">
+        <div class="term-card indigo-term">
+          <div class="term-name">노드 (Node)</div>
+          <div class="term-eng">Network Node</div>
+          <div class="term-desc">블록체인 네트워크에 연결되어 장부를 복사하고 거래를 검증하는 개별 컴퓨터. 비트코인 네트워크에는 전 세계 약 20,000개 이상의 노드가 있습니다.</div>
+        </div>
+        <div class="term-card gold-term">
+          <div class="term-name">단일 실패 지점 (SPoF)</div>
+          <div class="term-eng">Single Point of Failure</div>
+          <div class="term-desc">시스템에서 어느 한 곳이 고장 났을 때 전체가 마비되는 취약 지점. 블록체인은 수천 개의 노드에 분산되어 이 문제를 해결합니다.</div>
+        </div>
+        <div class="term-card">
+          <div class="term-name">시스템 거버넌스</div>
+          <div class="term-eng">System Governance</div>
+          <div class="term-desc">블록체인 네트워크의 규칙을 누가, 어떻게 바꿀지 결정하는 의사결정 구조. 중앙 기관 없이 참여자들의 합의로 운영됩니다.</div>
+        </div>
+        <div class="term-card indigo-term">
+          <div class="term-name">분산 원장 (DLT)</div>
+          <div class="term-eng">Distributed Ledger Technology</div>
+          <div class="term-desc">중앙 서버 없이 네트워크 참여자 모두가 동일한 거래 장부를 나눠 가지고 공동으로 검증하는 시스템.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 중급 확장 잠금 -->
+  <div class="advanced-locked">
+    <div class="advanced-locked-label">📚 중급 확장 — 업데이트 예정</div>
+    <div class="advanced-items">
+      <div class="advanced-item">블록체인 3가지 유형: 퍼블릭 / 컨소시엄 / 프라이빗의 구조적 차이</div>
+      <div class="advanced-item">블록체인 트릴레마: 보안성·확장성·탈중앙성을 동시에 달성하기 어려운 구조적 한계</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /tab-stage1 -->
+
+<!-- ════════════════════════════
+     2단계
+════════════════════════════ -->
+<div class="tab-panel" id="tab-stage2">
+
+<div class="stage-header-block" id="stage2">
+  <span class="stage-badge">2단계</span>
+  <div>
+    <div class="stage-title-txt">블록체인의 탄생</div>
+    <div class="stage-sub-txt">사토시 나카모토의 백서</div>
+  </div>
+</div>
+
+<!-- 2-1 탄생 배경 -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">1</div>
+    <h2 class="section-title">2008년 금융위기 — <span>불신에서 탄생한 기술</span></h2>
+  </div>
+  <p>2008년, 서브프라임 모기지 사태로 리먼 브라더스가 파산하며 전 세계 금융 시스템이 흔들렸습니다. 은행을 신뢰하던 수억 명의 시민이 속수무책으로 피해를 입었습니다.</p>
+  <p>바로 그해 10월 31일, "사토시 나카모토"라는 익명의 인물이 단 9페이지짜리 백서를 암호학 커뮤니티에 공개합니다.</p>
+
+  <div class="navy-box">
+    <strong>백서의 핵심 선언:</strong><br>
+    "제3자 중개인에 대한 신뢰가 아닌, 암호학적 증거에 기반한 P2P 전자 현금 시스템을 제안한다."<br><br>
+    <span style="color:rgba(255,255,255,0.7); font-size:0.82rem;">— 사토시 나카모토, Bitcoin: A Peer-to-Peer Electronic Cash System (2008)</span>
+  </div>
+
+  <div class="flow" style="margin-top:16px;">
+    <div class="flow-item">
+      <div class="flow-dot dot-indigo">📅</div>
+      <div class="flow-content">
+        <h4>2008년 10월 31일 — 백서 공개</h4>
+        <p>암호학 메일링 리스트에 9페이지 백서 공개. 누구도 주목하지 않았습니다.</p>
+      </div>
+    </div>
+    <div class="flow-item">
+      <div class="flow-dot dot-gold">⛏️</div>
+      <div class="flow-content">
+        <h4>2009년 1월 3일 — 제네시스 블록 생성</h4>
+        <p>비트코인 최초 블록 탄생. 블록 헤더에 당시 영국 타임스 1면 기사 제목을 암호화하여 삽입: <em>"은행들의 2차 구제금융 위기를 앞둔 장관"</em> — 중앙 금융 시스템에 대한 선전포고.</p>
+      </div>
+    </div>
+    <div class="flow-item">
+      <div class="flow-dot dot-mint">💸</div>
+      <div class="flow-content">
+        <h4>2009년 1월 12일 — 최초 비트코인 거래</h4>
+        <p>사토시 나카모토 → 할 피니(Hal Finney), 10BTC. 인류 최초의 P2P 디지털 화폐 거래.</p>
+      </div>
+    </div>
+    <div class="flow-item">
+      <div class="flow-dot dot-ok">👻</div>
+      <div class="flow-content">
+        <h4>2010년 — 사토시, 자취를 감춤</h4>
+        <p>온라인에서 완전히 사라짐. 이후 정체 미상. 사토시가 사라진 것이 비트코인의 탈중앙성을 완성했다는 해석이 있습니다. "창시자가 없으니 아무도 통제할 수 없다."</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 2-2 이중지불 문제 -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">2</div>
+    <h2 class="section-title">이중 지불 문제 — <span>핵심 기술적 돌파구</span></h2>
+  </div>
+  <p>사토시가 해결한 가장 핵심적인 과제는 <strong>이중 지불(Double Spending)</strong> 문제였습니다. 이것이 왜 어려운 문제인지 이해하는 것이 블록체인을 이해하는 출발점입니다.</p>
+
+  <div class="highlight-box">
+    💡 <strong>이렇게 이해하면:</strong><br>
+    디지털 파일은 복사가 됩니다. 사진을 카톡으로 보내도 내 폰에 원본이 남습니다. 그런데 돈을 디지털로 보냈는데 내 지갑에도 남아있다면? 그 돈은 화폐로서 가치가 없습니다. 이것이 이중 지불 문제입니다.
+  </div>
+
+  <p>사토시는 이 문제를 은행 같은 중개인 없이 처음으로 해결했습니다. 수천 개의 노드가 동시에 같은 장부를 검증하게 하여, 동일한 코인이 두 번 사용되는 것을 수학적으로 불가능하게 만든 것입니다.</p>
+</div>
+
+<!-- 2-3 선구자들 -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">3</div>
+    <h2 class="section-title">비트코인 이전의 <span>선구자들</span></h2>
+  </div>
+  <p>사토시는 혼자 이 모든 것을 발명하지 않았습니다. 수십 년간 암호학자들이 쌓아온 연구 위에 마지막 조각을 맞춘 것입니다.</p>
+
+  <div class="compare-table-wrap">
+    <table class="compare-table">
+      <thead>
+        <tr><th>연도</th><th>인물</th><th>업적</th><th>비트코인과의 연결</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>1983</strong></td>
+          <td><strong>데이비드 차움</strong><br><span style="font-size:0.72rem; color:var(--text-sub);">David Chaum</span></td>
+          <td>eCash 개념 제안. 익명성 보호 암호화 기술(은닉 서명) 최초 개발</td>
+          <td>"디지털 화폐의 아버지". 현대 공개키 암호화의 기반</td>
+        </tr>
+        <tr>
+          <td><strong>1990</strong></td>
+          <td>데이비드 차움</td>
+          <td>DigiCash 설립, eCash 상용화</td>
+          <td>1998년 파산 — 기술은 있었지만 <strong>중앙 회사 구조가 한계</strong>. 사토시가 탈중앙화를 택한 이유</td>
+        </tr>
+        <tr>
+          <td><strong>1997</strong></td>
+          <td><strong>아담 백</strong><br><span style="font-size:0.72rem; color:var(--text-sub);">Adam Back</span></td>
+          <td>HashCash 개발</td>
+          <td>PoW(작업 증명)의 원형. 비트코인 채굴 방식의 직접적 기원</td>
+        </tr>
+        <tr>
+          <td><strong>1998</strong></td>
+          <td><strong>웨이 다이</strong><br><span style="font-size:0.72rem; color:var(--text-sub);">Wei Dai</span></td>
+          <td>B-Money 제안</td>
+          <td>탈중앙 전자화폐 개념. 사토시 백서에 직접 인용됨</td>
+        </tr>
+        <tr>
+          <td><strong>1998</strong></td>
+          <td><strong>닉 재보</strong><br><span style="font-size:0.72rem; color:var(--text-sub);">Nick Szabo</span></td>
+          <td>BitGold 고안</td>
+          <td>스마트 계약 개념 최초 제안. 이더리움의 사상적 기원</td>
+        </tr>
+        <tr>
+          <td><strong>2008</strong></td>
+          <td><strong>사토시 나카모토</strong></td>
+          <td>비트코인 백서</td>
+          <td>위 모든 개념의 통합·완성. 이중 지불 문제 실제 해결</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="mint-box">
+    <strong>eCash 실패의 교훈:</strong> 데이비드 차움의 eCash는 기술적으로 뛰어났지만, DigiCash라는 회사가 운영했기 때문에 회사가 파산하자 화폐도 사라졌습니다. 사토시는 이 교훈을 반영하여 어떤 회사도, 어떤 개인도 통제할 수 없는 탈중앙 구조를 처음부터 설계했습니다.
+  </div>
+
+  <!-- 용어 아코디언 -->
+  <div class="term-accordion">
+    <button class="term-accordion-btn" onclick="toggleAccordion(this)">📖 용어 보기 <span class="acc-arrow">▼</span></button>
+    <div class="term-accordion-body">
+      <div class="term-grid">
+        <div class="term-card indigo-term">
+          <div class="term-name">P2P</div>
+          <div class="term-eng">Peer-to-Peer</div>
+          <div class="term-desc">중앙 서버 없이 참여자끼리 직접 연결되는 네트워크 방식. 비트코인은 은행 없이 개인 간 직접 거래를 가능하게 합니다.</div>
+        </div>
+        <div class="term-card gold-term">
+          <div class="term-name">백서 (White Paper)</div>
+          <div class="term-eng">Technical White Paper</div>
+          <div class="term-desc">기술 프로젝트의 목적·구조·원리를 상세히 설명한 공식 문서. 비트코인 백서는 단 9페이지로 금융 혁명을 시작했습니다.</div>
+        </div>
+        <div class="term-card">
+          <div class="term-name">제네시스 블록</div>
+          <div class="term-eng">Genesis Block</div>
+          <div class="term-desc">블록체인의 첫 번째 블록. 모든 체인의 시작점이며 수정이 영구적으로 불가능합니다.</div>
+        </div>
+        <div class="term-card indigo-term">
+          <div class="term-name">은닉 서명</div>
+          <div class="term-eng">Blind Signature</div>
+          <div class="term-desc">데이비드 차움이 발명한 암호화 기술. 거래 내용을 숨기면서도 유효성을 증명할 수 있습니다. 현대 공개키 암호화의 기반입니다.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 중급 확장 -->
+  <div class="advanced-locked">
+    <div class="advanced-locked-label">📚 중급 확장 — 업데이트 예정</div>
+    <div class="advanced-items">
+      <div class="advanced-item">사이퍼펑크(Cypherpunk) 운동: 암호화로 프라이버시를 지키려던 개발자 집단. 사토시 백서의 사상적 뿌리</div>
+      <div class="advanced-item">사토시의 정체 미상이 비트코인 탈중앙성에 갖는 의미</div>
+      <div class="advanced-item">데이비드 차움의 은닉 서명 기술이 현대 공개키 암호화에 미친 영향</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /tab-stage2 -->
+
+<!-- ════════════════════════════
+     3단계
+════════════════════════════ -->
+<div class="tab-panel" id="tab-stage3">
+
+<div class="stage-header-block" id="stage3">
+  <span class="stage-badge">3단계</span>
+  <div>
+    <div class="stage-title-txt">핵심 메커니즘</div>
+    <div class="stage-sub-txt">블록(Block)과 체인(Chain)</div>
+  </div>
+</div>
+
+<!-- 3-1 블록 구조 -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">1</div>
+    <h2 class="section-title">블록의 구조 — <span>헤더(Header)와 바디(Body)</span></h2>
+  </div>
+  <p>블록은 <strong>헤더(Header)</strong>와 <strong>바디(Body)</strong>로 나뉩니다. 헤더는 블록의 신분증, 바디는 실제 거래 내역 묶음입니다. 이 블록들이 해시로 연결되어 '체인'을 이룹니다.</p>
+
+  <div class="compare-table-wrap">
+    <table class="compare-table">
+      <thead>
+        <tr><th>헤더 구성요소</th><th>역할</th><th>💡 이렇게 이해하면</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>버전</strong></td><td>블록체인 소프트웨어 버전</td><td>문서 양식 버전 번호</td></tr>
+        <tr><td><strong>이전 블록 해시</strong></td><td>앞 블록과 연결하는 링크</td><td>이전 페이지 번호를 현재 페이지에 기재</td></tr>
+        <tr><td><strong>머클 루트</strong></td><td>블록 내 모든 거래의 요약본</td><td>영수증 묶음의 합계 금액</td></tr>
+        <tr><td><strong>타임스탬프</strong></td><td>블록 생성 시간</td><td>공증 날짜 도장</td></tr>
+        <tr><td><strong>난이도 목표</strong></td><td>채굴 난이도 기준값</td><td>퍼즐의 난이도 설정값</td></tr>
+        <tr><td><strong>논스 (Nonce)</strong></td><td>채굴자가 찾아야 할 정답</td><td>자물쇠 비밀번호</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 3-2 해시와 불가역성 -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">2</div>
+    <h2 class="section-title">해시(Hash)와 <span>체인의 불가역성</span></h2>
+  </div>
+  <p>해시는 어떤 데이터든 집어넣으면 고정 길이의 암호 문자열이 나오는 함수입니다. 두 가지 결정적 특성이 있습니다. 같은 입력값은 항상 같은 해시값이 나오고, 해시값만 보고 원래 입력값을 역추적하는 것은 현실적으로 불가능합니다.</p>
+
+  <div class="highlight-box">
+    💡 <strong>이렇게 이해하면:</strong><br>
+    해시는 디지털 지문입니다. 같은 사람은 항상 같은 지문이지만, 지문만 보고 얼굴을 알 수는 없습니다. 블록 내용이 단 한 글자만 바뀌어도 해시값이 완전히 달라집니다. 그래서 과거 블록 하나를 조작하려면 그 이후 모든 블록의 해시를 전부 다시 계산해야 합니다. 이것이 현실적으로 불가능하기 때문에 블록체인은 불변합니다.
+  </div>
+
+  <div class="navy-box">
+    <strong>체인 연결의 원리:</strong><br><br>
+    <span style="color:rgba(255,255,255,0.9); font-size:0.88rem; line-height:2.0;">
+    블록 1의 해시값 → 블록 2 헤더에 저장<br>
+    블록 2의 해시값 → 블록 3 헤더에 저장<br>
+    블록 3의 해시값 → 블록 4 헤더에 저장<br>
+    ↓<br>
+    블록 2를 조작하면 블록 2의 해시가 바뀜<br>
+    → 블록 3의 "이전 블록 해시"와 불일치 → 블록 3, 4, 5... 모두 재계산 필요<br>
+    → <strong style="color:#FFD700;">수만 개 노드에서 동시에 — 현실적으로 불가능</strong>
+    </span>
+  </div>
+</div>
+
+<!-- 3-3 합의 알고리즘 -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">3</div>
+    <h2 class="section-title">합의 알고리즘 — <span>PoW vs PoS</span></h2>
+  </div>
+  <p>수천 개의 노드가 "어떤 블록이 올바른가"를 결정하는 방식이 합의 알고리즘입니다. 비트코인으로 시작된 PoW에서 현대적인 PoS로 진화해왔습니다.</p>
+
+  <div class="compare-table-wrap">
+    <table class="compare-table">
+      <thead>
+        <tr><th>구분</th><th>⛏️ PoW (작업 증명)</th><th>🪙 PoS (지분 증명)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>원리</strong></td><td>수학 문제 경쟁 → 먼저 푼 채굴자가 블록 생성</td><td>보유 코인 지분 비율로 블록 생성 권한 배정</td></tr>
+        <tr><td><strong>💡 비유</strong></td><td>더 좋은 장비로 더 빨리 금을 캐는 것</td><td>땅 많은 사람이 더 많은 농사 권한 받는 것</td></tr>
+        <tr><td><strong>에너지</strong></td><td>전력 소비 극대 (비트코인 전력 ≈ 중간 규모 국가)</td><td>99% 절감 (이더리움 2022년 전환 후)</td></tr>
+        <tr><td><strong>보안</strong></td><td>51% 공격 필요 (현실적 불가)</td><td>지분 51% 확보 필요 (경제적 억제력)</td></tr>
+        <tr><td><strong>대표 체인</strong></td><td>비트코인(BTC)</td><td>이더리움(ETH), 폴리곤(POL), 솔라나(SOL)</td></tr>
+        <tr><td><strong>단점</strong></td><td>에너지 낭비, 장비 진입장벽</td><td>부익부 우려, Nothing at Stake 문제</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 용어 아코디언 -->
+  <div class="term-accordion">
+    <button class="term-accordion-btn" onclick="toggleAccordion(this)">📖 용어 보기 <span class="acc-arrow">▼</span></button>
+    <div class="term-accordion-body">
+      <div class="term-grid">
+        <div class="term-card indigo-term">
+          <div class="term-name">해시 (Hash)</div>
+          <div class="term-eng">Cryptographic Hash</div>
+          <div class="term-desc">데이터를 고정 길이 암호 문자열로 변환하는 함수. 입력값이 조금만 달라져도 출력값이 완전히 달라집니다. 비트코인은 SHA-256 방식을 사용합니다.</div>
+        </div>
+        <div class="term-card gold-term">
+          <div class="term-name">Nothing at Stake</div>
+          <div class="term-eng">PoS 보안 취약점</div>
+          <div class="term-desc">PoS에서 검증자가 잃을 것이 없어서 여러 갈래 체인에 동시에 투표해버리는 문제. 현재는 슬래싱(예치금 강제 소각) 제도로 보완합니다.</div>
+        </div>
+        <div class="term-card">
+          <div class="term-name">채굴 (Mining)</div>
+          <div class="term-eng">Proof of Work Mining</div>
+          <div class="term-desc">PoW에서 새 블록을 만들 권리를 얻기 위해 수학 문제(해시 찾기)를 컴퓨터로 경쟁하여 푸는 행위. 성공한 채굴자는 코인 보상을 받습니다.</div>
+        </div>
+        <div class="term-card indigo-term">
+          <div class="term-name">논스 (Nonce)</div>
+          <div class="term-eng">Number Used Once</div>
+          <div class="term-desc">채굴자가 올바른 해시값을 찾기 위해 무작위로 대입하는 숫자. 이 숫자를 먼저 찾는 채굴자가 새 블록 생성 권한을 얻습니다.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 중급 확장 -->
+  <div class="advanced-locked">
+    <div class="advanced-locked-label">📚 중급 확장 — 업데이트 예정</div>
+    <div class="advanced-items">
+      <div class="advanced-item">머클 트리(Merkle Tree): 수천 건의 거래를 하나의 해시로 요약하는 이진 트리 구조</div>
+      <div class="advanced-item">51% 공격의 실제 사례와 경제적 억제력</div>
+      <div class="advanced-item">포크(Fork): 하드포크(비트코인 캐시 분리)와 소프트포크(규칙만 변경)의 차이</div>
+      <div class="advanced-item">DPoS(위임 지분 증명): 소수 대표자에게 검증 권한을 위임하는 방식</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /tab-stage3 -->
+
+<!-- ════════════════════════════
+     4단계
+════════════════════════════ -->
+<div class="tab-panel" id="tab-stage4">
+
+<div class="stage-header-block" id="stage4">
+  <span class="stage-badge">4단계</span>
+  <div>
+    <div class="stage-title-txt">스마트 컨트랙트</div>
+    <div class="stage-sub-txt">블록체인의 확장</div>
+  </div>
+</div>
+
+
+<!-- 4-1 비탈릭의 혁신 -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">1</div>
+    <h2 class="section-title">비탈릭 부테린의 혁신 — <span>조건부 계약의 탄생</span></h2>
+  </div>
+  <p>비트코인이 "디지털 금"이었다면, 2015년 등장한 이더리움은 <strong>프로그래밍 가능한 블록체인</strong>입니다. 단순 송금을 넘어 조건부 계약이 코드로 자동 실행되는 플랫폼을 만든 것이 비탈릭 부테린입니다.</p>
+
+  <div class="highlight-box">
+    💡 <strong>이렇게 이해하면:</strong><br>
+    비트코인이 "숫자를 A에서 B로 옮기는 것"이라면, 스마트 컨트랙트는 "A가 발생하면 B를 자동으로 실행한다"입니다. 중간 관리자 없이 코드가 직접 집행합니다.
+  </div>
+
+  <div class="compare-table-wrap" style="margin-top:16px;">
+    <table class="compare-table">
+      <thead>
+        <tr><th>기존 계약</th><th>스마트 컨트랙트</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>계약서 → 공증 → 변호사 중개 → 집행</td><td>코드 작성 → 배포 → 조건 충족 시 자동 실행</td></tr>
+        <tr><td>사람이 이행 여부 확인</td><td>블록체인이 자동 검증·집행</td></tr>
+        <tr><td>분쟁 시 법적 소송 필요</td><td>코드대로 실행, 번복 불가</td></tr>
+        <tr><td>수수료·시간 비용 발생</td><td>가스비만 지불, 즉시 실행</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p style="margin-top:14px;"><strong>실생활 활용 예시:</strong></p>
+  <div class="flow" style="margin-top:10px;">
+    <div class="flow-item">
+      <div class="flow-dot dot-indigo">🏠</div>
+      <div class="flow-content">
+        <h4>부동산 거래</h4>
+        <p>매수자가 대금 이체 → 스마트 계약이 자동으로 소유권 이전. 등기소·변호사 불필요.</p>
+      </div>
+    </div>
+    <div class="flow-item">
+      <div class="flow-dot dot-gold">✈️</div>
+      <div class="flow-content">
+        <h4>항공 보험</h4>
+        <p>항공편 연착 데이터 확인 → 보험금 자동 지급. 서류 제출·심사 불필요.</p>
+      </div>
+    </div>
+    <div class="flow-item">
+      <div class="flow-dot dot-ok">🪙</div>
+      <div class="flow-content">
+        <h4>STO 수익 배분</h4>
+        <p>임대료 수납 확인 → 토큰 보유 비율대로 자동 분배. <em>(블록체인 가이드 → STO 가이드로 이어지는 연결 지점)</em></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 4-2 스마트 컨트랙트 봇·어드레스·프로젝트 -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">2</div>
+    <h2 class="section-title">스마트 컨트랙트 — <span>봇, 어드레스, 그리고 프로젝트</span></h2>
+  </div>
+  <p>스마트 컨트랙트는 본질적으로 <strong>"사람 없이 스스로 작동하는 봇"</strong>입니다. 개발자가 규칙을 코드로 설계해두면, 조건이 충족될 때마다 자동으로 실행됩니다.</p>
+
+  <div class="flow">
+    <div class="flow-item">
+      <div class="flow-dot dot-indigo">🤖</div>
+      <div class="flow-content">
+        <h4>민팅도 봇이 한다</h4>
+        <p>토큰·NFT가 세상에 태어나는 민팅(Minting)도 스마트 컨트랙트 봇이 수행합니다. 개발자가 "이 조건이 되면 이 수량만큼 발행하라"고 설계해두면, 사람이 개입하지 않아도 코드가 스스로 토큰을 만들어냅니다.</p>
+      </div>
+    </div>
+    <div class="flow-item">
+      <div class="flow-dot dot-gold">📍</div>
+      <div class="flow-content">
+        <h4>컨트랙트 어드레스 — 봇의 주소</h4>
+        <p>블록체인에 배포된 스마트 컨트랙트 봇은 고유한 주소(0x...)를 부여받습니다. 이것이 <strong>컨트랙트 어드레스</strong>입니다. 탐색기에서 이 주소로 봇의 모든 거래 내역을 확인할 수 있고, 개인 지갑에 토큰을 추가할 때도 이 주소를 사용합니다.</p>
+      </div>
+    </div>
+    <div class="flow-item">
+      <div class="flow-dot dot-mint">⚙️</div>
+      <div class="flow-content">
+        <h4>스마트 컨트랙트가 수행하는 프로젝트들</h4>
+        <p>설계하기에 따라 스마트 컨트랙트는 다양한 프로젝트를 자율 수행합니다.</p>
+        <div style="margin-top:8px; display:flex; flex-direction:column; gap:4px;">
+          <div style="font-size:0.8rem; color:var(--gray);">🪙 <strong>토큰 발행</strong> — 규칙에 따라 민팅·소각·전송 자동 실행</div>
+          <div style="font-size:0.8rem; color:var(--gray);">💰 <strong>수익 배분</strong> — 임대료·배당이 들어오면 보유 비율대로 자동 분배</div>
+          <div style="font-size:0.8rem; color:var(--gray);">🗳️ <strong>투표·의결</strong> — 토큰 보유량 기준으로 투표권 배정 및 집계</div>
+          <div style="font-size:0.8rem; color:var(--gray);">🔄 <strong>유동성 관리</strong> — DEX에서 가격 조건에 따라 자동 거래 체결</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 4-3 비트코인→이더리움→폴리곤 -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">3</div>
+    <h2 class="section-title">비트코인 → 이더리움 → <span>폴리곤</span></h2>
+  </div>
+  <p>블록체인은 세대를 거치며 진화했습니다. 각 세대가 이전 세대의 한계를 해결하는 방식으로 발전했습니다.</p>
+
+  <div class="flow">
+    <div class="flow-item">
+      <div class="flow-dot dot-gold">₿</div>
+      <div class="flow-content">
+        <h4>비트코인 (2009) — "디지털 금"</h4>
+        <p>단순 가치 저장·송금 전용 장부. 스마트 계약 불가. 이중 지불 문제 해결. 탈중앙화 화폐의 개념 증명.</p>
+      </div>
+    </div>
+    <div class="flow-item">
+      <div class="flow-dot dot-indigo">Ξ</div>
+      <div class="flow-content">
+        <h4>이더리움 (2015) — "프로그래밍 가능한 블록체인"</h4>
+        <p>스마트 컨트랙트 도입. 토큰·NFT·DeFi 생태계 탄생. 2022년 PoW→PoS 전환(더 머지)으로 에너지 99.95% 절감.</p>
+      </div>
+    </div>
+    <div class="flow-item">
+      <div class="flow-dot dot-mint">⬡</div>
+      <div class="flow-content">
+        <h4>폴리곤 (2017) — "이더리움의 고속 확장판"</h4>
+        <p>이더리움 위에서 작동하는 레이어2 네트워크. 초저가 수수료(가스비 0.001달러 미만), 빠른 처리 속도. STO·NFT 인프라로 활용.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 용어 아코디언 -->
+  <div class="term-accordion">
+    <button class="term-accordion-btn" onclick="toggleAccordion(this)">📖 용어 보기 <span class="acc-arrow">▼</span></button>
+    <div class="term-accordion-body">
+      <div class="term-grid">
+        <div class="term-card indigo-term">
+          <div class="term-name">민팅 (Minting)</div>
+          <div class="term-eng">Token Minting</div>
+          <div class="term-desc">스마트 컨트랙트를 통해 새로운 토큰·NFT를 블록체인상에 생성하는 과정. 발행량·소유자·규칙이 코드에 의해 확정됩니다.</div>
+        </div>
+        <div class="term-card gold-term">
+          <div class="term-name">가스비 (Gas Fee)</div>
+          <div class="term-eng">Transaction Gas Fee</div>
+          <div class="term-desc">스마트 계약 실행 시 네트워크에 지불하는 수수료. 이더리움은 네트워크 혼잡도에 따라 크게 변동하며, 폴리곤은 매우 저렴합니다.</div>
+        </div>
+        <div class="term-card">
+          <div class="term-name">컨트랙트 어드레스</div>
+          <div class="term-eng">Contract Address</div>
+          <div class="term-desc">배포된 스마트 계약의 고유 식별 주소(0x...). 사람의 지갑 주소와 구분되며, 해당 자산의 모든 규칙이 이 주소에 저장됩니다.</div>
+        </div>
+        <div class="term-card indigo-term">
+          <div class="term-name">봇 (Bot)</div>
+          <div class="term-eng">Automated Trading Bot</div>
+          <div class="term-desc">스마트 컨트랙트의 자동 실행 특성을 이용하는 자동화 거래 프로그램. 민팅 시작·유동성 공급 순간을 감지해 사람보다 수백 배 빠르게 거래합니다.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 중급 확장 -->
+  <div class="advanced-locked">
+    <div class="advanced-locked-label">📚 중급 확장 — 업데이트 예정</div>
+    <div class="advanced-items">
+      <div class="advanced-item">솔리디티(Solidity): 스마트 계약 작성용 프로그래밍 언어</div>
+      <div class="advanced-item">DAO(탈중앙화 자율 조직): 스마트 계약으로 운영되는 조직. 투표·예산 집행 모두 코드로 자동화</div>
+      <div class="advanced-item">DeFi(탈중앙화 금융): 스마트 계약 기반 대출·거래·이자 서비스 — 스왑, 브릿지, 유동성 공급</div>
+      <div class="advanced-item">레이어2: 폴리곤·아비트럼·옵티미즘의 구조적 차이와 선택 기준</div>
+    </div>
+  </div>
+  <!-- 비탈릭 부테린 인물 소개 아코디언 -->
+  <div class="term-accordion" style="margin-top:16px; border-color:var(--gold-muted);">
+    <button class="term-accordion-btn" onclick="toggleAccordion(this)" style="background:var(--gold-lt); color:#7a5a10;">
+      👨‍💻 비탈릭 부테린 — 이더리움을 만든 사람 <span class="acc-arrow">▼</span>
+    </button>
+    <div class="term-accordion-body">
+      <p>스마트 컨트랙트를 이해하려면 이 사람을 먼저 알아야 합니다. 19세에 "프로그래밍 가능한 블록체인"이라는 개념을 제시하고, 그것을 현실로 만들어낸 인물입니다.</p>
+
+  <div class="navy-box">
+    <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
+      <div style="font-size:2.5rem; flex-shrink:0;">👨‍💻</div>
+      <div style="flex:1; min-width:180px;">
+        <strong style="color:#FFD700; font-size:1.0rem;">Vitalik Buterin (비탈릭 부테린)</strong><br>
+        <span style="color:rgba(255,255,255,0.75); font-size:0.82rem;">1994년 러시아 콜롬나 출생 · 6세에 캐나다 이민 · 이더리움 공동 창립자</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="flow" style="margin-top:16px;">
+    <div class="flow-item">
+      <div class="flow-dot dot-indigo">🎮</div>
+      <div class="flow-content">
+        <h4>탈중앙화에 눈을 뜬 계기</h4>
+        <p>열렬한 게이머였던 그는 즐기던 게임 '월드 오브 워크래프트'에서 캐릭터 능력이 갑자기 하향 패치되는 것을 경험했습니다. "개발사 블리자드가 마음대로 규칙을 바꿀 수 있다는 것"에 충격을 받았고, 이것이 탈중앙화에 관심을 갖게 된 결정적 계기가 됐습니다.</p>
+      </div>
+    </div>
+    <div class="flow-item">
+      <div class="flow-dot dot-gold">📰</div>
+      <div class="flow-content">
+        <h4>17세 — 비트코인 매거진 운영</h4>
+        <p>고등학생 신분으로 아버지의 소개로 비트코인을 접한 뒤, 2011년 비트코인 매거진을 공동 창업하고 직접 기사를 쓰기 시작했습니다.</p>
+      </div>
+    </div>
+    <div class="flow-item">
+      <div class="flow-dot dot-mint">📄</div>
+      <div class="flow-content">
+        <h4>19세 — 이더리움 백서 작성</h4>
+        <p>워털루 대학교를 자퇴하고 2013년 말, 만 19세의 나이에 이더리움 백서를 작성해 몇몇 친구에게 공유했습니다. 예상과 달리 30명이 넘는 개발자들이 연락해 왔고, 아무도 심각한 오류를 발견하지 못했습니다.</p>
+      </div>
+    </div>
+    <div class="flow-item">
+      <div class="flow-dot dot-ok">🚀</div>
+      <div class="flow-content">
+        <h4>2015년 — 이더리움 메인넷 출시</h4>
+        <p>백서 발표 2년 만에 이더리움이 세상에 나왔습니다. 이로써 블록체인은 단순 송금 장부에서 "누구나 프로그램을 올릴 수 있는 세계 컴퓨터"로 진화했습니다.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="var-grid" style="margin-top:16px;">
+    <div class="var-card gold">
+      <div class="var-name">2014 세계기술상</div>
+      <div class="var-value" style="font-size:0.9rem;">저커버그 제쳐</div>
+      <div class="var-desc">IT 소프트웨어 부문에서 페이스북 창업자 마크 저커버그를 제치고 수상.</div>
+    </div>
+    <div class="var-card">
+      <div class="var-name">2021 타임 100인</div>
+      <div class="var-value" style="font-size:0.9rem;">세계 100대 영향력</div>
+      <div class="var-desc">타임지 선정 세계에서 가장 영향력 있는 100인 포함.</div>
+    </div>
+    <div class="var-card mint">
+      <div class="var-name">2024 한국 방문</div>
+      <div class="var-value" style="font-size:0.9rem;">ETH Seoul 기조연설</div>
+      <div class="var-desc">서울 비들 아시아, ETH 서울 기조연설. 판교 카페 목격담으로 화제.</div>
+    </div>
+    <div class="var-card indigo">
+      <div class="var-name">인물됨</div>
+      <div class="var-value" style="font-size:0.9rem;">검소·도덕성</div>
+      <div class="var-desc">억만장자임에도 검소한 생활. 보유 자산 90%가 ETH. 적극적인 기부와 탈중앙화 철학으로 업계에서 가장 존경받는 인물.</div>
+    </div>
+  </div>
+
+  <div class="mint-box">
+    <strong>"사토시가 첫 번째 돌을 놓았다면, 비탈릭은 그 위에 무한한 잠재력의 건물을 세웠다."</strong><br>
+    비트코인이 단순 송금 장부였다면, 이더리움은 모든 종류의 계약·서비스·자산을 코드로 구현할 수 있는 플랫폼입니다. 현재 존재하는 대부분의 토큰·NFT·DeFi가 이더리움 위에서 탄생했습니다.
+  </div>
+</div>
+
+    </div>
+  </div>
+</div>
+
+</div><!-- /tab-stage4 -->
+
+</div><!-- /container -->
+
+<!-- ── 하단 네비게이션 ── -->
+<nav class="bottom-nav">
+  <a class="nav-item" href="../index.html">
+    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>홈
+  </a>
+  <a class="nav-item active" href="../pages/guide_home.html">
+    <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>가이드
+  </a>
+  <a class="nav-item" href="../pages/calculator.html">
+    <svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="16" y2="10"/></svg>계산기
+  </a>
+  <a class="nav-item" href="../pages/simulator.html">
+    <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>시뮬레이터
+  </a>
+  <a class="nav-item" href="../pages/mypage.html">
+    <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>내 정보
+  </a>
+</nav>

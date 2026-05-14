@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<link rel="icon" type="image/png" sizes="192x192" href="../icons/icon-192x192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="../icons/icon-180x180.png">
+<link rel="manifest" href="../manifest.json">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#1e1e72">
+<title>SuperSaver Kit — 내 정보</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
+<style>
+:root{--indigo-deep:#1e1e72;--indigo:#2d2d9f;--indigo-lt:#f0f0ff;--indigo-bg:#f4f4ff;--mint:#00938a;--mint-lt:#e0f5f4;--gold-muted:#c9a84c;--gold-lt:#fdf3dc;--border:#e0e0f4;--gray-lt:#f4f7f9;--text-sub:#8888bb;--red:#d93025;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Pretendard',sans-serif;background:var(--indigo-bg);padding-bottom:80px;visibility:hidden;}
+.hero{background:linear-gradient(160deg,#1e1e72 0%,#2d2d9f 55%,#1e1e72 100%);color:white;padding:40px 24px 32px;text-align:center;}
+.hero-avatar{width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:1.6rem;font-weight:900;margin:0 auto 12px;border:2px solid rgba(255,255,255,0.3);}
+.hero-name{font-size:1.2rem;font-weight:900;letter-spacing:-0.02em;}
+.hero-email{font-size:0.78rem;color:rgba(255,255,255,0.6);margin-top:4px;}
+.hero-badge{display:inline-block;background:rgba(255,215,0,0.2);color:#FFD700;border:1px solid rgba(255,215,0,0.35);font-size:0.65rem;font-weight:700;padding:3px 10px;border-radius:20px;margin-top:8px;letter-spacing:0.05em;}
+.container{max-width:860px;margin:0 auto;padding:20px 16px;}
+.section{background:white;border-radius:20px;padding:24px;margin-bottom:12px;border:1px solid var(--border);box-shadow:0 2px 12px rgba(30,30,114,0.06);}
+.section-title{font-size:0.78rem;font-weight:700;color:var(--text-sub);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:16px;}
+.info-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);}
+.info-row:last-child{border-bottom:none;padding-bottom:0;}
+.info-label{font-size:0.82rem;color:var(--text-sub);font-weight:500;}
+.info-value{font-size:0.88rem;color:var(--indigo-deep);font-weight:700;}
+.status-badge{display:inline-block;font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:20px;}
+.badge-approved{background:var(--mint-lt);color:var(--mint);}
+.menu-item{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--border);cursor:pointer;text-decoration:none;}
+.menu-item:last-child{border-bottom:none;}
+.menu-icon{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}
+.menu-text{flex:1;}
+.menu-name{font-size:0.9rem;font-weight:700;color:var(--indigo-deep);}
+.menu-sub{font-size:0.72rem;color:var(--text-sub);margin-top:2px;}
+.menu-arr{color:var(--text-sub);font-size:1.1rem;}
+.btn-logout{width:100%;padding:14px;border-radius:14px;border:1.5px solid var(--red);background:white;color:var(--red);font-family:'Pretendard',sans-serif;font-size:0.92rem;font-weight:700;cursor:pointer;transition:all 0.15s;margin-top:4px;}
+.btn-logout:hover{background:#ffebee;}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:9999;background:white;border-top:1px solid var(--border);display:flex;height:60px;box-shadow:0 -4px 20px rgba(30,30,114,0.08);}
+@supports (padding-bottom:env(safe-area-inset-bottom)){.bottom-nav{padding-bottom:env(safe-area-inset-bottom);height:calc(60px + env(safe-area-inset-bottom));}}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;text-decoration:none;color:#bbbbdd;font-size:0.63rem;font-weight:700;transition:color 0.15s;}
+.nav-item svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2;}
+.nav-item.active{color:var(--indigo);}
+</style>
+</head>
+<body>
+
+<div class="hero" id="hero">
+  <div class="hero-avatar" id="hero-avatar">?</div>
+  <div class="hero-name" id="hero-name">로딩 중...</div>
+  <div class="hero-email" id="hero-email"></div>
+  <div class="hero-badge" id="hero-badge">승인 완료</div>
+</div>
+
+<div class="container">
+
+  <div class="section">
+    <div class="section-title">계정 정보</div>
+    <div class="info-row">
+      <span class="info-label">이름</span>
+      <span class="info-value" id="info-name">-</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">이메일</span>
+      <span class="info-value" id="info-email">-</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">가입 상태</span>
+      <span class="status-badge badge-approved">승인 완료</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">메뉴</div>
+    <a class="menu-item" href="simulator.html">
+      <div class="menu-icon" style="background:var(--indigo-lt);">📊</div>
+      <div class="menu-text">
+        <div class="menu-name">시뮬레이션 기록</div>
+        <div class="menu-sub">저장된 시뮬레이션 결과 열람</div>
+      </div>
+      <div class="menu-arr">›</div>
+    </a>
+    <a class="menu-item" href="guide_home.html">
+      <div class="menu-icon" style="background:var(--mint-lt);">📚</div>
+      <div class="menu-text">
+        <div class="menu-name">가이드 센터</div>
+        <div class="menu-sub">학습 자료 모음</div>
+      </div>
+      <div class="menu-arr">›</div>
+    </a>
+  </div>
+
+  <div class="section">
+    <button class="btn-logout" onclick="doLogout()">로그아웃</button>
+  </div>
+
+</div>
+
+<nav class="bottom-nav">
+  <a class="nav-item" href="../index.html">
+    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>홈
+  </a>
+  <a class="nav-item" href="guide_home.html">
+    <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>가이드
+  </a>
+  <a class="nav-item" href="calculator.html">
+    <svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="16" y2="10"/></svg>계산기
+  </a>
+  <a class="nav-item" href="simulator.html">
+    <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>시뮬레이터
+  </a>
+  <a class="nav-item active" href="mypage.html">
+    <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>내 정보
+  </a>
+</nav>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+const app = initializeApp({
+  apiKey:"AIzaSyCV4elOllJXF-Rx6qrYNDAwSSfVHKAQelQ",
+  authDomain:"supersaver-kit.firebaseapp.com",
+  projectId:"supersaver-kit",
+  storageBucket:"supersaver-kit.firebasestorage.app",
+  messagingSenderId:"800388848026",
+  appId:"1:800388848026:web:1d64b6ffebf8544ecb0223"
+});
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+onAuthStateChanged(auth, async (user) => {
+  if (!user) { window.location.href='../auth.html'; return; }
+  const snap = await getDoc(doc(db,'users',user.uid));
+  if (!snap.exists() || snap.data().status !== 'approved') {
+    await signOut(auth); window.location.href='../auth.html'; return;
+  }
+  const data = snap.data();
+  const initial = (data.name||'?')[0].toUpperCase();
+  document.getElementById('hero-avatar').textContent = initial;
+  document.getElementById('hero-name').textContent = data.name||'-';
+  document.getElementById('hero-email').textContent = data.email||'-';
+  document.getElementById('info-name').textContent = data.name||'-';
+  document.getElementById('info-email').textContent = data.email||'-';
+  document.body.style.visibility = 'visible';
+  window._auth = auth;
+});
+
+window.doLogout = async function() {
+  if (!confirm('로그아웃 하시겠습니까?')) return;
+  await signOut(window._auth);
+  window.location.href = 'auth.html';
+};
+</script>
+</body>
+</html>

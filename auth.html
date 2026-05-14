@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192x192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180x180.png">
+<link rel="manifest" href="manifest.json">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#1e1e72">
+<title>SuperSaver Kit — 로그인</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
+<style>
+:root {
+  --indigo:#2d2d9f; --indigo-deep:#1e1e72; --indigo-lt:#f0f0ff;
+  --mint:#00938a; --mint-lt:#e0f5f4;
+  --gold:#FFD700; --gold-muted:#c9a84c;
+  --border:#e0e0f4; --gray-lt:#f4f7f9;
+  --text-sub:#8888bb; --red:#d93025;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Pretendard',sans-serif;background:var(--indigo-lt);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 20px;}
+
+.logo-wrap{text-align:center;margin-bottom:28px;}
+.logo-icon{font-size:2.2rem;margin-bottom:8px;}
+.logo-title{font-size:1.2rem;font-weight:900;color:var(--indigo-deep);letter-spacing:-0.02em;}
+.logo-sub{font-size:0.78rem;color:var(--text-sub);margin-top:2px;}
+
+.card{background:white;border-radius:24px;padding:28px 24px;width:100%;max-width:400px;box-shadow:0 4px 32px rgba(30,30,114,0.10);border:1px solid var(--border);}
+
+/* 탭 */
+.tabs{display:flex;background:var(--indigo-lt);border-radius:12px;padding:4px;margin-bottom:24px;}
+.tab{flex:1;text-align:center;padding:9px;border-radius:9px;font-size:0.82rem;font-weight:700;color:var(--text-sub);cursor:pointer;transition:all 0.2s;}
+.tab.active{background:white;color:var(--indigo-deep);box-shadow:0 1px 6px rgba(30,30,114,0.12);}
+
+/* 폼 */
+.form-group{margin-bottom:16px;}
+label{display:block;font-size:0.75rem;font-weight:700;color:var(--indigo-deep);margin-bottom:6px;letter-spacing:0.02em;}
+input{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:0.9rem;font-family:'Pretendard',sans-serif;color:var(--indigo-deep);outline:none;transition:border-color 0.15s;background:white;}
+input:focus{border-color:var(--indigo);}
+input::placeholder{color:#c0c8e8;}
+
+.btn{width:100%;padding:14px;border-radius:12px;border:none;font-family:'Pretendard',sans-serif;font-size:0.95rem;font-weight:700;cursor:pointer;transition:all 0.15s;margin-top:4px;}
+.btn-primary{background:linear-gradient(135deg,var(--indigo-deep),var(--indigo));color:white;}
+.btn-primary:hover{opacity:0.9;transform:translateY(-1px);}
+.btn-primary:active{transform:translateY(0);}
+.btn-primary:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+
+/* 메시지 */
+.msg{padding:12px 16px;border-radius:10px;font-size:0.82rem;font-weight:500;margin-top:14px;display:none;line-height:1.5;}
+.msg.success{background:var(--mint-lt);color:var(--mint);border:1px solid rgba(0,147,138,0.2);}
+.msg.error{background:#ffebee;color:var(--red);border:1px solid rgba(217,48,37,0.2);}
+.msg.pending{background:var(--indigo-lt);color:var(--indigo);border:1px solid rgba(45,45,159,0.2);}
+.msg.show{display:block;}
+
+/* 패널 */
+.panel{display:none;} .panel.active{display:block;}
+
+/* 구분선 */
+.divider{text-align:center;font-size:0.72rem;color:var(--text-sub);margin:16px 0;position:relative;}
+.divider::before,.divider::after{content:'';position:absolute;top:50%;width:42%;height:1px;background:var(--border);}
+.divider::before{left:0;} .divider::after{right:0;}
+
+.notice-box{background:var(--indigo-lt);border-radius:12px;padding:14px 16px;font-size:0.78rem;color:var(--text-sub);line-height:1.6;margin-bottom:16px;border:1px solid var(--border);}
+.notice-box strong{color:var(--indigo);}
+
+.back-link{text-align:center;margin-top:20px;}
+.back-link a{font-size:0.78rem;color:var(--text-sub);text-decoration:none;}
+.back-link a:hover{color:var(--indigo);}
+
+/* 승인 대기 안내 */
+.pending-card{background:white;border-radius:24px;padding:32px 24px;width:100%;max-width:400px;box-shadow:0 4px 32px rgba(30,30,114,0.10);border:1px solid var(--border);text-align:center;display:none;}
+.pending-card .icon{font-size:2.5rem;margin-bottom:16px;}
+.pending-card h2{font-size:1.1rem;font-weight:900;color:var(--indigo-deep);margin-bottom:8px;}
+.pending-card p{font-size:0.85rem;color:var(--text-sub);line-height:1.7;}
+.pending-card .badge{display:inline-block;background:var(--indigo-lt);color:var(--indigo);font-size:0.72rem;font-weight:700;padding:4px 12px;border-radius:20px;margin-top:12px;}
+</style>
+</head>
+<body>
+
+<div class="logo-wrap">
+  <div class="logo-icon">📊</div>
+  <div class="logo-title">SuperSaver Kit</div>
+  <div class="logo-sub">슈퍼세이브 학습·시뮬레이션 플랫폼</div>
+</div>
+
+<!-- 로그인·가입 카드 -->
+<div class="card" id="auth-card">
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('login')">로그인</div>
+    <div class="tab" onclick="switchTab('signup')">가입 신청</div>
+  </div>
+
+  <!-- 로그인 패널 -->
+  <div class="panel active" id="panel-login">
+    <div class="form-group">
+      <label>이메일</label>
+      <input type="email" id="login-email" placeholder="이메일 주소">
+    </div>
+    <div class="form-group">
+      <label>비밀번호</label>
+      <input type="password" id="login-pw" placeholder="비밀번호" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="btn btn-primary" onclick="doLogin()" id="btn-login">로그인</button>
+    <div class="msg" id="msg-login"></div>
+  </div>
+
+  <!-- 가입신청 패널 -->
+  <div class="panel" id="panel-signup">
+    <div class="notice-box">
+      <strong>폐쇄형 승인제 운영</strong><br>
+      가입 신청 후 관리자 승인이 완료되면 모든 기능을 이용하실 수 있습니다.
+    </div>
+    <div class="form-group">
+      <label>이름</label>
+      <input type="text" id="signup-name" placeholder="실명 입력">
+    </div>
+    <div class="form-group">
+      <label>이메일</label>
+      <input type="email" id="signup-email" placeholder="이메일 주소">
+    </div>
+    <div class="form-group">
+      <label>비밀번호</label>
+      <input type="password" id="signup-pw" placeholder="8자 이상">
+    </div>
+    <div class="form-group">
+      <label>비밀번호 확인</label>
+      <input type="password" id="signup-pw2" placeholder="비밀번호 재입력" onkeydown="if(event.key==='Enter')doSignup()">
+    </div>
+    <button class="btn btn-primary" onclick="doSignup()" id="btn-signup">가입 신청</button>
+    <div class="msg" id="msg-signup"></div>
+  </div>
+</div>
+
+<!-- 승인 대기 안내 카드 -->
+<div class="pending-card" id="pending-card">
+  <div class="icon">⏳</div>
+  <h2>가입 신청 완료</h2>
+  <p>관리자 승인 후 이용 가능합니다.<br>승인이 완료되면 로그인해주세요.</p>
+  <div class="badge">승인 대기 중</div>
+  <br><br>
+  <button class="btn btn-primary" onclick="showAuthCard()">확인</button>
+</div>
+
+<div class="back-link">
+  <a href="index.html">← 홈으로 돌아가기</a>
+</div>
+
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, doc, setDoc, getDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCV4elOllJXF-Rx6qrYNDAwSSfVHKAQelQ",
+  authDomain: "supersaver-kit.firebaseapp.com",
+  projectId: "supersaver-kit",
+  storageBucket: "supersaver-kit.firebasestorage.app",
+  messagingSenderId: "800388848026",
+  appId: "1:800388848026:web:1d64b6ffebf8544ecb0223"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// 전역 노출
+window._auth = auth;
+window._db = db;
+window._signIn = signInWithEmailAndPassword;
+window._createUser = createUserWithEmailAndPassword;
+window._doc = doc;
+window._setDoc = setDoc;
+window._getDoc = getDoc;
+window._serverTimestamp = serverTimestamp;
+</script>
+
+<!-- EmailJS -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+<script>
+emailjs.init('wUFejISu_LNMamwkO');
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', (tab==='login'&&i===0)||(tab==='signup'&&i===1)));
+  document.getElementById('panel-login').classList.toggle('active', tab==='login');
+  document.getElementById('panel-signup').classList.toggle('active', tab==='signup');
+}
+
+function showMsg(id, text, type) {
+  const el = document.getElementById(id);
+  el.textContent = text;
+  el.className = 'msg show ' + type;
+}
+
+function showPendingCard() {
+  document.getElementById('auth-card').style.display = 'none';
+  document.getElementById('pending-card').style.display = 'block';
+}
+
+function showAuthCard() {
+  document.getElementById('auth-card').style.display = 'block';
+  document.getElementById('pending-card').style.display = 'none';
+  switchTab('login');
+}
+
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pw = document.getElementById('login-pw').value;
+  if (!email || !pw) { showMsg('msg-login','이메일과 비밀번호를 입력해주세요.','error'); return; }
+
+  const btn = document.getElementById('btn-login');
+  btn.disabled = true; btn.textContent = '로그인 중...';
+
+  try {
+    // Firebase 준비 대기
+    await new Promise(r => setTimeout(r, 500));
+    const cred = await window._signIn(window._auth, email, pw);
+    const uid = cred.user.uid;
+    const snap = await window._getDoc(window._doc(window._db,'users',uid));
+
+    if (!snap.exists()) { showMsg('msg-login','계정 정보를 찾을 수 없습니다.','error'); btn.disabled=false; btn.textContent='로그인'; return; }
+
+    const data = snap.data();
+    if (data.status === 'pending') {
+      showMsg('msg-login','아직 승인 대기 중입니다. 관리자 승인 후 이용 가능합니다.','pending');
+      btn.disabled=false; btn.textContent='로그인'; return;
+    }
+    if (data.status !== 'approved') {
+      showMsg('msg-login','승인되지 않은 계정입니다.','error');
+      btn.disabled=false; btn.textContent='로그인'; return;
+    }
+
+    // 승인된 경우 홈으로
+    sessionStorage.setItem('ssk_user', JSON.stringify({uid, name:data.name, email:data.email, role:data.role||'user'}));
+    window.location.href = 'index.html';
+
+  } catch(e) {
+    const msg = e.code==='auth/user-not-found'||e.code==='auth/wrong-password'||e.code==='auth/invalid-credential'
+      ? '이메일 또는 비밀번호가 올바르지 않습니다.'
+      : '로그인 중 오류가 발생했습니다.';
+    showMsg('msg-login', msg, 'error');
+    btn.disabled=false; btn.textContent='로그인';
+  }
+}
+
+async function doSignup() {
+  const name = document.getElementById('signup-name').value.trim();
+  const email = document.getElementById('signup-email').value.trim();
+  const pw = document.getElementById('signup-pw').value;
+  const pw2 = document.getElementById('signup-pw2').value;
+
+  if (!name||!email||!pw||!pw2) { showMsg('msg-signup','모든 항목을 입력해주세요.','error'); return; }
+  if (pw.length < 8) { showMsg('msg-signup','비밀번호는 8자 이상이어야 합니다.','error'); return; }
+  if (pw !== pw2) { showMsg('msg-signup','비밀번호가 일치하지 않습니다.','error'); return; }
+
+  const btn = document.getElementById('btn-signup');
+  btn.disabled=true; btn.textContent='신청 중...';
+
+  try {
+    await new Promise(r => setTimeout(r, 500));
+    const cred = await window._createUser(window._auth, email, pw);
+    const uid = cred.user.uid;
+
+    await window._setDoc(window._doc(window._db,'users',uid), {
+      name, email, role:'user', status:'pending',
+      createdAt: window._serverTimestamp()
+    });
+
+    // 관리자 이메일 알림
+    try {
+      await emailjs.send('service_1rgzqkc','template_8hhwyre',{
+        user_name: name,
+        user_email: email,
+        request_time: new Date().toLocaleString('ko-KR')
+      });
+    } catch(e) { console.log('EmailJS error:', e); }
+
+    showPendingCard();
+
+  } catch(e) {
+    const msg = e.code==='auth/email-already-in-use'
+      ? '이미 가입된 이메일입니다.'
+      : '가입 신청 중 오류가 발생했습니다. 다시 시도해주세요.';
+    showMsg('msg-signup', msg, 'error');
+    btn.disabled=false; btn.textContent='가입 신청';
+  }
+}
+</script>
+</body>
+</html>

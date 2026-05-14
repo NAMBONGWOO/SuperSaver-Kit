@@ -1,0 +1,1593 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SuperSaver Kit">
+<meta name="theme-color" content="#1e1e72">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SuperSaver Kit — STO 가이드</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+/* ────────────────────────────────
+   DESIGN TOKENS (기존 앱 통일)
+──────────────────────────────── */
+:root {
+  --indigo-deep: #1e1e72;
+  --indigo:      #2d2d9f;
+  --indigo-mid:  #3d3dbb;
+  --indigo-lt:   #f0f0ff;
+  --indigo-bg:   #f4f4ff;
+  --mint:        #00938a;
+  --mint-lt:     #e0f5f4;
+  --mint-dk:     #006b63;
+  --gold:        #FFD700;
+  --gold-muted:  #c9a84c;
+  --gold-lt:     #fdf3dc;
+  --red:         #d93025;
+  --gray:        #5a6a7a;
+  --gray-lt:     #f4f7f9;
+  --white:       #ffffff;
+  --border:      #e0e0f4;
+  --text-main:   #1e1e72;
+  --text-sub:    #8888bb;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  visibility: hidden;
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--indigo-bg);
+  color: var(--indigo-deep);
+  line-height: 1.7;
+  padding-bottom: 80px;
+}
+
+/* ── 헤더 ── */
+.hero {
+  background: linear-gradient(160deg, #1e1e72 0%, #2d2d9f 55%, #1e1e72 100%);
+  color: white;
+  padding: 40px 24px 32px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; top: -80px; left: -80px;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(0,147,138,0.18) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero::after {
+  content: '';
+  position: absolute; bottom: -60px; right: -60px;
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(201,168,76,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-tag {
+  display: inline-block;
+  background: rgba(0,147,138,0.25);
+  color: rgba(255,215,0,0.85);
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.15em;
+  padding: 5px 14px; border-radius: 20px;
+  border: 1px solid rgba(0,147,138,0.4);
+  margin-bottom: 20px;
+}
+.hero h1 {
+  font-size: clamp(1.6rem, 4.5vw, 2.4rem);
+  font-weight: 900; line-height: 1.25;
+  margin-bottom: 16px; letter-spacing: -0.02em;
+}
+.hero h1 em { color: var(--gold); font-style: normal; }
+.hero-sub {
+  font-size: 0.95rem;
+  color: rgba(255,255,255,0.65);
+  max-width: 520px; margin: 0 auto;
+}
+
+/* ── 단계 네비게이션 바 ── */
+.stage-nav-wrap {
+  position: sticky; top: 0; z-index: 500;
+  background: white;
+  border-bottom: 1px solid var(--border);
+  padding: 10px 16px;
+  box-shadow: 0 2px 12px rgba(30,30,114,0.10);
+  text-align: center;
+}
+.stage-nav-label {
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em;
+  color: var(--text-sub); margin-bottom: 6px;
+}
+.stage-chips-wrap {
+  position: relative; width: 100%;
+}
+.stage-chips-wrap::after {
+  content: '';
+  position: absolute; top: 0; right: 0;
+  width: 48px; height: 100%;
+  background: linear-gradient(to right, transparent, white);
+  pointer-events: none; z-index: 1;
+}
+.stage-chips {
+  display: flex; gap: 6px;
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+  width: 100%;
+  padding-bottom: 2px; padding-right: 36px;
+  scrollbar-width: none;
+  justify-content: safe center;
+}
+.stage-chips::-webkit-scrollbar { display: none; }
+.stage-chip {
+  display: inline-flex; align-items: center;
+  font-size: 0.62rem; font-weight: 700; letter-spacing: 0.03em;
+  padding: 5px 12px; border-radius: 20px; cursor: pointer;
+  white-space: nowrap; border: 1px solid transparent; outline: none;
+  background: var(--indigo-lt); color: var(--text-sub);
+  transition: all 0.18s; flex-shrink: 0; font-family: inherit;
+}
+.stage-chip.active {
+  background: var(--indigo); color: white;
+  box-shadow: 0 2px 8px rgba(30,30,114,0.25);
+}
+.stage-chip:hover:not(.active) { background: #e4e4ff; color: var(--indigo); }
+.stage-chip:hover {
+  background: var(--indigo-mid); color: white;
+}
+.stage-chip.current {
+  background: var(--indigo); color: white;
+  border-color: var(--indigo);
+}
+.stage-chip.locked {
+  background: var(--gray-lt); color: var(--gray);
+  cursor: not-allowed;
+}
+
+/* ── 레이아웃 ── */
+.container { max-width: 860px; margin: 0 auto; padding: 0 16px 32px; }
+
+/* ── 단계 헤더 ── */
+.stage-header-block {
+  margin-top: 24px; margin-bottom: 4px;
+  display: flex; align-items: center; gap: 12px;
+  padding: 0 4px;
+}
+.stage-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em;
+  padding: 4px 12px; border-radius: 20px;
+  background: var(--indigo); color: white;
+  white-space: nowrap;
+}
+.stage-title-txt {
+  font-size: 1.05rem; font-weight: 900;
+  color: var(--indigo-deep); letter-spacing: -0.02em;
+}
+.stage-sub-txt {
+  font-size: 0.78rem; color: var(--text-sub); font-weight: 500;
+}
+
+/* ── 섹션 카드 ── */
+.section {
+  background: white; border-radius: 20px; padding: 28px 24px;
+  margin-top: 12px;
+  box-shadow: 0 2px 16px rgba(15,31,53,0.06);
+  border: 1px solid var(--border);
+}
+.section-header {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 18px; padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+.section-num {
+  width: 32px; height: 32px; min-width: 32px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--indigo); color: white;
+  border-radius: 50%; font-size: 0.8rem; font-weight: 900;
+  line-height: 1; flex-shrink: 0;
+}
+.section-num.mint-num { background: var(--mint); }
+.section-title {
+  font-size: 1.15rem; font-weight: 700;
+  color: var(--indigo-deep); letter-spacing: -0.02em; line-height: 1.3;
+}
+.section-title span { color: var(--indigo); }
+
+p { font-size: 0.92rem; color: #3a4a5c; line-height: 1.8; margin-bottom: 12px; }
+p:last-child { margin-bottom: 0; }
+
+/* ── 강조 박스 ── */
+.highlight-box {
+  background: var(--indigo-lt); border-left: 4px solid var(--indigo);
+  border-radius: 0 12px 12px 0; padding: 16px 20px; margin: 16px 0;
+  font-size: 0.9rem; color: var(--indigo); font-weight: 500; line-height: 1.7;
+}
+.gold-box {
+  background: var(--gold-lt); border-left: 4px solid var(--gold-muted);
+  border-radius: 0 12px 12px 0; padding: 16px 20px; margin: 16px 0;
+  font-size: 0.9rem; color: #7a5a10; font-weight: 500; line-height: 1.7;
+}
+.mint-box {
+  background: var(--mint-lt); border-left: 4px solid var(--mint);
+  border-radius: 0 12px 12px 0; padding: 16px 20px; margin: 16px 0;
+  font-size: 0.9rem; color: var(--mint-dk); font-weight: 500; line-height: 1.7;
+}
+.navy-box {
+  background: linear-gradient(160deg, #1e1e72 0%, #2d2d9f 55%, #1e1e72 100%);
+  border-radius: 14px; padding: 20px 24px; margin: 16px 0;
+  color: rgba(255,255,255,0.9); font-size: 0.88rem; line-height: 1.8;
+}
+.navy-box strong { color: var(--gold); }
+
+/* ── 비교 카드 그리드 ── */
+.compare-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px; margin: 16px 0;
+}
+.compare-card {
+  border: 1px solid var(--border); border-radius: 14px;
+  padding: 16px; position: relative; overflow: hidden;
+  background: white;
+}
+.compare-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 3px;
+}
+.compare-card.indigo::before { background: var(--indigo); }
+.compare-card.gold::before   { background: var(--gold-muted); }
+.compare-card.mint::before   { background: var(--mint); }
+.compare-card.red::before    { background: var(--red); }
+.compare-card-icon { font-size: 1.4rem; margin-bottom: 8px; }
+.compare-card-name {
+  font-size: 0.8rem; font-weight: 900; color: var(--indigo-deep);
+  margin-bottom: 6px;
+}
+.compare-card-desc {
+  font-size: 0.75rem; color: var(--gray); line-height: 1.55;
+}
+.compare-card-tag {
+  display: inline-block; margin-top: 8px;
+  font-size: 0.62rem; font-weight: 700;
+  padding: 2px 8px; border-radius: 10px;
+}
+.tag-indigo { background: var(--indigo-lt); color: var(--indigo); }
+.tag-gold   { background: var(--gold-lt);   color: #7a5a10; }
+.tag-mint   { background: var(--mint-lt);   color: var(--mint-dk); }
+.tag-red    { background: #ffebee;          color: #c62828; }
+
+/* ── 비교 테이블 ── */
+.compare-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 10px; margin: 16px 0; }
+.compare-table { width: 100%; min-width: 480px; border-collapse: collapse; font-size: 0.85rem; }
+.compare-table th {
+  background: linear-gradient(160deg, #1e1e72 0%, #2d2d9f 55%, #1e1e72 100%);
+  color: white; padding: 10px 14px; text-align: left;
+  font-weight: 700; font-size: 0.8rem;
+}
+.compare-table th:first-child { border-radius: 10px 0 0 0; }
+.compare-table th:last-child  { border-radius: 0 10px 0 0; }
+.compare-table td {
+  padding: 10px 14px; border-bottom: 1px solid var(--border);
+  color: #3a4a5c; vertical-align: middle;
+}
+.compare-table tr:last-child td { border-bottom: none; }
+.compare-table tr:nth-child(even) td { background: transparent; }
+
+/* ── 흐름도 ── */
+.flow { display: flex; flex-direction: column; gap: 0; margin: 20px 0; }
+.flow-item {
+  display: flex; gap: 16px; align-items: flex-start; position: relative;
+}
+.flow-item:not(:last-child)::after {
+  content: ''; position: absolute; left: 19px; top: 42px;
+  width: 2px; height: calc(100% - 10px);
+  background: linear-gradient(to bottom, var(--mint), transparent);
+}
+.flow-dot {
+  width: 40px; height: 40px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 900; font-size: 0.82rem; flex-shrink: 0;
+  position: relative; z-index: 1;
+}
+.dot-indigo { background: var(--indigo); color: white; }
+.dot-gold   { background: var(--gold-muted); color: white; }
+.dot-mint   { background: var(--mint); color: white; }
+.dot-ok     { background: #2e7d32; color: white; }
+.flow-content {
+  flex: 1; background: var(--gray-lt); border-radius: 12px;
+  padding: 14px 18px; margin-bottom: 12px;
+}
+.flow-content h4 { font-size: 0.88rem; font-weight: 700; color: var(--indigo-deep); margin-bottom: 4px; }
+.flow-content p  { font-size: 0.82rem; color: var(--gray); margin: 0; line-height: 1.6; }
+.flow-content .amount { font-size: 0.92rem; font-weight: 900; color: var(--indigo); margin-top: 6px; }
+
+/* ── 변수 카드 ── */
+.var-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin: 16px 0; }
+.var-card { border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; position: relative; overflow: hidden; background: white; }
+.var-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--indigo); }
+.var-card.gold::before { background: var(--gold-muted); }
+.var-card.mint::before { background: var(--mint); }
+.var-name  { font-size: 0.68rem; font-weight: 700; color: var(--gray); letter-spacing: 0.06em; margin-bottom: 6px; }
+.var-value { font-size: 1.2rem; font-weight: 900; color: var(--indigo); letter-spacing: -0.02em; margin-bottom: 4px; }
+.var-card.gold .var-value { color: var(--gold-muted); }
+.var-card.mint .var-value { color: var(--mint); }
+.var-desc  { font-size: 0.72rem; color: var(--gray); line-height: 1.5; }
+
+/* ── 잠금 오버레이 ── */
+.stage-locked-wrap {
+  margin-top: 12px;
+  background: white; border-radius: 20px;
+  border: 1px dashed var(--border);
+  padding: 24px;
+  text-align: center;
+  opacity: 0.6;
+}
+.stage-locked-icon { font-size: 2rem; margin-bottom: 8px; }
+.stage-locked-title { font-size: 0.95rem; font-weight: 700; color: var(--indigo-deep); margin-bottom: 4px; }
+.stage-locked-sub   { font-size: 0.8rem; color: var(--gray); }
+
+/* ── 푸터 ── */
+.footer {
+  text-align: center; padding: 24px 16px;
+  font-size: 0.72rem; color: var(--text-sub);
+  line-height: 1.8;
+}
+
+/* ── 하단 네비게이션 ── */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
+  background: white; border-top: 1px solid var(--border);
+  display: flex; height: 60px;
+  box-shadow: 0 -4px 20px rgba(30,30,114,0.08);
+  max-width: 100%;
+}
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .bottom-nav { padding-bottom: env(safe-area-inset-bottom); height: calc(60px + env(safe-area-inset-bottom)); }
+}
+.nav-item {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 3px; text-decoration: none; color: #bbbbdd;
+  font-size: 0.63rem; font-weight: 700; transition: color 0.15s;
+}
+.nav-item svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; }
+.nav-item.active { color: var(--indigo); }
+
+@media (max-width: 600px) {
+  .section { padding: 22px 16px; }
+  .compare-grid { grid-template-columns: 1fr 1fr; }
+}
+
+
+/* ── 탭 패널 ── */
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ── 상단 칩 탭 버튼 ── */
+
+
+
+.stage-chip {
+  display: inline-flex; align-items: center;
+  font-size: 0.62rem; font-weight: 700; letter-spacing: 0.04em;
+  padding: 5px 12px; border-radius: 20px; cursor: pointer;
+  white-space: nowrap; border: none; outline: none;
+  background: var(--indigo-lt); color: var(--text-sub);
+  transition: all 0.18s; flex-shrink: 0;
+}
+.stage-chip.active {
+  background: var(--indigo); color: white;
+  box-shadow: 0 2px 8px rgba(30,30,114,0.25);
+}
+.stage-chip:hover:not(.active) {
+  background: #e4e4ff; color: var(--indigo);
+}
+/* ── 아코디언 용어 카드 ── */
+.term-accordion {
+  margin-top: 18px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  background: white;
+}
+.term-accordion-btn {
+  width: 100%; text-align: left; cursor: pointer;
+  background: var(--indigo-lt); border: none; outline: none;
+  padding: 12px 18px;
+  display: flex; align-items: center; gap: 8px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.8rem; font-weight: 700; color: var(--indigo);
+  letter-spacing: 0.03em; transition: background 0.15s;
+}
+.term-accordion-btn:hover { background: #e4e4ff; }
+.term-accordion-btn .acc-arrow {
+  margin-left: auto; font-size: 0.75rem;
+  transition: transform 0.25s; display: inline-block;
+}
+.term-accordion-btn.open .acc-arrow { transform: rotate(180deg); }
+.term-accordion-body {
+  display: none;
+  padding: 14px 18px;
+  border-top: 1px solid var(--border);
+  background: white;
+}
+.term-accordion-body.open { display: block; }
+.term-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+}
+.term-card {
+  border: 1px solid var(--border);
+  border-radius: 12px; padding: 12px 14px;
+  background: var(--gray-lt);
+  position: relative; overflow: hidden;
+}
+.term-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 3px; background: var(--mint);
+}
+.term-card.indigo-term::before { background: var(--indigo); }
+.term-card.gold-term::before   { background: var(--gold-muted); }
+.term-name {
+  font-size: 0.72rem; font-weight: 900;
+  color: var(--indigo-deep); margin-bottom: 5px;
+}
+.term-eng {
+  font-size: 0.62rem; color: var(--text-sub);
+  font-weight: 500; margin-bottom: 6px;
+}
+.term-desc {
+  font-size: 0.75rem; color: #3a4a5c; line-height: 1.6;
+}
+
+
+
+
+
+/* ── 단계 헤더 강조 ── */
+.stage-header-block {
+  background: linear-gradient(135deg, #1e1e72 0%, #2d2d9f 100%);
+  border-radius: 16px;
+  padding: 16px 20px;
+  margin-top: 24px;
+  margin-bottom: 4px;
+  display: flex; align-items: center; gap: 12px;
+  box-shadow: 0 4px 16px rgba(30,30,114,0.18);
+}
+.stage-header-block .stage-badge {
+  background: rgba(255,255,255,0.18);
+  color: #FFD700;
+  border: 1px solid rgba(255,215,0,0.35);
+}
+.stage-header-block .stage-title-txt {
+  color: white;
+}
+.stage-header-block .stage-sub-txt {
+  color: rgba(255,255,255,0.6);
+}
+
+</style>
+</head>
+<body>
+<!-- Firebase 로그인 상태 체크 -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+const app = initializeApp({
+  apiKey: "AIzaSyCV4elOllJXF-Rx6qrYNDAwSSfVHKAQelQ",
+  authDomain: "supersaver-kit.firebaseapp.com",
+  projectId: "supersaver-kit",
+  storageBucket: "supersaver-kit.firebasestorage.app",
+  messagingSenderId: "800388848026",
+  appId: "1:800388848026:web:1d64b6ffebf8544ecb0223"
+});
+const auth = getAuth(app);
+const db = getFirestore(app);
+onAuthStateChanged(auth, async (user) => {
+  if (!user) { window.location.href='../auth.html'; return; }
+  const snap = await getDoc(doc(db,'users',user.uid));
+  if (!snap.exists() || snap.data().status !== 'approved') {
+    await auth.signOut(); window.location.href='../auth.html'; return;
+  }
+  document.body.style.visibility='visible';
+  const d=snap.data();
+  sessionStorage.setItem('ssk_user',JSON.stringify({uid:user.uid,name:d.name,email:d.email,role:d.role||'user'}));
+});
+</script>
+
+<!-- ── 헤더 ── -->
+<div class="hero">
+  <h1>STO <em>증권형 토큰</em><br>단계별 가이드</h1>
+  <p class="hero-sub">기초 개념부터 실전 적용까지 — 5단계 빌드업 커리큘럼으로 토큰증권을 마스터하세요.</p>
+</div>
+
+<!-- ── 단계 네비게이션 ── -->
+<div class="stage-nav-wrap">
+  <div class="stage-nav-label">📖 단계 바로가기</div>
+  <div class="stage-chips-wrap">
+    <div class="stage-chips">
+      <button class="stage-chip active"        onclick="showTab('stage1', this)">1단계</button>
+      <button class="stage-chip"               onclick="showTab('stage2', this)">2단계</button>
+      <button class="stage-chip"               onclick="showTab('stage3', this)">3단계</button>
+      <button class="stage-chip"               onclick="showTab('stage4', this)">4단계</button>
+      <button class="stage-chip"               onclick="showTab('stage5', this)">5단계</button>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+
+<div class="tab-panel active" id="tab-stage1">
+<!-- ════════════════════════════════
+     1단계: 기초 개념
+════════════════════════════════ -->
+<div class="stage-header-block" id="stage1">
+  <span class="stage-badge">1단계</span>
+  <div>
+    <div class="stage-title-txt">기초 개념</div>
+    <div class="stage-sub-txt">Introduction to STO</div>
+  </div>
+</div>
+
+<!-- 1-1. STO의 정의 -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">1</div>
+    <h2 class="section-title">STO의 <span>정의</span></h2>
+  </div>
+  <p><strong>STO(Security Token Offering)</strong>란, 주식·채권·부동산 지분 등 실제 가치를 가진 자산을 블록체인 기반의 디지털 토큰으로 발행하는 것입니다. 쉽게 말해, <strong>"증권을 토큰으로 만든 것"</strong>입니다.</p>
+  <div class="highlight-box">
+    <strong>핵심 한 줄 정의:</strong><br>
+    STO = 실물 자산의 권리(소유권·수익권·의결권)를 블록체인 토큰에 담아 디지털로 거래 가능하게 만든 금융 상품
+  </div>
+  <p>기존에는 부동산 한 채를 소유하려면 수억 원이 필요했습니다. STO를 활용하면 그 건물의 소유권을 1,000개의 토큰으로 나누어, 단 10만 원으로도 <strong>조각 소유</strong>가 가능합니다.</p>
+  <div class="var-grid">
+    <div class="var-card indigo">
+      <div class="var-name">S · Security</div>
+      <div class="var-value" style="font-size:1.0rem">증권</div>
+      <div class="var-desc">자본시장법상 권리가 부여된 금융 자산</div>
+    </div>
+    <div class="var-card gold">
+      <div class="var-name">T · Token</div>
+      <div class="var-value" style="font-size:1.0rem">토큰</div>
+      <div class="var-desc">블록체인 위에서 발행·유통되는 디지털 단위</div>
+    </div>
+    <div class="var-card mint">
+      <div class="var-name">O · Offering</div>
+      <div class="var-value" style="font-size:1.0rem">공모/발행</div>
+      <div class="var-desc">투자자에게 토큰을 판매하여 자금을 조달하는 행위</div>
+    </div>
+  </div>
+</div>
+
+<!-- 1-2. 법적 지위 -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">2</div>
+    <h2 class="section-title">법적 지위 — <span>자본시장법과 토큰증권</span></h2>
+  </div>
+  <p>한국에서 STO는 <strong>자본시장법</strong> 체계 안에서 규율됩니다. 금융위원회는 2023년 2월 "토큰증권 가이드라인"을 발표하며 STO를 합법적인 금융 상품으로 공식 인정했습니다.</p>
+  <div class="navy-box">
+    <strong>금융위원회 정의 (2023년 가이드라인)</strong><br>
+    "분산원장 기술을 활용하여 자본시장법상 증권을 디지털화한 것" — 즉, 기존 증권과 동일한 법적 보호를 받으며, 발행·유통 모두 금융당국의 감독 아래 이루어집니다.
+  </div>
+  <div class="flow">
+    <div class="flow-item">
+      <div class="flow-dot dot-indigo">1</div>
+      <div class="flow-content">
+        <h4>증권으로 분류</h4>
+        <p>STO는 ICO(가상자산 공개)와 달리, 자본시장법상 '증권'에 해당합니다. 투자자 보호 규정이 동일하게 적용됩니다.</p>
+      </div>
+    </div>
+    <div class="flow-item">
+      <div class="flow-dot dot-gold">2</div>
+      <div class="flow-content">
+        <h4>인가된 기관만 발행 가능</h4>
+        <p>증권사·은행 등 금융당국 인가를 받은 <strong>계좌관리기관</strong>을 통해서만 발행·유통이 허용됩니다.</p>
+      </div>
+    </div>
+    <div class="flow-item">
+      <div class="flow-dot dot-ok">3</div>
+      <div class="flow-content">
+        <h4>공시 의무</h4>
+        <p>발행 내역, 자산 현황, 수익 배분 등을 정기적으로 공시해야 합니다. 투명성이 법적으로 보장됩니다.</p>
+        <div class="amount">→ 투자자 보호 장치가 ICO보다 강력</div>
+      </div>
+    </div>
+  </div>
+  <div class="gold-box">
+    <strong>참고:</strong> 금융규제 샌드박스를 통해 일부 기업이 혁신금융서비스로 STO 사업을 먼저 시작하고 있습니다. 제도가 빠르게 진화하는 분야입니다.
+  </div>
+</div>
+
+<!-- 1-3. 기존 자산과의 비교 -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">3</div>
+    <h2 class="section-title">기존 자산과의 <span>비교</span></h2>
+  </div>
+  <p>STO는 기존의 주식, 코인(ICO)과 어떻게 다를까요? 세 가지를 나란히 비교해보겠습니다.</p>
+
+  <div class="compare-table-wrap">
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>구분</th>
+          <th>📈 주식</th>
+          <th>🪙 코인 (ICO)</th>
+          <th>🔐 STO</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>법적 근거</strong></td>
+          <td>자본시장법 ✅</td>
+          <td>없음 (무규제) ❌</td>
+          <td>자본시장법 ✅</td>
+        </tr>
+        <tr>
+          <td><strong>기초 자산</strong></td>
+          <td>회사 지분</td>
+          <td>없거나 불명확</td>
+          <td>부동산·미술품·채권 등</td>
+        </tr>
+        <tr>
+          <td><strong>투자자 보호</strong></td>
+          <td>강함</td>
+          <td>매우 약함</td>
+          <td>강함 (증권 동일)</td>
+        </tr>
+        <tr>
+          <td><strong>거래 방식</strong></td>
+          <td>증권거래소</td>
+          <td>암호화폐 거래소</td>
+          <td>장외거래소 (ATS)</td>
+        </tr>
+        <tr>
+          <td><strong>소액 투자</strong></td>
+          <td>제한적</td>
+          <td>가능</td>
+          <td>✅ 조각 투자 가능</td>
+        </tr>
+        <tr>
+          <td><strong>수익 구조</strong></td>
+          <td>배당 + 시세 차익</td>
+          <td>시세 차익만</td>
+          <td>배당 + 시세 차익</td>
+        </tr>
+        <tr>
+          <td><strong>투명성</strong></td>
+          <td>공시 의무</td>
+          <td>없음</td>
+          <td>온체인 공시 ✅</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="highlight-box">
+    <strong>STO의 핵심 강점:</strong> 코인(ICO)의 블록체인 기술력 + 주식의 법적 안정성을 결합한 구조입니다. 실물 자산이 뒷받침하고, 법이 보호하며, 블록체인이 투명하게 기록합니다.
+  </div>
+
+  <div class="compare-grid" style="margin-top:16px;">
+    <div class="compare-card indigo">
+      <div class="compare-card-icon">📈</div>
+      <div class="compare-card-name">주식</div>
+      <div class="compare-card-desc">법적 보호 강하나, 회사 지분에만 한정. 소액 조각 투자 어려움.</div>
+      <span class="compare-card-tag tag-indigo">전통 금융</span>
+    </div>
+    <div class="compare-card red">
+      <div class="compare-card-icon">🪙</div>
+      <div class="compare-card-name">코인 (ICO)</div>
+      <div class="compare-card-desc">규제 없어 접근 쉬우나, 사기·가격 변동 위험 크고 투자자 보호 없음.</div>
+      <span class="compare-card-tag tag-red">고위험</span>
+    </div>
+    <div class="compare-card mint">
+      <div class="compare-card-icon">🔐</div>
+      <div class="compare-card-name">STO</div>
+      <div class="compare-card-desc">법적 보호 + 실물 자산 + 소액 투자 가능. 블록체인 투명성 보장.</div>
+      <span class="compare-card-tag tag-mint">권장 구조</span>
+    </div>
+  </div>
+
+  <!-- 🔴 신규 추가: 조각투자 플랫폼 vs STO -->
+  <div style="margin-top:28px; padding-top:24px; border-top:2px solid var(--border);">
+    <h3 style="font-size:1.0rem; font-weight:700; color:var(--indigo-deep); margin-bottom:14px; letter-spacing:-0.02em;">
+      🧩 특별 비교: <span style="color:var(--indigo);">기존 조각투자 플랫폼 vs STO</span>
+    </h3>
+    <p>카사(부동산), 뮤직카우(음악 저작권) 등 기존 조각투자 플랫폼은 STO와 어떤 점이 다를까요? 겉보기에는 비슷해 보이지만, 법적 지위와 거래 구조에서 핵심적인 차이가 있습니다.</p>
+
+    <div class="compare-table-wrap">
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th>구분</th>
+            <th>🧩 기존 조각투자 플랫폼<br><span style="font-weight:400;font-size:0.7rem;">(카사·뮤직카우 등)</span></th>
+            <th>🔐 STO<br><span style="font-weight:400;font-size:0.7rem;">(토큰증권)</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>법적 근거</strong></td>
+            <td>규제 샌드박스 (한시적 허용) ⏳</td>
+            <td>자본시장법·전자증권법 (제도화) ✅</td>
+          </tr>
+          <tr>
+            <td><strong>증권 분류</strong></td>
+            <td>투자계약증권 (2022년 소급 인정)</td>
+            <td>처음부터 증권으로 설계·발행</td>
+          </tr>
+          <tr>
+            <td><strong>발행·유통</strong></td>
+            <td>동일 업체가 발행+중개 ❌</td>
+            <td>발행·유통 분리 의무 ✅</td>
+          </tr>
+          <tr>
+            <td><strong>거래 시장</strong></td>
+            <td>자체 플랫폼 내 제한적 매매</td>
+            <td>인가된 장외거래소 (KDX·NXT)</td>
+          </tr>
+          <tr>
+            <td><strong>투자금 관리</strong></td>
+            <td>업체 자체 계좌 (위험 존재)</td>
+            <td>증권사 계좌관리기관 의무 보관</td>
+          </tr>
+          <tr>
+            <td><strong>공시 의무</strong></td>
+            <td>없음</td>
+            <td>정기 공시 의무 (증권신고서 등)</td>
+          </tr>
+          <tr>
+            <td><strong>투자자 보호</strong></td>
+            <td>제한적 (증권 규제 미적용)</td>
+            <td>증권법상 완전 보호</td>
+          </tr>
+          <tr>
+            <td><strong>대표 사례</strong></td>
+            <td>카사(부동산), 뮤직카우(음악 저작권)</td>
+            <td>KDX·NXT 컨소시엄</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="flow" style="margin-top:20px;">
+      <div class="flow-item">
+        <div class="flow-dot dot-indigo">1</div>
+        <div class="flow-content">
+          <h4>과거: 조각투자 플랫폼의 등장</h4>
+          <p>2018년 뮤직카우가 음악 저작권 참여청구권을 거래하며 조각투자 시장 개척. 당시 통신판매업으로 등록되어 법적 사각지대 존재</p>
+        </div>
+      </div>
+      <div class="flow-item">
+        <div class="flow-dot dot-gold">2</div>
+        <div class="flow-content">
+          <h4>전환기: 금융당국의 증권 판단</h4>
+          <p>2022년 금융위원회가 뮤직카우의 저작권 참여청구권을 '투자계약증권'으로 판단. 조각투자가 금융투자상품으로 공식 인정됨</p>
+        </div>
+      </div>
+      <div class="flow-item">
+        <div class="flow-dot dot-mint">3</div>
+        <div class="flow-content">
+          <h4>현재: STO 제도화</h4>
+          <p>2026년 1월 자본시장법·전자증권법 개정안 통과로 STO 시장 공식 출범. 기존 조각투자 업체들도 KDX·NXT 컨소시엄에 참여하며 제도권 편입 중</p>
+          <div class="amount">→ 시장 규모: 2024년 34조 원 → 2030년 367조 원 전망 (연평균 49% 성장)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mint-box" style="margin-top:16px;">
+      <strong>핵심 차이 한 줄 정리</strong><br>
+      기존 조각투자는 '사후에 증권으로 인정받은 과도기 모델', STO는 '처음부터 제도권에서 설계된 증권 모델'입니다. 투자자는 이제 STO를 통해 조각투자 상품을 법적으로 보호받으며 거래할 수 있습니다.
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════
+     2단계 이후: 준비 중
+════════════════════════════════ -->
+
+
+</div>
+
+<div class="tab-panel" id="tab-stage2">
+<!-- ════════════════════════════════
+     2단계: 구성 요소 및 생태계
+════════════════════════════════ -->
+<div class="stage-header-block" id="stage2" style="margin-top:32px;">
+  <span class="stage-badge">2단계</span>
+  <div>
+    <div class="stage-title-txt">구성 요소 및 생태계</div>
+    <div class="stage-sub-txt">The Ecosystem</div>
+  </div>
+</div>
+
+<!-- 2-1. 기초 자산 -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num mint-num">1</div>
+    <h2 class="section-title">기초 자산 <span>(Asset)</span></h2>
+  </div>
+  <p><strong>기초 자산</strong>이란 STO의 뿌리가 되는 실물 자산입니다. 이 자산의 소유권·수익권을 잘게 쪼개 토큰으로 발행하는 것이 STO의 출발점입니다.</p>
+  <div class="compare-grid">
+    <div class="compare-card indigo">
+      <div class="compare-card-icon">🏢</div>
+      <div class="compare-card-name">부동산</div>
+      <div class="compare-card-desc">상업용 건물·오피스·물류센터 등. 임대 수익 + 매각 차익을 토큰 보유자에게 배분. 가장 보편적인 STO 기초 자산.</div>
+      <span class="compare-card-tag tag-indigo">비금전신탁 수익증권</span>
+    </div>
+    <div class="compare-card gold">
+      <div class="compare-card-icon">🎨</div>
+      <div class="compare-card-name">미술품</div>
+      <div class="compare-card-desc">고가 작품을 조각 소유. 작품 매각 시 시세 차익을 지분에 비례 배분. 뮤지엄·갤러리와 협업 구조.</div>
+      <span class="compare-card-tag tag-gold">투자계약증권</span>
+    </div>
+    <div class="compare-card mint">
+      <div class="compare-card-icon">🎵</div>
+      <div class="compare-card-name">음악 저작권 (IP)</div>
+      <div class="compare-card-desc">음원 스트리밍·방송 사용료 등 저작권료를 수익으로 배분. 뮤직카우가 대표 사례.</div>
+      <span class="compare-card-tag tag-mint">비금전신탁 수익증권</span>
+    </div>
+    <div class="compare-card indigo">
+      <div class="compare-card-icon">🐄</div>
+      <div class="compare-card-name">고가 현물·기타</div>
+      <div class="compare-card-desc">한우(뱅카우), 명품·와인·MRI 의료기기 등 신규 자산군 확대 중.</div>
+      <span class="compare-card-tag tag-indigo">투자계약증권</span>
+    </div>
+  </div>
+  <div class="compare-table-wrap">
+    <table class="compare-table">
+      <thead><tr><th>자산 유형</th><th>수익 구조</th><th>발행 형태</th><th>국내 사례</th></tr></thead>
+      <tbody>
+        <tr><td><strong>부동산</strong></td><td>임대료 + 매각 차익</td><td>비금전신탁 수익증권</td><td>카사, 펀블, 루센트블록</td></tr>
+        <tr><td><strong>음악 저작권</strong></td><td>저작권료 수익 배분</td><td>비금전신탁 수익증권</td><td>뮤직카우</td></tr>
+        <tr><td><strong>미술품</strong></td><td>매각 차익</td><td>투자계약증권</td><td>아트앤가이드, 테사</td></tr>
+        <tr><td><strong>한우·농축산</strong></td><td>판매 수익 배분</td><td>투자계약증권</td><td>뱅카우</td></tr>
+        <tr><td><strong>의료기기·기타</strong></td><td>임대·운용 수익</td><td>투자계약증권</td><td>리턴플러스(MRI)</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="highlight-box"><strong>핵심 조건:</strong> 기초 자산이 STO로 발행되려면 <strong>안정적인 현금 흐름</strong>이 뒷받침되어야 합니다.</div>
+</div>
+
+<!-- 2-2. 발행인 -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num mint-num">2</div>
+    <h2 class="section-title">발행인 <span>(Issuer)</span></h2>
+  </div>
+  <p><strong>발행인</strong>은 자산을 보유하거나 확보한 뒤 이를 토큰화하여 투자자에게 판매하는 주체입니다. STO의 법적 책임과 공시 의무는 모두 발행인에게 귀속됩니다.</p>
+  <div class="flow">
+    <div class="flow-item">
+      <div class="flow-dot dot-indigo">1</div>
+      <div class="flow-content"><h4>자산 보유자 (Asset Owner)</h4><p>건물주, 저작권자, 미술품 소유자 등 원래 자산을 가진 주체. STO 플랫폼에 자산 상장을 요청하며 토큰 발행을 통해 자금을 조달합니다.</p></div>
+    </div>
+    <div class="flow-item">
+      <div class="flow-dot dot-gold">2</div>
+      <div class="flow-content"><h4>발행인 계좌관리기관 (신설)</h4><p>요건을 갖춘 발행인은 증권사를 거치지 않고 <strong>직접 토큰증권을 발행·등록·관리</strong>할 수 있습니다.</p><div class="amount">자기자본 요건: 일반 투자자 대상 10억원 / 전문 투자자 대상 5억원</div></div>
+    </div>
+    <div class="flow-item">
+      <div class="flow-dot dot-ok">3</div>
+      <div class="flow-content"><h4>발행인의 법적 의무</h4><p>정기 공시, 자산 가치 평가, 투자자 예치금 외부 신탁, 약관 교부 등 기존 증권사와 동일한 투자자 보호 기준을 준수해야 합니다.</p></div>
+    </div>
+  </div>
+  <div class="gold-box"><strong>두 가지 발행 경로:</strong><br>① <strong>신탁수익증권</strong> — 기초 자산을 신탁사에 이전 후 수익증권 발행 (부동산·음악 등)<br>② <strong>투자계약증권</strong> — 자산 공유지분을 투자자에게 직접 양도 (미술품·한우 등)</div>
+</div>
+
+<!-- 2-3. 플랫폼/계좌관리기관 -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num mint-num">3</div>
+    <h2 class="section-title">플랫폼 / <span>계좌관리기관</span></h2>
+  </div>
+  <p>STO 생태계에서 발행과 유통을 기술적·법적으로 지원하는 인프라 주체들입니다.</p>
+  <div class="flow">
+    <div class="flow-item">
+      <div class="flow-dot dot-indigo">🏦</div>
+      <div class="flow-content"><h4>증권사 / 은행 (계좌관리기관)</h4><p>KB증권, 한국투자증권, 신한증권 등 주요 증권사가 STO 플랫폼 구축 경쟁 중. 토큰 생성·이전 및 투자자 계좌 관리를 담당합니다.</p></div>
+    </div>
+    <div class="flow-item">
+      <div class="flow-dot dot-gold">⚙️</div>
+      <div class="flow-content"><h4>블록체인 기술 기업 (Tech Partner)</h4><p>증권사와 컨소시엄을 구성해 스마트 계약 개발·분산원장 운영·KYC/AML 검증 시스템을 제공합니다.</p></div>
+    </div>
+    <div class="flow-item">
+      <div class="flow-dot dot-indigo">🏛️</div>
+      <div class="flow-content"><h4>한국예탁결제원 (KSD)</h4><p>발행 총량 관리 및 심사. 토큰증권의 양도가능성·대체가능성 등 외형적 요건 검증.</p></div>
+    </div>
+    <div class="flow-item">
+      <div class="flow-dot dot-ok">📊</div>
+      <div class="flow-content"><h4>장외거래중개업자 (ATS, 유통 플랫폼)</h4><p>KDX·NXT가 장외거래 유통 플랫폼 예비 인가 사업자로 선정. 투자자 간 토큰 매매를 중개하는 2차 유통 시장 역할.</p><div class="amount">발행과 유통은 이해충돌 방지를 위해 반드시 분리 운영</div></div>
+    </div>
+  </div>
+  <div class="mint-box"><strong>분산원장의 법적 지위 확보 (2025년):</strong> 전자증권법·자본시장법 개정안 국회 통과로, 블록체인 상에 기록된 권리의 발생·변경·소멸이 기존 전자등록계좌부와 <strong>동일한 법적 효력</strong>을 갖게 되었습니다.</div>
+</div>
+
+<!-- 2-4. 투자자 -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num mint-num">4</div>
+    <h2 class="section-title">투자자 <span>(Investor)</span></h2>
+  </div>
+  <p>STO에서 투자자는 단순히 토큰을 구매하는 것이 아니라, <strong>실물 자산에 대한 법적 권리</strong>를 취득합니다.</p>
+  <div class="var-grid">
+    <div class="var-card indigo"><div class="var-name">수익권</div><div class="var-value" style="font-size:1.0rem">배당 수익</div><div class="var-desc">임대료·저작권료·매각 차익 등을 보유 토큰 수량에 비례해 자동 배분.</div></div>
+    <div class="var-card gold"><div class="var-name">의결권</div><div class="var-value" style="font-size:1.0rem">온체인 투표</div><div class="var-desc">자산 처분·운용 방향 등 주요 의사결정에 토큰 보유량 비례로 참여 가능.</div></div>
+    <div class="var-card mint"><div class="var-name">유동성</div><div class="var-value" style="font-size:1.0rem">2차 거래</div><div class="var-desc">장외거래 플랫폼(ATS)을 통해 보유 토큰을 타 투자자에게 매도 가능.</div></div>
+    <div class="var-card indigo"><div class="var-name">소액 진입</div><div class="var-value" style="font-size:1.0rem">조각 소유</div><div class="var-desc">수십억 자산도 수만 원 단위로 진입 가능. 소액 분산 투자 수요에 최적화.</div></div>
+  </div>
+  <div class="navy-box"><strong>투자자 보호 장치 (자본시장법 동일 적용)</strong><br>· 투자자 예치금은 외부 금융기관에 별도 신탁<br>· 전자등록계좌부 등록으로 권리 추정력·제3자 대항력 부여<br>· 정기 공시 및 자산 가치 평가 결과 의무 공개<br>· KYC(본인 확인) · AML(자금세탁 방지) 적용</div>
+  <div class="highlight-box"><strong>2030년 시장 전망 (삼일PwC):</strong> 국내 토큰증권 시장 시가총액이 2024년 약 34조원에서 2030년 약 367조원으로, 연평균 약 49% 성장이 예상됩니다.</div>
+</div>
+
+
+</div>
+
+<div class="tab-panel" id="tab-stage3">
+<!-- ════════════════════════════════
+     3단계: 기술적 아키텍처
+════════════════════════════════ -->
+<div class="stage-header-block" id="stage3" style="margin-top:32px;">
+  <span class="stage-badge">3단계</span>
+  <div>
+    <div class="stage-title-txt">기술적 아키텍처</div>
+    <div class="stage-sub-txt">Technical Structure</div>
+  </div>
+</div>
+
+<!-- 3-1. 네트워크 선택 -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num mint-num">1</div>
+    <h2 class="section-title">네트워크 <span>선택</span></h2>
+  </div>
+  <p>STO를 발행하기 위해선 어떤 블록체인 네트워크 위에 올릴지를 먼저 결정해야 합니다. 이 선택이 거래 속도·비용·보안·규제 대응 방식을 모두 결정합니다.</p>
+  <div class="compare-table-wrap">
+    <table class="compare-table">
+      <thead><tr><th>구분</th><th>🌐 퍼블릭 체인</th><th>⚡ 고성능 퍼블릭</th><th>🔒 프라이빗/컨소시엄</th></tr></thead>
+      <tbody>
+        <tr><td><strong>대표 네트워크</strong></td><td>Ethereum, Polygon</td><td>Solana</td><td>Hyperledger, Corda, Progmat</td></tr>
+        <tr><td><strong>접근 권한</strong></td><td>누구나 접근 가능</td><td>누구나 접근 가능</td><td>허가된 기관만 접근</td></tr>
+        <tr><td><strong>처리 속도</strong></td><td>Polygon 약 48~71 TPS</td><td>실사용 1,000+ TPS</td><td>설계에 따라 다름</td></tr>
+        <tr><td><strong>거래 비용</strong></td><td>소액 가스비 발생</td><td>매우 저렴</td><td>가스비 없음</td></tr>
+        <tr><td><strong>EVM 호환</strong></td><td>✅ 호환</td><td>❌ 비호환</td><td>설계에 따라 다름</td></tr>
+        <tr><td><strong>STO 적합 용도</strong></td><td>글로벌 STO, RWA</td><td>소액·고빈도 거래</td><td>국내 증권사 컨소시엄</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="navy-box"><strong>국내 방향:</strong> 분산원장을 사용하더라도 반드시 <strong>제도권 금융 인프라 안에서 운영</strong>해야 한다는 기조가 확고합니다. 국내 증권사들은 허가된 기관 간 컨소시엄 체인 또는 프라이빗 체인을 우선 검토하고 있습니다.</div>
+  <div class="term-accordion">
+    <button class="term-accordion-btn" onclick="toggleAccordion(this)">📖 용어 보기 <span class="acc-arrow">▼</span></button>
+    <div class="term-accordion-body">
+      <div class="term-grid">
+        <div class="term-card indigo-term"><div class="term-name">EVM</div><div class="term-eng">Ethereum Virtual Machine</div><div class="term-desc">이더리움 호환 체인의 공통 실행 환경. "EVM 호환"이면 이더리움용 스마트 계약을 그대로 사용 가능합니다.</div></div>
+        <div class="term-card"><div class="term-name">TPS</div><div class="term-eng">Transactions Per Second</div><div class="term-desc">초당 처리 가능한 트랜잭션(거래) 수. 숫자가 높을수록 더 많은 거래를 빠르게 처리합니다.</div></div>
+        <div class="term-card gold-term"><div class="term-name">컨소시엄 체인</div><div class="term-eng">Consortium Chain</div><div class="term-desc">복수의 금융기관이 공동으로 운영하는 반공개 블록체인입니다.</div></div>
+        <div class="term-card indigo-term"><div class="term-name">가스비</div><div class="term-eng">Gas Fee</div><div class="term-desc">퍼블릭 블록체인에서 트랜잭션을 처리할 때 네트워크에 지불하는 수수료입니다.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 3-2. 스마트 계약 -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num mint-num">2</div>
+    <h2 class="section-title">스마트 계약 <span>(Smart Contract)</span></h2>
+  </div>
+  <p><strong>스마트 계약</strong>은 "조건이 충족되면 자동으로 실행되는 디지털 계약서"입니다. 사람이 개입하지 않아도 코드가 수익을 배분하고, 투표를 집계하고, 거래를 승인합니다.</p>
+  <div class="highlight-box"><strong>핵심 비유:</strong> 기존 금융에서는 은행 직원이 계좌이체·배당 지급을 처리합니다. STO에서는 스마트 계약이 그 역할을 24시간 자동으로 수행합니다.</div>
+  <div class="flow">
+    <div class="flow-item"><div class="flow-dot dot-indigo">1</div><div class="flow-content"><h4>KYC / 화이트리스트 검증</h4><p>토큰을 전송하기 전, 수신자 지갑이 KYC 인증을 완료한 승인된 주소인지 자동 확인합니다. 미승인 지갑으로는 전송 자체가 차단됩니다.</p></div></div>
+    <div class="flow-item"><div class="flow-dot dot-gold">2</div><div class="flow-content"><h4>수익 배분 자동화</h4><p>임대료·배당·저작권료가 스마트 계약 주소로 입금되면, 보유 토큰 수량 비율대로 각 투자자에게 자동 분배합니다.</p></div></div>
+    <div class="flow-item"><div class="flow-dot dot-indigo">3</div><div class="flow-content"><h4>의결권 온체인 집계</h4><p>자산 처분·운용 방향 등 주요 의사결정을 온라인 투표로 진행합니다. 보유 토큰 수량 기준으로 투표권이 자동 산정·집계됩니다.</p></div></div>
+    <div class="flow-item"><div class="flow-dot dot-ok">4</div><div class="flow-content"><h4>락업 · 전송 제한</h4><p>발행 후 일정 기간 매도 금지(락업), 특정 국가 투자자 거래 제한(관할권 필터) 등 규제 요건을 코드로 강제합니다.</p></div></div>
+  </div>
+  <div class="mint-box"><strong>오라클의 역할:</strong> 실제 임대료 납부 여부, 자산 감정가 등 외부 데이터를 블록체인에 전달해주는 <strong>오라클(Oracle)</strong>이 스마트 계약과 현실을 연결합니다.</div>
+  <div class="term-accordion">
+    <button class="term-accordion-btn" onclick="toggleAccordion(this)">📖 용어 보기 <span class="acc-arrow">▼</span></button>
+    <div class="term-accordion-body">
+      <div class="term-grid">
+        <div class="term-card indigo-term"><div class="term-name">화이트리스트</div><div class="term-eng">Whitelist</div><div class="term-desc">KYC 인증을 완료하고 거래가 허용된 지갑 주소 목록. 목록에 없는 주소로는 토큰 전송이 자동 차단됩니다.</div></div>
+        <div class="term-card gold-term"><div class="term-name">락업</div><div class="term-eng">Lock-up</div><div class="term-desc">발행 후 일정 기간 동안 토큰을 매도하지 못하도록 스마트 계약으로 잠그는 장치입니다.</div></div>
+        <div class="term-card"><div class="term-name">오라클</div><div class="term-eng">Oracle</div><div class="term-desc">외부 실물 데이터를 블록체인 스마트 계약에 전달하는 연결 장치입니다. 체인링크(Chainlink)가 대표적입니다.</div></div>
+        <div class="term-card indigo-term"><div class="term-name">KYC / AML</div><div class="term-eng">Know Your Customer / Anti-Money Laundering</div><div class="term-desc">고객 신원 확인(KYC)과 자금세탁 방지(AML). STO 투자자는 반드시 이 절차를 완료해야 토큰을 보유할 수 있습니다.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 3-3. 토큰 표준 -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num mint-num">3</div>
+    <h2 class="section-title">토큰 표준 <span>ERC-3643 · ERC-1400</span></h2>
+  </div>
+  <p><strong>토큰 표준</strong>은 "토큰이 어떻게 작동해야 하는가"에 대한 공통 규격입니다. 일반 코인은 ERC-20을 사용하지만, 증권형 토큰은 KYC·전송 제한·수익 배분 등 규제 준수 기능이 추가되어야 합니다.</p>
+  <div class="compare-table-wrap">
+    <table class="compare-table">
+      <thead><tr><th>표준</th><th>세대</th><th>핵심 특징</th><th>STO 적합도</th></tr></thead>
+      <tbody>
+        <tr><td><strong>ERC-20</strong></td><td>일반 토큰</td><td>자유 전송 가능, KYC·전송 제한 없음</td><td>❌ 증권 불가</td></tr>
+        <tr><td><strong>ERC-1400</strong></td><td>1세대 증권형</td><td>전송 제한·파티션 기능 추가, 오프체인 검증, 모듈성 부족</td><td>⚠️ 레거시 취급</td></tr>
+        <tr><td><strong>ERC-3643</strong></td><td>현행 글로벌 표준</td><td>온체인 신원 검증(ONCHAINID), 모듈식 컴플라이언스, 이더리움 공식 승인</td><td>✅ 권장 표준</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="margin-top:16px;"><strong>왜 ERC-3643인가?</strong> 이더리움 커뮤니티가 공식 승인한 최초의 규정 준수 토큰화 표준입니다. 미국 SEC도 2025년 7월 이 표준을 공식 검토하며 글로벌 RWA 표준으로 사실상 확정되고 있습니다.</p>
+  <div class="var-grid" style="margin-top:16px;">
+    <div class="var-card indigo"><div class="var-name">Token Contract</div><div class="var-value" style="font-size:0.9rem;">토큰 본체</div><div class="var-desc">ERC-20 기반 + 전송 전 컴플라이언스 검증 훅(Hook) 실행</div></div>
+    <div class="var-card mint"><div class="var-name">Identity Registry</div><div class="var-value" style="font-size:0.9rem;">신원 등록부</div><div class="var-desc">지갑주소 ↔ 온체인 신원(ONCHAINID) 매핑 관리</div></div>
+    <div class="var-card gold"><div class="var-name">Compliance Module</div><div class="var-value" style="font-size:0.9rem;">규정 준수 모듈</div><div class="var-desc">관할권·보유한도·전송규칙 정책을 코드로 설정·변경</div></div>
+    <div class="var-card indigo"><div class="var-name">ONCHAINID</div><div class="var-value" style="font-size:0.9rem;">온체인 신원</div><div class="var-desc">투자자의 KYC 자격증명을 블록체인에 저장하는 분산 신원(DID) 시스템</div></div>
+  </div>
+  <div class="term-accordion">
+    <button class="term-accordion-btn" onclick="toggleAccordion(this)">📖 용어 보기 <span class="acc-arrow">▼</span></button>
+    <div class="term-accordion-body">
+      <div class="term-grid">
+        <div class="term-card indigo-term"><div class="term-name">ERC (이더리움 표준)</div><div class="term-eng">Ethereum Request for Comments</div><div class="term-desc">이더리움 생태계의 기술 표준 규격 번호. ERC-20은 일반 토큰, ERC-3643은 증권형 토큰 표준입니다.</div></div>
+        <div class="term-card"><div class="term-name">T-REX Protocol</div><div class="term-eng">Token for Regulated EXchanges</div><div class="term-desc">ERC-3643의 원래 이름. Tokeny Solutions가 개발한 규제 거래소용 토큰 프로토콜입니다.</div></div>
+        <div class="term-card gold-term"><div class="term-name">DID</div><div class="term-eng">Decentralized Identifier</div><div class="term-desc">중앙 기관 없이 개인이 스스로 관리하는 디지털 신원. KYC 결과를 DID에 연결해 온체인 검증에 활용합니다.</div></div>
+        <div class="term-card indigo-term"><div class="term-name">파티션</div><div class="term-eng">Token Partition</div><div class="term-desc">하나의 토큰을 클래스별로 분리하는 기능. 의결권 있는 클래스 A / 배당만 받는 클래스 B로 구분 발행 가능합니다.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- 3-4. 지갑 및 보안 -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num mint-num">4</div>
+    <h2 class="section-title">지갑 및 보안 <span>멀티시그 · 수탁</span></h2>
+  </div>
+  <p>STO에서 지갑은 단순한 코인 보관 도구가 아닙니다. <strong>법적 권리(수익권·의결권·소유권)의 보관 장치</strong>입니다.</p>
+  <div class="gold-box"><strong>보안의 두 축:</strong> ① 발행인·운영 측의 <strong>멀티시그(다중 서명)</strong>와 ② 투자자·기관의 <strong>수탁(커스터디)</strong> 시스템으로 구성됩니다.</div>
+  <div class="flow">
+    <div class="flow-item"><div class="flow-dot dot-indigo">🔑</div><div class="flow-content"><h4>멀티시그 (Multi-Signature) — Safe</h4><p>여러 명의 서명이 있어야만 거래가 실행되는 구조입니다. 예: "3명 중 2명이 승인해야 수익 배분 실행". 현재 업계 표준은 <strong>Safe(구 Gnosis Safe)</strong>이며 발행인 운영 지갑, 수익 배분 지갑에 필수 적용됩니다.</p></div></div>
+    <div class="flow-item"><div class="flow-dot dot-gold">🏦</div><div class="flow-content"><h4>수탁 시스템 (Custody) — 3가지 유형</h4><p>기관 투자자를 위한 전문 자산 보관 서비스입니다. 보안 수준과 편의성에 따라 세 가지로 구분됩니다.</p></div></div>
+  </div>
+  <div class="compare-grid">
+    <div class="compare-card indigo"><div class="compare-card-icon">🌐</div><div class="compare-card-name">핫 월렛 (Hot Wallet)</div><div class="compare-card-desc">인터넷에 상시 연결. 거래가 빠르고 편리하지만 해킹 위험이 상대적으로 높습니다.</div><span class="compare-card-tag tag-indigo">편의성 높음</span></div>
+    <div class="compare-card gold"><div class="compare-card-icon">❄️</div><div class="compare-card-name">콜드 월렛 (Cold Wallet)</div><div class="compare-card-desc">인터넷과 완전 분리된 오프라인 보관. 보안이 매우 높습니다. 하드웨어 지갑(Ledger 등) 형태가 대표적입니다.</div><span class="compare-card-tag tag-gold">보안 최강</span></div>
+    <div class="compare-card mint"><div class="compare-card-icon">🧩</div><div class="compare-card-name">MPC 커스터디</div><div class="compare-card-desc">개인키를 여러 조각으로 분산 보관해 단일 유출을 방지합니다. 현재 기관급 수탁의 글로벌 표준입니다.</div><span class="compare-card-tag tag-mint">기관급 표준</span></div>
+  </div>
+  <div class="navy-box" style="margin-top:16px;"><strong>⚠️ MPC 명칭 혼동 주의</strong><br>· <strong>MPC 커스터디</strong> = <em>Multi-Party Computation</em> — 개인키를 분산 보관하는 <u>보안 기술</u><br>· <strong>MPC 토큰(티커)</strong> = 특정 프로젝트의 <u>토큰 이름</u> (예: Mineral Project Coin)<br>두 개념은 완전히 다르며 혼동하지 않도록 주의가 필요합니다. → <a href="mpc_guide.html" style="color:var(--mint);">MPC 토큰 가이드 참조</a></div>
+  <div class="mint-box"><strong>국내 방향 (2025년):</strong> 커스터디 기업들은 단순 보관을 넘어 <strong>"발행·보관·유통 네트워크를 망라하는 가상자산 은행"</strong>으로 진화를 목표로 하고 있습니다.</div>
+  <div class="term-accordion">
+    <button class="term-accordion-btn" onclick="toggleAccordion(this)">📖 용어 보기 <span class="acc-arrow">▼</span></button>
+    <div class="term-accordion-body">
+      <div class="term-grid">
+        <div class="term-card indigo-term"><div class="term-name">멀티시그</div><div class="term-eng">Multi-Signature</div><div class="term-desc">여러 명의 디지털 서명이 있어야 거래가 실행되는 보안 구조. 단일 담당자 실수·해킹으로 인한 피해를 방지합니다.</div></div>
+        <div class="term-card"><div class="term-name">Safe (구 Gnosis Safe)</div><div class="term-eng">Multisig Wallet Standard</div><div class="term-desc">멀티시그 지갑의 업계 표준 플랫폼. 전 세계 STO·DeFi 프로젝트가 운영 지갑으로 사용합니다.</div></div>
+        <div class="term-card gold-term"><div class="term-name">MPC 커스터디</div><div class="term-eng">Multi-Party Computation Custody</div><div class="term-desc">개인키를 여러 조각으로 나눠 분산 보관하는 기술. 키 한 조각이 유출되어도 실제 키를 복원할 수 없습니다.</div></div>
+        <div class="term-card indigo-term"><div class="term-name">개인키</div><div class="term-eng">Private Key</div><div class="term-desc">지갑의 비밀번호이자 자산 소유 증명. 분실하면 자산 접근이 영구 불가능하며 STO에서는 법적 권리까지 함께 잃게 됩니다.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</div>
+
+<div class="tab-panel" id="tab-stage4">
+<!-- ════════════════════════════════
+     4단계: 발행 및 투자 프로세스
+════════════════════════════════ -->
+<div class="stage-header-block" id="stage4" style="margin-top:32px;">
+  <span class="stage-badge">4단계</span>
+  <div>
+    <div class="stage-title-txt">발행 및 투자 프로세스</div>
+    <div class="stage-sub-txt">The Lifecycle</div>
+  </div>
+</div>
+
+<!-- 4-1. 발행 절차 -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num mint-num">1</div>
+    <h2 class="section-title">발행 절차 — <span>자산 감정부터 민팅까지</span></h2>
+  </div>
+  <p>STO 발행은 단순히 토큰을 만드는 것이 아닙니다. 자산 감정 → 법적 구조화 → 당국 심사 → 스마트 계약 배포 → 토큰 발행의 순서로 진행되는 복합적인 과정입니다.</p>
+
+  <div class="flow">
+    <div class="flow-item">
+      <div class="flow-dot dot-indigo">1</div>
+      <div class="flow-content">
+        <h4>기초자산 선정 및 법적 구조화</h4>
+        <p>부동산·미술품·저작권 등 수익을 창출할 수 있는 자산을 선정합니다. 신탁수익증권 또는 투자계약증권 중 어떤 형태로 발행할지 법적 구조를 결정합니다.</p>
+      </div>
+    </div>
+    <div class="flow-item">
+      <div class="flow-dot dot-gold">2</div>
+      <div class="flow-content">
+        <h4>자산 가치 감정</h4>
+        <p>독립 평가기관이 기초자산의 현재 가치와 예상 수익을 산정합니다. 이 감정 결과가 토큰 발행 총량과 가격 산정의 기준이 됩니다.</p>
+      </div>
+    </div>
+    <div class="flow-item">
+      <div class="flow-dot dot-indigo">3</div>
+      <div class="flow-content">
+        <h4>증권신고서 제출 및 KSD 심사</h4>
+        <p>금융당국에 증권신고서를 제출하고, 한국예탁결제원(KSD)이 양도가능성·대체가능성·법령 위반 여부 등을 심사합니다. <strong>실제로 기초자산 보관방식·투자자 권리 범위 미흡으로 정정이 반복된 사례가 있어 꼼꼼한 준비가 필수입니다.</strong></p>
+      </div>
+    </div>
+    <div class="flow-item">
+      <div class="flow-dot dot-gold">4</div>
+      <div class="flow-content">
+        <h4>계좌관리기관 등록 및 KYC 온보딩</h4>
+        <p>인가받은 증권사(계좌관리기관)에 등록하고, 투자자 KYC(신원확인)·AML(자금세탁방지) 검증을 완료합니다. 검증된 지갑 주소만 화이트리스트에 등록됩니다.</p>
+      </div>
+    </div>
+    <div class="flow-item">
+      <div class="flow-dot dot-indigo">5</div>
+      <div class="flow-content">
+        <h4>스마트 계약 배포</h4>
+        <p>수익 배분·전송 제한·의결권 등 규칙이 담긴 스마트 계약을 블록체인에 배포합니다. 독립적인 보안 감사(Audit)를 통해 코드 취약점을 사전 검증합니다.</p>
+      </div>
+    </div>
+    <div class="flow-item">
+      <div class="flow-dot dot-ok">6</div>
+      <div class="flow-content">
+        <h4>토큰 발행 (Minting) → 투자자 배정</h4>
+        <p>스마트 계약이 토큰을 생성(Minting)하고, KSD가 발행 총량과 투자자 배정 수량의 일치 여부를 최종 확인합니다. 오차 발생 시 정정 후 배정이 완료됩니다.</p>
+        <div class="amount">→ 이 시점부터 토큰 보유 = 법적 권리 보유</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 요약 카드 -->
+  <div class="compare-table-wrap" style="margin-top:16px;">
+    <table class="compare-table">
+      <thead>
+        <tr><th>단계</th><th>주체</th><th>핵심 내용</th><th>소요 기간</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>① 자산 구조화</strong></td><td>발행인 + 법무</td><td>신탁수익증권 or 투자계약증권 선택</td><td>1~3개월</td></tr>
+        <tr><td><strong>② 가치 감정</strong></td><td>독립 평가기관</td><td>자산 가치 및 수익 산정</td><td>1~2개월</td></tr>
+        <tr><td><strong>③ 당국 심사</strong></td><td>금융위·KSD</td><td>증권신고서 제출·검토·승인</td><td>1~6개월</td></tr>
+        <tr><td><strong>④ KYC 온보딩</strong></td><td>계좌관리기관</td><td>투자자 신원 확인·화이트리스트 등록</td><td>상시</td></tr>
+        <tr><td><strong>⑤ 스마트 계약</strong></td><td>기술 파트너</td><td>배포 + 보안 감사(Audit)</td><td>1~2개월</td></tr>
+        <tr><td><strong>⑥ 민팅·배정</strong></td><td>발행인·KSD</td><td>토큰 생성 및 투자자 계좌 배정</td><td>D-day</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="term-accordion">
+    <button class="term-accordion-btn" onclick="toggleAccordion(this)">📖 용어 보기 <span class="acc-arrow">▼</span></button>
+    <div class="term-accordion-body">
+      <div class="term-grid">
+        <div class="term-card indigo-term">
+          <div class="term-name">민팅 (Minting)</div>
+          <div class="term-eng">Token Minting</div>
+          <div class="term-desc">스마트 계약이 새로운 토큰을 생성하는 행위. 실물 화폐 주조에 빗댄 표현으로, 발행량이 확정되면 그 수량만큼 토큰이 만들어집니다.</div>
+        </div>
+        <div class="term-card gold-term">
+          <div class="term-name">증권신고서</div>
+          <div class="term-eng">Securities Registration Statement</div>
+          <div class="term-desc">공모 발행 시 금융당국에 제출하는 투자자 보호 문서. 기초자산 내용·수익 구조·리스크·발행인 정보 등을 담습니다.</div>
+        </div>
+        <div class="term-card">
+          <div class="term-name">보안 감사 (Audit)</div>
+          <div class="term-eng">Smart Contract Audit</div>
+          <div class="term-desc">스마트 계약 코드의 버그·취약점을 독립 보안 전문기관이 검증하는 과정. STO 발행 전 필수 절차입니다.</div>
+        </div>
+        <div class="term-card indigo-term">
+          <div class="term-name">도산절연</div>
+          <div class="term-eng">Bankruptcy Remote</div>
+          <div class="term-desc">발행인이 파산해도 기초자산(신탁 자산)은 투자자에게 돌아올 수 있도록 법적으로 분리해 두는 구조입니다.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 4-2. 유통 및 거래 -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num mint-num">2</div>
+    <h2 class="section-title">유통 및 거래 — <span>장외거래소와 2차 시장</span></h2>
+  </div>
+  <p>발행 후 투자자 간 토큰을 사고파는 <strong>2차 유통 시장</strong>이 필요합니다. STO는 일반 주식거래소가 아닌 <strong>장외거래중개업자(ATS)</strong>를 통해 유통됩니다.</p>
+
+  <div class="compare-grid">
+    <div class="compare-card indigo">
+      <div class="compare-card-icon">🏛️</div>
+      <div class="compare-card-name">장외거래중개업자 (ATS)</div>
+      <div class="compare-card-desc">Alternative Trading System. 투자자 간 STO 토큰 매매를 중개하는 플랫폼. 국내에서는 KDX·NXT가 2025년 예비인가 사업자로 선정됐습니다.</div>
+      <span class="compare-card-tag tag-indigo">2차 유통 시장</span>
+    </div>
+    <div class="compare-card gold">
+      <div class="compare-card-icon">🔀</div>
+      <div class="compare-card-name">발행-유통 분리 원칙</div>
+      <div class="compare-card-desc">발행인과 유통 플랫폼은 반드시 분리 운영해야 합니다. 이해충돌 방지와 투자자 보호를 위한 핵심 원칙입니다.</div>
+      <span class="compare-card-tag tag-gold">규제 핵심 원칙</span>
+    </div>
+    <div class="compare-card mint">
+      <div class="compare-card-icon">🔒</div>
+      <div class="compare-card-name">락업 기간</div>
+      <div class="compare-card-desc">발행 후 일정 기간은 거래가 제한됩니다. 스마트 계약이 자동으로 락업 기간을 관리하며 만료 후 자동 해제됩니다.</div>
+      <span class="compare-card-tag tag-mint">자동 관리</span>
+    </div>
+  </div>
+
+  <div class="highlight-box">
+    <strong>일반투자자 투자 한도:</strong> 리스크가 높은 투자계약증권은 신탁수익증권보다 엄격한 투자 한도가 적용됩니다. 과도한 고위험 투자로부터 일반 투자자를 보호하기 위한 장치입니다.
+  </div>
+  <div class="gold-box">
+    <strong>⚠️ 유동성 리스크:</strong> 현재 국내 STO 유통 시장은 초기 단계입니다. 장외거래소의 실제 거래량이 충분하지 않으면 매도하고 싶어도 매수자가 없어 현금화가 어려울 수 있습니다. STO는 주식처럼 즉시 환금이 보장되지 않습니다.
+  </div>
+</div>
+
+<!-- 4-3. 수익 실현 -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num mint-num">3</div>
+    <h2 class="section-title">수익 실현 — <span>배당·매각 차익 분배</span></h2>
+  </div>
+  <p>STO 투자자의 수익은 크게 두 가지입니다. 보유 기간 중 받는 <strong>배당 수익</strong>과, 토큰 매각 시 발생하는 <strong>시세 차익</strong>입니다.</p>
+
+  <div class="var-grid">
+    <div class="var-card mint">
+      <div class="var-name">① 배당 수익</div>
+      <div class="var-value" style="font-size:0.9rem;">정기 수익 배분</div>
+      <div class="var-desc">임대료·저작권료·이자 등이 스마트 계약 주소로 입금되면 보유 토큰 비율대로 자동 분배. 중간 정산 담당자 불필요.</div>
+    </div>
+    <div class="var-card gold">
+      <div class="var-name">② 매각 차익</div>
+      <div class="var-value" style="font-size:0.9rem;">시세 차익</div>
+      <div class="var-desc">기초자산 가치 상승 시 토큰 가격도 상승. 장외거래소에서 매도 시 매입가와의 차익이 수익입니다.</div>
+    </div>
+    <div class="var-card indigo">
+      <div class="var-name">③ 자산 매각 차익</div>
+      <div class="var-value" style="font-size:0.9rem;">청산 배분</div>
+      <div class="var-desc">건물 매각·저작권 양도 등 기초자산이 최종 처분될 때 매각 대금을 토큰 비율대로 분배합니다.</div>
+    </div>
+    <div class="var-card gold">
+      <div class="var-name">⚠️ 세금 이슈</div>
+      <div class="var-value" style="font-size:0.9rem;">과세 기준 미정</div>
+      <div class="var-desc">현재 STO 수익에 대한 명확한 과세 기준이 아직 정비 중입니다. 투자 전 세무사 확인이 필요합니다.</div>
+    </div>
+  </div>
+
+  <div class="navy-box">
+    <strong style="color:#FFD700;">수익 배분 자동화 흐름</strong><br><br>
+    <span style="color:rgba(255,255,255,0.9); font-size:0.88rem; line-height:2.0;">
+    💰 임대료/저작권료 수납<br>
+    ↓ 블록체인 오라클이 수납 확인 데이터를 온체인 전달<br>
+    ↓ 스마트 계약이 전체 토큰 수량 대비 보유 비율 계산<br>
+    ↓ 각 투자자 지갑으로 자동 송금<br>
+    ✅ 전 과정 온체인 기록 — 투명하게 확인 가능
+    </span>
+  </div>
+</div>
+
+<!-- 4-4. 공시 및 투명성 -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num mint-num">4</div>
+    <h2 class="section-title">공시 및 투명성 — <span>온체인 데이터 확인</span></h2>
+  </div>
+  <p>STO의 가장 강력한 장점 중 하나는 <strong>투명성</strong>입니다. 발행량·보유자·수익 배분 내역이 블록체인에 영구 기록되어 누구나 확인할 수 있습니다.</p>
+
+  <div class="compare-grid">
+    <div class="compare-card indigo">
+      <div class="compare-card-icon">🔍</div>
+      <div class="compare-card-name">블록체인 탐색기</div>
+      <div class="compare-card-desc">PolygonScan 등 탐색기에서 컨트랙트 주소를 검색하면 발행 총량·홀더 수·거래 내역을 실시간 확인 가능합니다.</div>
+      <span class="compare-card-tag tag-indigo">온체인 공시</span>
+    </div>
+    <div class="compare-card gold">
+      <div class="compare-card-icon">📋</div>
+      <div class="compare-card-name">오프체인 공시</div>
+      <div class="compare-card-desc">자산 감정 보고서·재무제표·계약서 등 블록체인에 담기 어려운 문서는 발행인이 별도 공시합니다. 자본시장법상 의무입니다.</div>
+      <span class="compare-card-tag tag-gold">법적 의무</span>
+    </div>
+    <div class="compare-card mint">
+      <div class="compare-card-icon">🔗</div>
+      <div class="compare-card-name">온·오프체인 연결</div>
+      <div class="compare-card-desc">IPFS(분산 파일 저장소)에 공시 문서를 올리고 해시값을 온체인에 기록하는 방식으로 두 데이터를 연결합니다.</div>
+      <span class="compare-card-tag tag-mint">투명성 보장</span>
+    </div>
+  </div>
+
+  <!-- 탐색기 확인 방법 아코디언 -->
+  <div class="term-accordion" style="margin-top:14px;">
+    <button class="term-accordion-btn" onclick="toggleAccordion(this)">🔍 PolygonScan에서 확인하는 방법 <span class="acc-arrow">▼</span></button>
+    <div class="term-accordion-body">
+      <div class="term-grid">
+        <div class="term-card indigo-term">
+          <div class="term-name">① 컨트랙트 주소 검색</div>
+          <div class="term-desc">polygonscan.com 검색창에 토큰 컨트랙트 주소(0x...)를 입력합니다. 토큰 이름·심볼·총 발행량이 표시됩니다.</div>
+        </div>
+        <div class="term-card">
+          <div class="term-name">② Holders 탭</div>
+          <div class="term-desc">전체 보유자 수와 상위 홀더의 보유 비율을 확인합니다. 소수에게 집중되어 있는지 분산되어 있는지 파악할 수 있습니다.</div>
+        </div>
+        <div class="term-card gold-term">
+          <div class="term-name">③ Transfers 탭</div>
+          <div class="term-desc">토큰의 전체 이동 내역을 시간순으로 확인합니다. 수익 배분 트랜잭션·거래 패턴을 파악할 수 있습니다.</div>
+        </div>
+        <div class="term-card indigo-term">
+          <div class="term-name">④ Contract 탭</div>
+          <div class="term-desc">스마트 계약 소스코드 공개 여부를 확인합니다. "Verified" 표시가 있어야 코드를 직접 검토할 수 있습니다.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="term-accordion" style="margin-top:8px;">
+    <button class="term-accordion-btn" onclick="toggleAccordion(this)">📖 용어 보기 <span class="acc-arrow">▼</span></button>
+    <div class="term-accordion-body">
+      <div class="term-grid">
+        <div class="term-card indigo-term">
+          <div class="term-name">블록체인 탐색기</div>
+          <div class="term-eng">Block Explorer</div>
+          <div class="term-desc">블록체인의 모든 트랜잭션·주소·스마트 계약을 조회할 수 있는 검색 도구. PolygonScan·Etherscan 등이 대표적입니다.</div>
+        </div>
+        <div class="term-card gold-term">
+          <div class="term-name">IPFS</div>
+          <div class="term-eng">InterPlanetary File System</div>
+          <div class="term-desc">중앙 서버 없이 전 세계 분산 노드에 파일을 저장하는 시스템. 공시 문서를 영구적으로 보존하는 데 활용됩니다.</div>
+        </div>
+        <div class="term-card">
+          <div class="term-name">해시값 (Hash)</div>
+          <div class="term-eng">Cryptographic Hash</div>
+          <div class="term-desc">파일 내용을 고정 길이 문자열로 변환한 디지털 지문. 파일이 조금이라도 변경되면 해시값이 완전히 달라져 위변조를 탐지할 수 있습니다.</div>
+        </div>
+        <div class="term-card indigo-term">
+          <div class="term-name">트랜잭션 (Tx)</div>
+          <div class="term-eng">Transaction</div>
+          <div class="term-desc">블록체인에서 발생하는 모든 거래 단위. 토큰 전송·수익 배분·스마트 계약 실행 등 모든 활동이 트랜잭션으로 기록됩니다.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+
+<div class="tab-panel" id="tab-stage5">
+<!-- ════════════════════════════════
+     5단계: 심화 및 실전 적용
+════════════════════════════════ -->
+<div class="stage-header-block" id="stage5" style="margin-top:32px;">
+  <span class="stage-badge">5단계</span>
+  <div>
+    <div class="stage-title-txt">심화 및 실전 적용</div>
+    <div class="stage-sub-txt">Advanced & Use Case</div>
+  </div>
+</div>
+
+<!-- 5-1. RWA 글로벌 트렌드 -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num mint-num">1</div>
+    <h2 class="section-title">RWA — <span>실물 자산 토큰화 글로벌 트렌드</span></h2>
+  </div>
+  <p><strong>RWA(Real World Asset)</strong>는 부동산·채권·미술품 등 실물 자산을 블록체인 토큰으로 발행하는 것으로, STO의 상위 개념입니다. 2024년부터 BlackRock·JP모건 등 글로벌 금융 대형사들이 본격 진입하며 실험 단계에서 기관 규모 채택으로 전환됐습니다.</p>
+
+  <div class="var-grid">
+    <div class="var-card mint">
+      <div class="var-name">2025년 시장 규모</div>
+      <div class="var-value">600억 달러</div>
+      <div class="var-desc">스테이블코인 제외 기준 (약 87조 원). 2020년 대비 연평균 53% 성장.</div>
+    </div>
+    <div class="var-card gold">
+      <div class="var-name">2030년 전망</div>
+      <div class="var-value">4조~30조 달러</div>
+      <div class="var-desc">BlackRock 자체 전망 5조~10조 달러. 기관마다 전망치 차이가 큰 초기 시장입니다.</div>
+    </div>
+    <div class="var-card indigo">
+      <div class="var-name">가장 빠른 성장</div>
+      <div class="var-value">국채 토큰화</div>
+      <div class="var-desc">2024년 1월~2025년 4월 539% 급증. BlackRock BUIDL 펀드 27억 달러 운용.</div>
+    </div>
+    <div class="var-card mint">
+      <div class="var-name">Polygon 점유율</div>
+      <div class="var-value">62%</div>
+      <div class="var-desc">글로벌 토큰화 채권 시장의 62%를 Polygon이 점유. 기업 제휴·규제 친화적 접근이 강점.</div>
+    </div>
+  </div>
+
+  <div class="compare-table-wrap">
+    <table class="compare-table">
+      <thead>
+        <tr><th>기관</th><th>프로젝트</th><th>규모</th><th>특징</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>BlackRock</strong></td><td>BUIDL 펀드</td><td>27억 달러</td><td>이더리움 기반 국채 토큰화. 최소 투자 500만 달러 (기관 전용)</td></tr>
+        <tr><td><strong>JP모건</strong></td><td>Onyx 네트워크</td><td>3,000억 달러+</td><td>토큰화 담보 네트워크. 글로벌 결제 시스템 블록체인화</td></tr>
+        <tr><td><strong>Franklin Templeton</strong></td><td>BENJI</td><td>8억 달러+</td><td>7개 블록체인 네트워크 운용. 소액 투자 가능</td></tr>
+        <tr><td><strong>Goldman Sachs</strong></td><td>GS DAP</td><td>다수 프로젝트</td><td>디지털 자산 플랫폼, 채권·부동산 토큰화</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="navy-box">
+    <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
+      <div style="font-size:1.8rem; flex-shrink:0;">🌍→🔐→🪙</div>
+      <div style="flex:1; min-width:180px;">
+        <strong style="color:#FFD700;">왜 지금 RWA인가?</strong><br>
+        <span style="color:rgba(255,255,255,0.85); font-size:0.85rem; line-height:1.7;">
+        제로금리 시대 종말 → 실물 수익 자산 수요 급증<br>
+        대형 기관 진입 → 시장 신뢰도·유동성 상승<br>
+        글로벌 규제 정비 → MiCA(유럽)·SEC(미국) 기준 명확화
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 5-2. 규제 샌드박스 -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num mint-num">2</div>
+    <h2 class="section-title">규제 샌드박스 — <span>국내외 현황</span></h2>
+  </div>
+  <p><strong>규제 샌드박스</strong>는 새로운 기술·서비스를 일정 조건(기간·장소·규모 제한) 아래 규제 예외를 허용하여 먼저 시장에서 테스트할 수 있는 제도입니다. 국내 STO 시장은 이 제도를 통해 성장했습니다.</p>
+
+  <div class="flow">
+    <div class="flow-item">
+      <div class="flow-dot dot-indigo">🇰🇷</div>
+      <div class="flow-content">
+        <h4>국내 현황 — 샌드박스에서 법제화로</h4>
+        <p>2019년 금융혁신지원특별법 도입 이후 2024년 12월 기준 누적 500건 지정. 카사·비브릭·펀블·루센트블록 등이 혁신금융서비스로 지정받아 부동산 STO를 선제적으로 운영했습니다. 2025년 금융위원회가 연내 STO 법제화를 공식 발표하며 샌드박스를 넘어 본격 제도권 편입 단계로 진입했습니다.</p>
+      </div>
+    </div>
+    <div class="flow-item">
+      <div class="flow-dot dot-gold">🌐</div>
+      <div class="flow-content">
+        <h4>해외 현황</h4>
+        <p>싱가포르는 2022년 Project Guardian으로 토큰화 채권 파일럿을 시작해 2024년 상용 네트워크 구축 지원을 발표했습니다. 유럽은 MiCA(2024년 7월 시행)로 가상자산 규제를 명확화했으며, 미국 SEC는 트럼프 행정부 하에서 Project Crypto를 추진하며 기존 금융 인프라에 블록체인을 도입하는 방향으로 전환하고 있습니다. 독일은 D7 플랫폼을 통해 국가 차원의 STO 발행 플랫폼을 직접 운영합니다.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="compare-table-wrap">
+    <table class="compare-table">
+      <thead>
+        <tr><th>국가/지역</th><th>제도</th><th>현황</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>🇰🇷 한국</strong></td><td>혁신금융서비스 (샌드박스)</td><td>2025년 자본시장법·전자증권법 개정 추진 중</td></tr>
+        <tr><td><strong>🇸🇬 싱가포르</strong></td><td>Project Guardian (MAS)</td><td>2024년 상용화 지원 발표, 아시아 선도</td></tr>
+        <tr><td><strong>🇪🇺 유럽</strong></td><td>MiCA + DLT Pilot</td><td>2024년 7월 MiCA 시행, 규제 체계 가장 명확</td></tr>
+        <tr><td><strong>🇺🇸 미국</strong></td><td>SEC Project Crypto</td><td>2025년 규제 완화 기조, 나스닥 토큰화 주식 신청</td></tr>
+        <tr><td><strong>🇩🇪 독일</strong></td><td>D7 플랫폼 (Deutsche Börse)</td><td>국가 차원 STO 발행 플랫폼 직접 운영</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="gold-box">
+    <strong>⚠️ 샌드박스의 한계:</strong> 혁신금융서비스는 최대 4년간 규제 유예가 가능하지만, 지정 기간 만료 전까지 법제화가 완료되지 않으면 사업 중단 리스크가 있습니다. 국내 일부 조각투자 플랫폼이 이 리스크에 직면한 바 있습니다.
+  </div>
+</div>
+
+<!-- 5-3. 리스크 관리 -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num mint-num">3</div>
+    <h2 class="section-title">리스크 관리 — <span>보안·법적 분쟁 대응</span></h2>
+  </div>
+  <p>STO는 기존 금융과 블록체인이 결합된 만큼, 두 영역의 리스크가 동시에 존재합니다. 투자자·발행인 모두가 알아야 할 주요 리스크를 정리합니다.</p>
+
+  <div class="compare-table-wrap">
+    <table class="compare-table">
+      <thead>
+        <tr><th>리스크 유형</th><th>내용</th><th>대응 방안</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>🔓 스마트 계약 취약점</strong></td>
+          <td>코드 버그·해킹으로 자산 유실 가능</td>
+          <td>독립 보안 감사(Audit) 필수·멀티시그 적용</td>
+        </tr>
+        <tr>
+          <td><strong>📦 오프체인 자산 리스크</strong></td>
+          <td>실물 자산 훼손·분쟁·가치 하락</td>
+          <td>자산 보험 가입·정기 감정 평가</td>
+        </tr>
+        <tr>
+          <td><strong>⚖️ 법적 분쟁</strong></td>
+          <td>증권성 사후 판단 시 소급 적용 가능</td>
+          <td>발행 전 법무 검토·금융당국 사전 협의</td>
+        </tr>
+        <tr>
+          <td><strong>💧 유동성 리스크</strong></td>
+          <td>거래소 거래량 부족 시 환금 불가</td>
+          <td>유통 시장 활성화 여부 사전 확인</td>
+        </tr>
+        <tr>
+          <td><strong>📜 규제 변경 리스크</strong></td>
+          <td>법률 개정으로 사업 구조 변경 강제</td>
+          <td>규제 동향 모니터링·유연한 계약 설계</td>
+        </tr>
+        <tr>
+          <td><strong>🔑 키 분실 리스크</strong></td>
+          <td>개인키 분실 시 토큰 영구 접근 불가</td>
+          <td>MPC 커스터디·멀티시그 지갑 사용</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="navy-box">
+    <strong style="color:#FFD700;">투자자 자기 보호 체크리스트</strong><br><br>
+    <span style="color:rgba(255,255,255,0.9); font-size:0.85rem; line-height:2.0;">
+    ✅ 스마트 계약 보안 감사(Audit) 완료 여부 확인<br>
+    ✅ 발행인 자기자본 요건 충족 여부 (일반 투자자 대상 10억원+)<br>
+    ✅ 투자자 예치금 외부 신탁 여부 (발행인 파산 대비)<br>
+    ✅ 장외거래소 실제 거래량·유동성 확인<br>
+    ✅ JORC 등 기초자산 가치 공인 여부<br>
+    ✅ 온체인 공시 + 오프체인 공시 모두 확인<br>
+    ✅ 개인 지갑 백업 및 커스터디 설정 완료
+    </span>
+  </div>
+
+  <div class="term-accordion">
+    <button class="term-accordion-btn" onclick="toggleAccordion(this)">📖 용어 보기 <span class="acc-arrow">▼</span></button>
+    <div class="term-accordion-body">
+      <div class="term-grid">
+        <div class="term-card indigo-term">
+          <div class="term-name">소급 적용</div>
+          <div class="term-eng">Retroactive Application</div>
+          <div class="term-desc">현재 발행한 토큰이 나중에 증권으로 판단될 경우, 과거 발행 시점부터 자본시장법 위반으로 소급 처벌될 수 있습니다.</div>
+        </div>
+        <div class="term-card gold-term">
+          <div class="term-name">도산절연</div>
+          <div class="term-eng">Bankruptcy Remote</div>
+          <div class="term-desc">발행인 파산 시에도 신탁 자산은 투자자에게 반환될 수 있도록 법적으로 분리한 구조. STO 발행 시 필수 확인 사항입니다.</div>
+        </div>
+        <div class="term-card">
+          <div class="term-name">ATS</div>
+          <div class="term-eng">Alternative Trading System</div>
+          <div class="term-desc">장외거래중개업자. 토큰증권의 2차 거래를 중개하는 플랫폼. 국내에서는 KDX·NXT가 예비인가 선정됐습니다.</div>
+        </div>
+        <div class="term-card indigo-term">
+          <div class="term-name">MiCA</div>
+          <div class="term-eng">Markets in Crypto-Assets</div>
+          <div class="term-desc">2024년 7월 시행된 유럽연합의 가상자산 규제법. 전 세계 가장 포괄적인 디지털 자산 규제로 글로벌 기준이 되고 있습니다.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+
+
+<!-- ── 푸터 ── -->
+<div class="footer">
+  SuperSaver Kit · STO 가이드 v1.0<br>
+  콘텐츠는 단계별로 순차 업데이트됩니다.<br>
+  본 자료는 교육 목적이며 투자 권유가 아닙니다.
+</div>
+
+</div><!-- /container -->
+
+<!-- ── 하단 네비게이션 ── -->
+<nav class="bottom-nav">
+  <a class="nav-item" href="../index.html" id="nav-home">
+    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>홈
+  </a>
+  <a class="nav-item active" href="../pages/guide_home.html" id="nav-guide">
+    <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>가이드
+  </a>
+  <a class="nav-item" href="../pages/calculator.html" id="nav-calc">
+    <svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="16" y2="10"/></svg>계산기
+  </a>
+  <a class="nav-item" href="../pages/simulator.html" id="nav-sim">
+    <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>시뮬레이터
+  </a>
+  <a class="nav-item" href="../pages/mypage.html">
+    <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>내 정보
+  </a>
+</nav>

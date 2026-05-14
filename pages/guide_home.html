@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<link rel="icon" type="image/png" sizes="192x192" href="../icons/icon-192x192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="../icons/icon-180x180.png">
+<link rel="manifest" href="../manifest.json">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SuperSaver Kit">
+<meta name="theme-color" content="#1e1e72">
+<title>SuperSaver Kit — 가이드</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
+<style>
+:root {
+  --indigo-deep: #1e1e72;
+  --indigo:      #2d2d9f;
+  --indigo-mid:  #3d3dbb;
+  --indigo-lt:   #f0f0ff;
+  --indigo-bg:   #f4f4ff;
+  --mint:        #00938a;
+  --mint-lt:     #e0f5f4;
+  --mint-dk:     #006b63;
+  --gold:        #FFD700;
+  --gold-muted:  #c9a84c;
+  --gold-lt:     #fdf3dc;
+  --border:      #e0e0f4;
+  --text-main:   #1e1e72;
+  --text-sub:    #8888bb;
+  --gray-lt:     #f4f7f9;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  visibility: hidden;
+  font-family: 'Pretendard', sans-serif;
+  background: var(--indigo-bg);
+  color: var(--text-main);
+  padding-bottom: 80px;
+  overflow-x: hidden;
+  -webkit-text-size-adjust: none;
+}
+
+/* ── 헤더 밴드 ── */
+.hero-band {
+  width: 100%;
+  background: linear-gradient(160deg, #15156a 0%, #2525a0 60%, #15156a 100%);
+  padding: 36px 24px 28px; text-align: center;
+  position: relative; overflow: hidden;
+}
+.hero-band::before {
+  content: '';
+  position: absolute; top: -60px; left: -60px;
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(0,147,138,0.18) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-band::after {
+  content: '';
+  position: absolute; bottom: -40px; right: -40px;
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, rgba(201,168,76,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+
+
+.hero-title {
+  font-size: 1.7rem; font-weight: 900; color: white;
+  line-height: 1.2; letter-spacing: -0.03em;
+  margin-bottom: 8px;
+  position: relative; z-index: 10;
+}
+.hero-title em { color: var(--gold); font-style: normal; }
+.hero-sub {
+  font-size: 0.82rem; color: rgba(255,255,255,0.6);
+  line-height: 1.6; position: relative; z-index: 10;
+}
+
+/* ── 컨테이너 ── */
+.container {
+  max-width: 480px; margin: 0 auto;
+  padding: 20px 18px 0;
+}
+
+/* ── 섹션 레이블 ── */
+.section-label {
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em;
+  color: var(--text-sub); text-transform: uppercase;
+  margin-bottom: 10px; padding-left: 2px;
+}
+
+/* ── 가이드 선택 카드 (메인 2개) ── */
+.guide-card {
+  display: flex; gap: 14px; align-items: center;
+  background: white;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  padding: 14px;
+  text-decoration: none;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 16px rgba(30,30,114,0.07);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.guide-card:active { transform: scale(0.985); box-shadow: 0 1px 8px rgba(30,30,114,0.05); }
+.guide-card-icon {
+  width: 48px; height: 48px; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0;
+}
+.icon-indigo { background: linear-gradient(135deg, #f0f0ff 0%, #e4e4ff 100%); }
+.icon-mint   { background: linear-gradient(135deg, #e0f5f4 0%, #c8f0ec 100%); }
+
+.guide-card-text { flex: 1; min-width: 0; }
+.guide-card-name {
+  font-size: 1.0rem; font-weight: 900;
+  color: var(--indigo-deep); letter-spacing: -0.02em;
+  margin-bottom: 7px;
+}
+.guide-card-tags {
+  display: flex; gap: 5px; flex-wrap: wrap;
+}
+.guide-tag {
+  font-size: 0.6rem; font-weight: 700; letter-spacing: 0.04em;
+  padding: 3px 9px; border-radius: 20px;
+}
+.gtag-indigo { background: var(--indigo-lt); color: var(--indigo); }
+.gtag-mint   { background: var(--mint-lt);   color: var(--mint-dk); }
+.gtag-gold   { background: var(--gold-lt);   color: #7a5a10; }
+.guide-card-arrow {
+  width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; color: var(--text-sub);
+}
+
+
+/* ── 예고 카드 ── */
+.coming-card {
+  background: white;
+  border-radius: 20px;
+  border: 1px dashed var(--border);
+  padding: 14px;
+  margin-bottom: 10px;
+  display: flex; gap: 14px; align-items: center;
+  opacity: 0.55;
+}
+.coming-icon {
+  width: 48px; height: 48px; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0;
+  background: var(--gray-lt);
+}
+.coming-text { flex: 1; min-width: 0; }
+.coming-name {
+  font-size: 1.0rem; font-weight: 900;
+  color: var(--text-sub); letter-spacing: -0.02em;
+  margin-bottom: 6px;
+}
+.coming-badge {
+  display: inline-block;
+  font-size: 0.6rem; font-weight: 700; letter-spacing: 0.06em;
+  padding: 3px 10px; border-radius: 20px;
+  background: var(--gray-lt); color: var(--text-sub);
+  border: 1px solid var(--border);
+}
+
+/* ── 업데이트 안내 ── */
+.update-notice {
+  background: white; border-radius: 14px;
+  border: 1px solid var(--border);
+  padding: 14px 16px;
+  display: flex; align-items: flex-start; gap: 10px;
+  margin-bottom: 20px;
+}
+.notice-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+.notice-text { font-size: 0.75rem; color: var(--text-sub); line-height: 1.6; }
+.notice-text strong { color: var(--indigo-deep); }
+
+/* ── 하단 네비게이션 ── */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
+  background: white; border-top: 1px solid var(--border);
+  display: flex; height: 60px;
+  box-shadow: 0 -4px 20px rgba(30,30,114,0.08);
+}
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .bottom-nav { padding-bottom: env(safe-area-inset-bottom); height: calc(60px + env(safe-area-inset-bottom)); }
+}
+.nav-item {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 3px; text-decoration: none; color: #bbbbdd; font-size: 0.63rem; font-weight: 700;
+  transition: color 0.15s;
+}
+.nav-item svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; }
+.nav-item.active { color: var(--indigo); }
+
+/* ── 카테고리 헤더 ── */
+.cat-label {
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em;
+  color: var(--text-sub); text-transform: uppercase;
+  margin: 20px 0 8px; padding: 0 2px;
+  display: flex; align-items: center; gap: 10px;
+}
+.cat-label::after {
+  content: ''; flex: 1; height: 1px;
+  background: var(--border);
+}
+
+</style>
+</head>
+<body>
+<!-- Firebase 로그인 상태 체크 -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+const app = initializeApp({
+  apiKey: "AIzaSyCV4elOllJXF-Rx6qrYNDAwSSfVHKAQelQ",
+  authDomain: "supersaver-kit.firebaseapp.com",
+  projectId: "supersaver-kit",
+  storageBucket: "supersaver-kit.firebasestorage.app",
+  messagingSenderId: "800388848026",
+  appId: "1:800388848026:web:1d64b6ffebf8544ecb0223"
+});
+const auth = getAuth(app);
+const db = getFirestore(app);
+onAuthStateChanged(auth, async (user) => {
+  if (!user) { window.location.href='../auth.html'; return; }
+  const snap = await getDoc(doc(db,'users',user.uid));
+  if (!snap.exists() || snap.data().status !== 'approved') {
+    await auth.signOut(); window.location.href='../auth.html'; return;
+  }
+  document.body.style.visibility='visible';
+  const d=snap.data();
+  sessionStorage.setItem('ssk_user',JSON.stringify({uid:user.uid,name:d.name,email:d.email,role:d.role||'user'}));
+});
+</script>
+
+<!-- ── 헤더 ── -->
+<div class="hero-band">
+  <h1 class="hero-title">가이드 <em>센터</em></h1>
+  <p class="hero-sub">금융·블록체인·실물 자산까지 —<br>알아야 할 것들을 차근차근 학습하세요.</p>
+</div>
+
+<div class="container">
+
+  <!-- ── 카테고리 A: 블록체인·디지털 자산 ── -->
+  <div class="cat-label">블록체인 · 디지털 자산</div>
+
+  <a class="guide-card" href="../guides/blockchain_guide.html">
+    <div class="guide-card-icon" style="background: linear-gradient(135deg, #0d2137 0%, #1a3a5c 100%);">🌐</div>
+    <div class="guide-card-text">
+      <div class="guide-card-name">블록체인 입문 가이드</div>
+      <div class="guide-card-tags">
+        <span class="guide-tag" style="background:#e8f5e9; color:#2e7d32;">탈중앙화</span>
+        <span class="guide-tag" style="background:#e8f5e9; color:#2e7d32;">스마트 컨트랙트</span>
+        <span class="guide-tag gtag-gold">사토시</span>
+      </div>
+    </div>
+    <div class="guide-card-arrow">›</div>
+  </a>
+
+  <a class="guide-card" href="../guides/digital_asset_guide.html">
+    <div class="guide-card-icon" style="background: linear-gradient(135deg, #7a5a10 0%, #c9a84c 100%);">🪙</div>
+    <div class="guide-card-text">
+      <div class="guide-card-name">디지털 자산의 구조와 이코노미</div>
+      <div class="guide-card-tags">
+        <span class="guide-tag gtag-gold">코인·토큰</span>
+        <span class="guide-tag gtag-gold">DEX·스왑</span>
+        <span class="guide-tag gtag-mint">지갑 보안</span>
+      </div>
+    </div>
+    <div class="guide-card-arrow">›</div>
+  </a>
+
+  <a class="guide-card" href="../guides/sto_guide.html">
+    <div class="guide-card-icon icon-mint">🔐</div>
+    <div class="guide-card-text">
+      <div class="guide-card-name">STO 증권형 토큰 가이드</div>
+      <div class="guide-card-tags">
+        <span class="guide-tag gtag-mint">토큰증권</span>
+        <span class="guide-tag gtag-mint">자본시장법</span>
+        <span class="guide-tag gtag-mint">RWA</span>
+      </div>
+    </div>
+    <div class="guide-card-arrow">›</div>
+  </a>
+
+  <!-- ── 카테고리 B: 슈퍼트러스트 프로젝트 ── -->
+  <div class="cat-label">슈퍼트러스트 프로젝트</div>
+
+  <a class="guide-card" href="../guides/guide.html">
+    <div class="guide-card-icon icon-indigo">📖</div>
+    <div class="guide-card-text">
+      <div class="guide-card-name">슈퍼세이브 가이드</div>
+      <div class="guide-card-tags">
+        <span class="guide-tag gtag-indigo">신용거래</span>
+        <span class="guide-tag gtag-indigo">Right 증서</span>
+        <span class="guide-tag gtag-gold">복리 시뮬레이션</span>
+      </div>
+    </div>
+    <div class="guide-card-arrow">›</div>
+  </a>
+
+  <a class="guide-card" href="../guides/mpc_guide.html">
+    <div class="guide-card-icon" style="background: linear-gradient(135deg, #004d47 0%, #00938a 100%);">🪙</div>
+    <div class="guide-card-text">
+      <div class="guide-card-name">MPC 토큰 — Mineral Project Coin</div>
+      <div class="guide-card-tags">
+        <span class="guide-tag gtag-mint">ERC-20 → STO</span>
+        <span class="guide-tag gtag-mint">Polygon</span>
+      </div>
+    </div>
+    <div class="guide-card-arrow">›</div>
+  </a>
+
+  <a class="guide-card" href="../guides/mineral_guide.html">
+    <div class="guide-card-icon" style="background: linear-gradient(135deg, #0f4c35 0%, #1a6b4a 100%);">⛏️</div>
+    <div class="guide-card-text">
+      <div class="guide-card-name">차간 톨고이 광산 프로젝트</div>
+      <div class="guide-card-tags">
+        <span class="guide-tag" style="background:#e8f5e9; color:#2e7d32;">몽골 광산</span>
+        <span class="guide-tag gtag-gold">RWA 기초 자산</span>
+      </div>
+    </div>
+    <div class="guide-card-arrow">›</div>
+  </a>
+
+  <!-- ── 추가 예정 ── -->
+  <div class="cat-label">추가 예정</div>
+
+  <div class="coming-card">
+    <div class="coming-icon">📈</div>
+    <div class="coming-text">
+      <div class="coming-name">Finora STO 거래소</div>
+      <span class="coming-badge">🔒 준비 중</span>
+    </div>
+  </div>
+
+  <div class="coming-card">
+    <div class="coming-icon">📊</div>
+    <div class="coming-text">
+      <div class="coming-name">투자 분석 가이드</div>
+      <span class="coming-badge">🔒 준비 중</span>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<!-- ── 하단 네비게이션 ── -->
+<nav class="bottom-nav">
+  <a class="nav-item" href="../index.html">
+    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>홈
+  </a>
+  <a class="nav-item active" href="guide_home.html">
+    <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>가이드
+  </a>
+  <a class="nav-item" href="calculator.html">
+    <svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="16" y2="10"/></svg>계산기
+  </a>
+  <a class="nav-item" href="simulator.html">
+    <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>시뮬레이터
+  </a>
+  <a class="nav-item" href="mypage.html">
+    <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>내 정보
+  </a>
+</nav>
