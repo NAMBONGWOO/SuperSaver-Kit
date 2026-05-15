@@ -25,17 +25,21 @@ body{font-family:'Pretendard',sans-serif;background:var(--indigo-bg);padding-bot
 /* ── 상단 네이비 밴드 ── */
 .hero-band{
   background:linear-gradient(160deg,#15156a 0%,#2525a0 60%,#15156a 100%);
-  padding:48px 18px 20px;
+  padding:28px 18px 20px;
+}
+.hero-band-inner{
+  max-width:500px;margin:0 auto;
+  display:flex;flex-direction:column;align-items:center;
 }
 /* 앱 헤더 행 */
-.app-row{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
-.app-icon{width:48px;height:48px;border-radius:13px;background:white;flex-shrink:0;
+.app-row{display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:14px;width:100%;position:relative;}
+.app-icon{width:52px;height:52px;border-radius:14px;background:white;flex-shrink:0;
   display:flex;align-items:center;justify-content:center;
   box-shadow:0 4px 14px rgba(0,0,0,0.25);overflow:hidden;}
-.app-icon img{width:44px;height:44px;object-fit:contain;}
-.app-name{font-size:1.1rem;font-weight:900;color:white;letter-spacing:-0.02em;}
-.app-tag{font-size:0.65rem;color:rgba(255,255,255,0.55);margin-top:2px;}
-.admin-btn{margin-left:auto;width:34px;height:34px;border-radius:50%;
+.app-icon img{width:46px;height:46px;object-fit:contain;}
+.app-name{font-size:1.15rem;font-weight:900;color:white;letter-spacing:-0.02em;text-align:center;}
+.app-tag{font-size:0.65rem;color:rgba(255,255,255,0.55);margin-top:1px;text-align:center;}
+.admin-btn{position:absolute;top:0;right:0;width:34px;height:34px;border-radius:50%;
   background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.22);
   display:none;align-items:center;justify-content:center;
   font-size:0.95rem;text-decoration:none;}
@@ -58,16 +62,24 @@ body{font-family:'Pretendard',sans-serif;background:var(--indigo-bg);padding-bot
 @keyframes spin{to{transform:rotate(360deg);}}
 
 /* 사용자 행 */
-.user-row{display:flex;align-items:center;gap:10px;}
-.user-avatar{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.15);
+.user-row{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;}
+.user-avatar{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.15);
   border:1.5px solid rgba(255,255,255,0.28);flex-shrink:0;
   display:flex;align-items:center;justify-content:center;
-  font-weight:900;color:white;font-size:0.85rem;}
-.user-name{font-size:0.88rem;font-weight:700;color:white;}
+  font-weight:900;color:white;font-size:0.9rem;}
+.user-name{font-size:0.92rem;font-weight:700;color:white;}
 .user-email{font-size:0.65rem;color:rgba(255,255,255,0.5);margin-top:1px;}
-.approved-badge{margin-left:auto;background:rgba(255,215,0,0.15);
+.approved-badge{background:rgba(255,215,0,0.15);
   border:1px solid rgba(255,215,0,0.28);border-radius:16px;
   padding:2px 8px;font-size:0.58rem;font-weight:700;color:var(--gold);white-space:nowrap;}
+/* 로그아웃 버튼 (hero 안) */
+.btn-logout-hero{
+  background:rgba(217,48,37,0.15);border:1px solid rgba(217,48,37,0.35);
+  border-radius:16px;padding:5px 13px;
+  font-size:0.68rem;font-weight:700;color:#ff8a80;
+  font-family:'Pretendard',sans-serif;cursor:pointer;white-space:nowrap;
+  margin-left:auto;flex-shrink:0;
+}
 
 /* ── 컨테이너 ── */
 .container{max-width:860px;margin:0 auto;padding:12px 14px 0;}
@@ -167,29 +179,19 @@ body{font-family:'Pretendard',sans-serif;background:var(--indigo-bg);padding-bot
 
 <!-- ── 상단 네이비 밴드 ── -->
 <div class="hero-band">
+<div class="hero-band-inner">
 
-  <!-- 앱 헤더 -->
+  <!-- 앱 헤더 (중앙정렬, 관리자 버튼 우상단 절대배치) -->
   <div class="app-row">
+    <a id="admin-btn" class="admin-btn" href="admin.html" title="관리자">⚙️</a>
     <div class="app-icon">
       <img src="icons/icon.png" alt="SuperSaver Kit">
     </div>
-    <div>
-      <div class="app-name">SuperSaver Kit</div>
-      <div class="app-tag">슈퍼세이버를 위한 필수 도구</div>
-    </div>
-    <a id="admin-btn" class="admin-btn" href="admin.html" title="관리자">⚙️</a>
+    <div class="app-name">SuperSaver Kit</div>
+    <div class="app-tag">슈퍼세이버를 위한 필수 도구</div>
   </div>
 
-  <!-- SUT 시세 칩 -->
-  <div class="price-chip">
-    <span class="chip-label">SUT</span>
-    <span class="chip-price" id="chipPrice">—</span>
-    <span class="chip-krw"   id="chipKrw">—</span>
-    <span class="chip-change flat" id="chipChange">—</span>
-    <button class="refresh-btn" id="refreshBtn" onclick="fetchPrice()">↺</button>
-  </div>
-
-  <!-- 사용자 정보 -->
+  <!-- 사용자 정보 + 로그아웃 -->
   <div class="user-row">
     <div class="user-avatar" id="user-avatar">?</div>
     <div>
@@ -197,8 +199,10 @@ body{font-family:'Pretendard',sans-serif;background:var(--indigo-bg);padding-bot
       <div class="user-email" id="user-email"></div>
     </div>
     <div class="approved-badge">승인 완료</div>
+    <button class="btn-logout-hero" onclick="doLogout()">로그아웃</button>
   </div>
 
+</div>
 </div>
 
 <!-- ── 컨테이너 ── -->
@@ -243,10 +247,7 @@ body{font-family:'Pretendard',sans-serif;background:var(--indigo-bg);padding-bot
     </div>
   </div>
 
-  <!-- 로그아웃 -->
-  <div class="section">
-    <button class="btn-logout" onclick="doLogout()">로그아웃</button>
-  </div>
+
 
 </div>
 
