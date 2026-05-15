@@ -1,7 +1,8 @@
 {
   "name": "SuperSaver Kit",
   "short_name": "SS Kit",
-  "start_url": ".",
+  "start_url": "/SuperSaver-Kit/index.html",
+  "scope": "/SuperSaver-Kit/",
   "display": "standalone",
   "background_color": "#1e1e72",
   "theme_color": "#1e1e72",
