@@ -569,8 +569,9 @@ onAuthStateChanged(auth, async (user) => {
                     <th id="th-price" style="display:none">신용매수가<br>/ SUT시세</th>
                     <th style="width:44px;">재참여X</th>
                     <th class="th-add">추가투입</th>
-                    <th>신용대금합계</th>
+                    <th>가용금액</th>
                     <th>재참여</th>
+                    <th>기보유<br>SUT(₮)</th>
                     <th>SUT매수</th>
                     <th>일지급</th>
                     <th>주정산</th>
@@ -582,7 +583,7 @@ onAuthStateChanged(auth, async (user) => {
     </div>
 
     <div class="notice">
-        * 단위: USDT &nbsp;|&nbsp; 재참여: 신용대금합계 도달 시 100 USDT 단위 자동 재참여<br>
+        * 단위: USDT &nbsp;|&nbsp; 재참여: 가용금액 도달 시 100 USDT 단위 자동 재참여<br>
         * 잔여대금: 주정산 지급만큼 감소, 재참여(준비금×2.4)만큼 증가 &nbsp;|&nbsp; 단순 참조용
     </div>
 </div>
@@ -875,6 +876,11 @@ function initTable() {
             </td>
             <td id="d_total_${i}">-</td>
             <td id="d_contract_${i}" class="c-none">-</td>
+            <td style="text-align:center;padding:2px 3px;">
+                <input type="number" id="sut_owned_${i}" value="0" min="0" step="0.1"
+                  oninput="run()"
+                  style="width:52px;font-size:0.7rem;padding:3px 4px;border:1px solid #e0e0f4;border-radius:6px;text-align:right;font-family:'Pretendard',sans-serif;color:#2d2d9f;">
+            </td>
             <td id="d_cost_${i}" class="c-none">-</td>
             <td class="c-daily" id="d_daily_${i}">-</td>
             <td class="c-weekly" id="d_weekly_${i}">-</td>
@@ -965,11 +971,13 @@ function run() {
         approved -= weeklyPay;
         if (approved < 0) approved = 0;
 
-        // 💳 건너뜀 체크 시 주정산을 신용대금합계에 포함하지 않음
+        // 💳 건너뜀 체크 시 주정산을 가용금액에 포함하지 않음
         const available   = (skipped ? 0 : weeklyPay) + carry + extra;
         const units       = costPerUnit > 0 ? Math.floor(available / costPerUnit) : 0;
         const contractAmt = units * 100;
-        const step2Cost   = units * step2PerUnit;
+        const ownedSutVal  = parseFloat(document.getElementById(`sut_owned_${i}`)?.value) || 0;
+        const step2Cost    = Math.max(0, units * step2PerUnit - ownedSutVal);
+        const ownedUsed    = Math.min(ownedSutVal, units * step2PerUnit);
 
         if (contractAmt > 0) {
             const newCredit = contractAmt * 2.4;

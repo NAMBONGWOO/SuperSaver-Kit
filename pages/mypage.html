@@ -242,14 +242,14 @@ body{font-family:'Pretendard',sans-serif;background:var(--indigo-bg);padding-bot
     </div>
     <div style="font-size:0.7rem;font-weight:700;color:var(--text-sub);letter-spacing:0.08em;margin-bottom:8px;">주차별 데이터</div>
     <div style="overflow-x:auto;border-radius:10px;border:1px solid var(--border);">
-      <table style="width:100%;border-collapse:collapse;font-size:0.75rem;min-width:400px;">
+      <table style="width:100%;border-collapse:collapse;font-size:0.72rem;">
         <thead>
           <tr style="background:linear-gradient(135deg,#1e1e72,#2d2d9f);">
-            <th style="padding:8px;color:white;text-align:center;font-weight:700;">주차</th>
-            <th style="padding:8px;color:white;text-align:right;font-weight:700;">날짜</th>
-            <th style="padding:8px;color:white;text-align:right;font-weight:700;">재참여</th>
-            <th style="padding:8px;color:white;text-align:right;font-weight:700;">일지급금</th>
-            <th style="padding:8px;color:white;text-align:right;font-weight:700;">신용대금</th>
+            <th style="padding:5px 4px;color:white;text-align:center;font-weight:700;">주차</th>
+            <th style="padding:5px 4px;color:white;text-align:right;font-weight:700;">날짜</th>
+            <th style="padding:5px 4px;color:white;text-align:right;font-weight:700;">재참여</th>
+            <th style="padding:5px 4px;color:white;text-align:right;font-weight:700;">일지급금</th>
+            <th style="padding:5px 4px;color:white;text-align:right;font-weight:700;">신용대금</th>
           </tr>
         </thead>
         <tbody id="modal-weekly"></tbody>
@@ -504,11 +504,11 @@ window.showDetail = function(id) {
   ].map(([k,v])=>`<div><div style="font-size:0.65rem;color:rgba(255,255,255,0.6);margin-bottom:2px;">${k}</div><div style="font-size:0.82rem;font-weight:700;color:white;">${v||'-'}</div></div>`).join('');
   document.getElementById('modal-weekly').innerHTML = (s.weeklyData||[]).map(w=>
     `<tr style="border-bottom:1px solid var(--border);">
-      <td style="padding:7px 8px;text-align:center;font-weight:700;color:var(--text-sub);">${w.week}</td>
-      <td style="padding:7px 8px;text-align:right;color:var(--indigo-deep);">${w.date}</td>
-      <td style="padding:7px 8px;text-align:right;color:var(--mint);">${w.contract||'-'}</td>
-      <td style="padding:7px 8px;text-align:right;color:var(--indigo);">${w.daily||'-'}</td>
-      <td style="padding:7px 8px;text-align:right;color:var(--indigo-deep);">${w.approved||'-'}</td>
+      <td style="padding:5px 4px;text-align:center;font-weight:700;color:var(--text-sub);">${w.week}</td>
+      <td style="padding:5px 4px;text-align:right;color:var(--indigo-deep);">${w.date}</td>
+      <td style="padding:5px 4px;text-align:right;color:var(--mint);">${w.contract||'-'}</td>
+      <td style="padding:5px 4px;text-align:right;color:var(--indigo);">${w.daily||'-'}</td>
+      <td style="padding:5px 4px;text-align:right;color:var(--indigo-deep);">${w.approved||'-'}</td>
     </tr>`).join('');
   document.getElementById('sim-modal').style.display='block';
   document.getElementById('sim-modal').scrollTop=0;
