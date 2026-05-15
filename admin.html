@@ -56,7 +56,7 @@ body{font-family:'Pretendard',sans-serif;background:var(--gray-lt);min-height:10
 .badge-approved{background:var(--mint-lt);color:var(--mint);}
 .badge-pending{background:var(--gold-lt);color:var(--gold-muted);}
 .badge-rejected{background:#ffebee;color:var(--red);}
-.badge-sim{background:var(--indigo-lt);color:var(--indigo);}
+
 
 /* 버튼 */
 .btn-approve{background:var(--mint);color:white;border:none;padding:6px 13px;border-radius:9px;font-size:0.73rem;font-weight:700;cursor:pointer;font-family:'Pretendard',sans-serif;}
@@ -214,7 +214,6 @@ onAuthStateChanged(auth, async (user) => {
 
 <script>
 let _sortOrder = 'desc'; // 최신순 기본
-let _simCounts = {};     // uid → 시뮬레이션 수
 
 function showMsg(id, text, type) {
   const el = document.getElementById(id);
@@ -268,14 +267,6 @@ window.loadUsers = async function() {
       return _sortOrder === 'desc' ? tb - ta : ta - tb;
     });
 
-    // 시뮬레이션 수 조회 (전체)
-    const simSnap = await window._getDocs(window._collection(window._db,'simulations'));
-    _simCounts = {};
-    simSnap.docs.forEach(d => {
-      const uid = d.data().userId;
-      if (uid) _simCounts[uid] = (_simCounts[uid]||0) + 1;
-    });
-
     const pending  = users.filter(u=>u.status==='pending');
     const approved = users.filter(u=>u.status==='approved');
     const rejected = users.filter(u=>u.status==='rejected');
@@ -303,22 +294,20 @@ window.loadUsers = async function() {
       ? '<div class="empty"><div class="empty-icon">🚫</div>거절된 회원이 없습니다.</div>'
       : rejected.map(u => userCard(u, 'rejected')).join('');
 
-  } catch(e) { console.error(e); }
+  } catch(e) {
+    console.error('loadUsers 오류:', e);
+    alert('회원 목록 로드 실패: ' + e.message);
+  }
 };
 
 function userCard(u, status) {
   const initial = (u.name||'?')[0].toUpperCase();
   const date = u.createdAt ? new Date(u.createdAt.seconds*1000).toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'}) : '-';
-  const simCount = _simCounts[u.id] || 0;
-
   const badge = {
     pending:  '<span class="badge badge-pending">대기 중</span>',
     approved: '<span class="badge badge-approved">승인 완료</span>',
     rejected: '<span class="badge badge-rejected">거절</span>',
   }[status];
-
-  const simBadge = simCount > 0
-    ? `<span class="badge badge-sim">시뮬 ${simCount}건</span>` : '';
 
   let actions = '';
   if (status === 'pending') {
@@ -339,7 +328,7 @@ function userCard(u, status) {
     <div class="user-card-top">
       <div class="user-avatar">${initial}</div>
       <div class="user-info">
-        <div class="user-name">${u.name||'-'}${badge}${simBadge}</div>
+        <div class="user-name">${u.name||'-'}${badge}</div>
         <div class="user-email">${u.email||'-'}</div>
         <div class="user-meta">
           <span>가입일: ${date}</span>
