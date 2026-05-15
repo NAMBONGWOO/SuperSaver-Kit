@@ -3,20 +3,20 @@
 <head>
     <head>
 <!-- 파비콘 -->
-<link rel="icon" type="image/png" sizes="192x192" href="../icons/icon-192x192.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png">
 
 <!-- iOS 홈화면 추가 아이콘 (180px) -->
-<link rel="apple-touch-icon" sizes="180x180" href="../icons/icon-180x180.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-180x180.png">
 
 <!-- PWA 매니페스트용 -->
-<link rel="manifest" href="../manifest.json">
+<link rel="manifest" href="/manifest.json">
         
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="SS시뮬레이터">
     <meta name="theme-color" content="#1e1e72">
     <link rel="apple-touch-icon" href="icon.png">
-    <link rel="manifest" href="../manifest.json">
+    <link rel="manifest" href="/manifest.json">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SuperSaver Kit — 시뮬레이터</title>
@@ -394,10 +394,10 @@ const app = initializeApp({
 const auth = getAuth(app);
 const db = getFirestore(app);
 onAuthStateChanged(auth, async (user) => {
-  if (!user) { window.location.href='../auth.html'; return; }
+  if (!user) { window.location.href='/auth.html'; return; }
   const snap = await getDoc(doc(db,'users',user.uid));
   if (!snap.exists() || snap.data().status !== 'approved') {
-    await auth.signOut(); window.location.href='../auth.html'; return;
+    await auth.signOut(); window.location.href='/auth.html'; return;
   }
   document.body.style.visibility='visible';
   const d=snap.data();
@@ -1123,7 +1123,7 @@ document.getElementById('nav-sim').classList.add('active');
 
 
 <nav class="bottom-nav">
-  <a class="nav-item" href="../index.html">
+  <a class="nav-item" href="/index.html">
     <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>홈
   </a>
   <a class="nav-item" href="guide_home.html">

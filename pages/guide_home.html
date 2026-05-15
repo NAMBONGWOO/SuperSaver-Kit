@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<link rel="icon" type="image/png" sizes="192x192" href="../icons/icon-192x192.png">
-<link rel="apple-touch-icon" sizes="180x180" href="../icons/icon-180x180.png">
-<link rel="manifest" href="../manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-180x180.png">
+<link rel="manifest" href="/manifest.json">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -226,10 +226,10 @@ const app = initializeApp({
 const auth = getAuth(app);
 const db = getFirestore(app);
 onAuthStateChanged(auth, async (user) => {
-  if (!user) { window.location.href='../auth.html'; return; }
+  if (!user) { window.location.href='/auth.html'; return; }
   const snap = await getDoc(doc(db,'users',user.uid));
   if (!snap.exists() || snap.data().status !== 'approved') {
-    await auth.signOut(); window.location.href='../auth.html'; return;
+    await auth.signOut(); window.location.href='/auth.html'; return;
   }
   document.body.style.visibility='visible';
   const d=snap.data();
@@ -249,7 +249,7 @@ onAuthStateChanged(auth, async (user) => {
   <!-- ── 카테고리 A: 블록체인·디지털 자산 ── -->
   <div class="cat-label">블록체인 · 디지털 자산</div>
 
-  <a class="guide-card" href="../guides/blockchain_guide.html" href="../guides/blockchain_guide.html">
+  <a class="guide-card" href="/guides/blockchain_guide.html" href="/guides/blockchain_guide.html">
     <div class="guide-card-icon" style="background: linear-gradient(135deg, #0d2137 0%, #1a3a5c 100%);">🌐</div>
     <div class="guide-card-text">
       <div class="guide-card-name">블록체인 입문 가이드</div>
@@ -263,7 +263,7 @@ onAuthStateChanged(auth, async (user) => {
     <div class="guide-card-arrow">›</div>
   </a>
 
-  <a class="guide-card" href="../guides/digital_asset_guide.html" href="../guides/digital_asset_guide.html">
+  <a class="guide-card" href="/guides/digital_asset_guide.html" href="/guides/digital_asset_guide.html">
     <div class="guide-card-icon" style="background: linear-gradient(135deg, #7a5a10 0%, #c9a84c 100%);">🪙</div>
     <div class="guide-card-text">
       <div class="guide-card-name">디지털 자산의 구조와 이코노미</div>
@@ -277,7 +277,7 @@ onAuthStateChanged(auth, async (user) => {
     <div class="guide-card-arrow">›</div>
   </a>
 
-  <a class="guide-card" href="../guides/sto_guide.html" href="../guides/sto_guide.html">
+  <a class="guide-card" href="/guides/sto_guide.html" href="/guides/sto_guide.html">
     <div class="guide-card-icon icon-mint">🔐</div>
     <div class="guide-card-text">
       <div class="guide-card-name">STO 증권형 토큰 가이드</div>
@@ -294,7 +294,7 @@ onAuthStateChanged(auth, async (user) => {
   <!-- ── 카테고리 B: 슈퍼트러스트 프로젝트 ── -->
   <div class="cat-label">슈퍼트러스트 프로젝트</div>
 
-  <a class="guide-card" href="../guides/guide.html" href="../guides/guide.html">
+  <a class="guide-card" href="/guides/guide.html" href="/guides/guide.html">
     <div class="guide-card-icon icon-indigo">📖</div>
     <div class="guide-card-text">
       <div class="guide-card-name">슈퍼세이브 가이드</div>
@@ -308,7 +308,7 @@ onAuthStateChanged(auth, async (user) => {
     <div class="guide-card-arrow">›</div>
   </a>
 
-  <a class="guide-card" href="../guides/mpc_guide.html" href="../guides/mpc_guide.html">
+  <a class="guide-card" href="/guides/mpc_guide.html" href="/guides/mpc_guide.html">
     <div class="guide-card-icon" style="background: linear-gradient(135deg, #004d47 0%, #00938a 100%);">🪙</div>
     <div class="guide-card-text">
       <div class="guide-card-name">MPC 토큰 — Mineral Project Coin</div>
@@ -321,7 +321,7 @@ onAuthStateChanged(auth, async (user) => {
     <div class="guide-card-arrow">›</div>
   </a>
 
-  <a class="guide-card" href="../guides/mineral_guide.html" href="../guides/mineral_guide.html">
+  <a class="guide-card" href="/guides/mineral_guide.html" href="/guides/mineral_guide.html">
     <div class="guide-card-icon" style="background: linear-gradient(135deg, #0f4c35 0%, #1a6b4a 100%);">⛏️</div>
     <div class="guide-card-text">
       <div class="guide-card-name">차간 톨고이 광산 프로젝트</div>
@@ -357,7 +357,7 @@ onAuthStateChanged(auth, async (user) => {
 
 <!-- ── 하단 네비게이션 ── -->
 <nav class="bottom-nav">
-  <a class="nav-item" href="../index.html">
+  <a class="nav-item" href="/index.html">
     <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>홈
   </a>
   <a class="nav-item active" href="guide_home.html">
