@@ -19,11 +19,10 @@
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Pretendard',sans-serif;background:var(--indigo-bg);padding-bottom:80px;visibility:hidden;}
-.hero{background:linear-gradient(160deg,#1e1e72 0%,#2d2d9f 55%,#1e1e72 100%);color:white;padding:40px 24px 32px;text-align:center;}
-.hero-avatar{width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:1.6rem;font-weight:900;margin:0 auto 12px;border:2px solid rgba(255,255,255,0.3);}
-.hero-name{font-size:1.2rem;font-weight:900;letter-spacing:-0.02em;}
-.hero-email{font-size:0.78rem;color:rgba(255,255,255,0.6);margin-top:4px;}
-.hero-badge{display:inline-block;background:rgba(255,215,0,0.2);color:#FFD700;border:1px solid rgba(255,215,0,0.35);font-size:0.65rem;font-weight:700;padding:3px 10px;border-radius:20px;margin-top:8px;letter-spacing:0.05em;}
+.hero{background:linear-gradient(160deg,#1e1e72 0%,#2d2d9f 55%,#1e1e72 100%);color:white;padding:18px 24px 16px;display:flex;align-items:center;gap:14px;}
+.hero-avatar{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:900;flex-shrink:0;border:2px solid rgba(255,255,255,0.3);}
+.hero-name{font-size:1.0rem;font-weight:900;letter-spacing:-0.02em;}
+.hero-email{font-size:0.75rem;color:rgba(255,255,255,0.6);margin-top:2px;}
 .container{max-width:860px;margin:0 auto;padding:20px 16px;}
 .section{background:white;border-radius:20px;padding:24px;margin-bottom:12px;border:1px solid var(--border);box-shadow:0 2px 12px rgba(30,30,114,0.06);}
 .section-title{font-size:0.78rem;font-weight:700;color:var(--text-sub);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:16px;}
@@ -33,13 +32,6 @@ body{font-family:'Pretendard',sans-serif;background:var(--indigo-bg);padding-bot
 .info-value{font-size:0.88rem;color:var(--indigo-deep);font-weight:700;}
 .status-badge{display:inline-block;font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:20px;}
 .badge-approved{background:var(--mint-lt);color:var(--mint);}
-.menu-item{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--border);cursor:pointer;text-decoration:none;}
-.menu-item:last-child{border-bottom:none;}
-.menu-icon{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}
-.menu-text{flex:1;}
-.menu-name{font-size:0.9rem;font-weight:700;color:var(--indigo-deep);}
-.menu-sub{font-size:0.72rem;color:var(--text-sub);margin-top:2px;}
-.menu-arr{color:var(--text-sub);font-size:1.1rem;}
 .btn-logout{width:100%;padding:14px;border-radius:14px;border:1.5px solid var(--red);background:white;color:var(--red);font-family:'Pretendard',sans-serif;font-size:0.92rem;font-weight:700;cursor:pointer;transition:all 0.15s;margin-top:4px;}
 .btn-logout:hover{background:#ffebee;}
 
@@ -109,25 +101,18 @@ body{font-family:'Pretendard',sans-serif;background:var(--indigo-bg);padding-bot
 <body>
 
 <div class="hero">
-  <div style="position:relative;display:inline-block;">
-    <div class="hero-avatar" id="hero-avatar">?</div>
+  <div class="hero-avatar" id="hero-avatar">?</div>
+  <div>
+    <div class="hero-name" id="hero-name">로딩 중...</div>
+    <div class="hero-email" id="hero-email"></div>
   </div>
-  <div class="hero-name" id="hero-name">로딩 중...</div>
-  <div class="hero-email" id="hero-email"></div>
-  <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:8px;">
-    <div class="hero-badge">승인 완료</div>
-    <a id="admin-link" href="../admin.html" style="display:none;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);border-radius:20px;padding:3px 10px;font-size:0.9rem;text-decoration:none;" title="관리자 페이지">⚙️</a>
-  </div>
+  <a id="admin-link" href="../admin.html" style="display:none;margin-left:auto;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);border-radius:50%;width:34px;height:34px;font-size:1rem;text-decoration:none;align-items:center;justify-content:center;" title="관리자 페이지">⚙️</a>
 </div>
 
 <div class="container">
 
   <div class="section">
     <div class="section-title">계정 정보</div>
-    <div class="info-row">
-      <span class="info-label">이름</span>
-      <span class="info-value" id="info-name">-</span>
-    </div>
     <div class="info-row">
       <span class="info-label">이메일</span>
       <span class="info-value" id="info-email">-</span>
@@ -138,25 +123,7 @@ body{font-family:'Pretendard',sans-serif;background:var(--indigo-bg);padding-bot
     </div>
   </div>
 
-  <div class="section">
-    <div class="section-title">메뉴</div>
-    <a class="menu-item" href="/SuperSaver-Kit/pages/simulator.html">
-      <div class="menu-icon" style="background:var(--indigo-lt);">📊</div>
-      <div class="menu-text">
-        <div class="menu-name">시뮬레이터</div>
-        <div class="menu-sub">새 시뮬레이션 실행</div>
-      </div>
-      <div class="menu-arr">›</div>
-    </a>
-    <a class="menu-item" href="../pages/guide_home.html">
-      <div class="menu-icon" style="background:var(--mint-lt);">📚</div>
-      <div class="menu-text">
-        <div class="menu-name">가이드 센터</div>
-        <div class="menu-sub">학습 자료 모음</div>
-      </div>
-      <div class="menu-arr">›</div>
-    </a>
-  </div>
+
 
   <!-- 시뮬레이션 기록 -->
   <div class="section" id="sim-section">
@@ -184,7 +151,7 @@ body{font-family:'Pretendard',sans-serif;background:var(--indigo-bg);padding-bot
     </div>
   </div>
 
-  <div class="section">
+  <div class="section" style="margin-top:0;">
     <button class="btn-logout" onclick="doLogout()">로그아웃</button>
   </div>
 
