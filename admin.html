@@ -16,59 +16,88 @@
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Pretendard',sans-serif;background:var(--gray-lt);min-height:100vh;padding-bottom:40px;}
 
-/* 탑바 */
-.topbar{background:linear-gradient(135deg,var(--indigo-deep),var(--indigo));color:white;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
-.topbar-title{font-size:1.0rem;font-weight:900;letter-spacing:-0.01em;}
-.topbar-sub{font-size:0.72rem;color:rgba(255,255,255,0.6);margin-top:2px;}
-.topbar-btn{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:white;padding:6px 14px;border-radius:20px;font-size:0.72rem;font-weight:700;cursor:pointer;font-family:'Pretendard',sans-serif;text-decoration:none;display:inline-block;}
+/* ── 탑바 ── */
+.topbar{
+  background:linear-gradient(135deg,var(--indigo-deep),var(--indigo));
+  color:white;padding:12px 16px;
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+}
+.topbar-title{font-size:0.95rem;font-weight:900;letter-spacing:-0.01em;white-space:nowrap;}
+.topbar-sub{font-size:0.68rem;color:rgba(255,255,255,0.6);margin-top:1px;}
+.topbar-btns{display:flex;gap:6px;align-items:center;flex-shrink:0;}
+.icon-btn{
+  background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);
+  color:white;width:34px;height:34px;border-radius:50%;
+  font-size:1.0rem;cursor:pointer;font-family:'Pretendard',sans-serif;
+  display:flex;align-items:center;justify-content:center;text-decoration:none;
+  transition:background 0.15s;
+}
+.icon-btn:hover{background:rgba(255,255,255,0.25);}
 
-.container{max-width:860px;margin:0 auto;padding:24px 16px;}
+/* ── 컨테이너 ── */
+.container{max-width:860px;margin:0 auto;padding:16px;}
 
-/* 통계 */
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:24px;}
-@media(max-width:480px){.stats{grid-template-columns:repeat(2,1fr);}}
-.stat-card{background:white;border-radius:16px;padding:14px;text-align:center;border:1px solid var(--border);box-shadow:0 2px 8px rgba(30,30,114,0.06);}
-.stat-num{font-size:1.6rem;font-weight:900;color:var(--indigo-deep);letter-spacing:-0.03em;}
-.stat-label{font-size:0.68rem;color:var(--text-sub);font-weight:600;margin-top:4px;letter-spacing:0.04em;}
+/* ── 통계 카드 (1행) ── */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px;}
+.stat-card{
+  background:white;border-radius:14px;padding:10px 6px;
+  text-align:center;border:2px solid transparent;
+  box-shadow:0 2px 8px rgba(30,30,114,0.06);
+  cursor:pointer;transition:all 0.15s;user-select:none;
+}
+.stat-card:active{transform:scale(0.97);}
+.stat-card.active-card{border-color:var(--indigo);background:var(--indigo-lt);}
+.stat-card.pending.active-card{border-color:var(--gold-muted);background:var(--gold-lt);}
+.stat-card.approved.active-card{border-color:var(--mint);background:var(--mint-lt);}
+.stat-card.rejected.active-card{border-color:var(--red);background:#ffebee;}
+.stat-num{font-size:1.4rem;font-weight:900;color:var(--indigo-deep);letter-spacing:-0.03em;line-height:1;}
+.stat-label{font-size:0.6rem;color:var(--text-sub);font-weight:600;margin-top:4px;letter-spacing:0.03em;}
 .stat-card.pending .stat-num{color:var(--gold-muted);}
 .stat-card.approved .stat-num{color:var(--mint);}
 .stat-card.rejected .stat-num{color:var(--red);}
 
-/* 섹션 헤더 */
-.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;margin-top:24px;}
-.section-title{font-size:0.8rem;font-weight:700;color:var(--text-sub);letter-spacing:0.08em;text-transform:uppercase;display:flex;align-items:center;gap:8px;}
-.section-title::after{content:'';flex:1;height:1px;background:var(--border);}
-.sort-btn{font-size:0.7rem;font-weight:700;padding:4px 10px;border-radius:20px;border:1.5px solid var(--border);background:white;color:var(--text-sub);cursor:pointer;font-family:'Pretendard',sans-serif;white-space:nowrap;transition:all 0.15s;}
+/* ── 정렬 ── */
+.sort-row{display:flex;align-items:center;gap:6px;margin-bottom:12px;}
+.sort-label{font-size:0.72rem;font-weight:700;color:var(--text-sub);}
+.sort-btn{font-size:0.68rem;font-weight:700;padding:4px 10px;border-radius:20px;border:1.5px solid var(--border);background:white;color:var(--text-sub);cursor:pointer;font-family:'Pretendard',sans-serif;transition:all 0.15s;}
 .sort-btn.active{border-color:var(--indigo);color:var(--indigo);background:var(--indigo-lt);}
 
-/* 회원 카드 */
-.user-card{background:white;border-radius:16px;padding:14px 16px;margin-bottom:8px;border:1px solid var(--border);box-shadow:0 1px 6px rgba(30,30,114,0.05);}
-.user-card-top{display:flex;align-items:center;gap:12px;}
-.user-avatar{width:40px;height:40px;border-radius:50%;background:var(--indigo-lt);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.9rem;color:var(--indigo);flex-shrink:0;}
+/* ── 섹션 타이틀 ── */
+.section-header{
+  display:flex;align-items:center;gap:8px;
+  font-size:0.78rem;font-weight:700;color:var(--text-sub);
+  letter-spacing:0.06em;text-transform:uppercase;
+  margin-bottom:10px;padding-bottom:8px;
+  border-bottom:1px solid var(--border);
+}
+
+/* ── 회원 카드 ── */
+.user-card{background:white;border-radius:14px;padding:12px 14px;margin-bottom:8px;border:1px solid var(--border);box-shadow:0 1px 6px rgba(30,30,114,0.05);}
+.user-card-top{display:flex;align-items:center;gap:10px;}
+.user-avatar{width:38px;height:38px;border-radius:50%;background:var(--indigo-lt);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.88rem;color:var(--indigo);flex-shrink:0;}
 .user-info{flex:1;min-width:0;}
-.user-name{font-size:0.9rem;font-weight:700;color:var(--indigo-deep);}
-.user-email{font-size:0.73rem;color:var(--text-sub);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.user-meta{font-size:0.67rem;color:#bbb;margin-top:3px;display:flex;gap:8px;flex-wrap:wrap;}
+.user-name{font-size:0.88rem;font-weight:700;color:var(--indigo-deep);}
+.user-email{font-size:0.7rem;color:var(--text-sub);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.user-date{font-size:0.65rem;color:#bbb;margin-top:2px;}
 .user-actions{display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end;}
 
-/* 뱃지 */
-.badge{display:inline-block;font-size:0.63rem;font-weight:700;padding:2px 7px;border-radius:8px;vertical-align:middle;margin-left:4px;}
+/* ── 뱃지 ── */
+.badge{display:inline-block;font-size:0.6rem;font-weight:700;padding:2px 6px;border-radius:6px;vertical-align:middle;margin-left:3px;}
 .badge-approved{background:var(--mint-lt);color:var(--mint);}
 .badge-pending{background:var(--gold-lt);color:var(--gold-muted);}
 .badge-rejected{background:#ffebee;color:var(--red);}
 
+/* ── 액션 버튼 ── */
+.btn-approve{background:var(--mint);color:white;border:none;padding:6px 12px;border-radius:8px;font-size:0.72rem;font-weight:700;cursor:pointer;font-family:'Pretendard',sans-serif;}
+.btn-reject{background:#ffebee;color:var(--red);border:1px solid rgba(217,48,37,0.2);padding:6px 12px;border-radius:8px;font-size:0.72rem;font-weight:700;cursor:pointer;font-family:'Pretendard',sans-serif;}
+.btn-delete{background:#fff0f0;color:var(--red);border:1.5px solid rgba(217,48,37,0.3);padding:6px 12px;border-radius:8px;font-size:0.72rem;font-weight:700;cursor:pointer;font-family:'Pretendard',sans-serif;}
+.btn-restore{background:var(--indigo-lt);color:var(--indigo);border:1px solid rgba(45,45,159,0.2);padding:6px 12px;border-radius:8px;font-size:0.72rem;font-weight:700;cursor:pointer;font-family:'Pretendard',sans-serif;}
 
-/* 버튼 */
-.btn-approve{background:var(--mint);color:white;border:none;padding:6px 13px;border-radius:9px;font-size:0.73rem;font-weight:700;cursor:pointer;font-family:'Pretendard',sans-serif;}
-.btn-approve:hover{opacity:0.85;}
-.btn-reject{background:#ffebee;color:var(--red);border:1px solid rgba(217,48,37,0.2);padding:6px 13px;border-radius:9px;font-size:0.73rem;font-weight:700;cursor:pointer;font-family:'Pretendard',sans-serif;}
-.btn-reject:hover{background:#ffd6d3;}
-.btn-delete{background:#fff0f0;color:var(--red);border:1.5px solid rgba(217,48,37,0.3);padding:6px 13px;border-radius:9px;font-size:0.73rem;font-weight:700;cursor:pointer;font-family:'Pretendard',sans-serif;}
-.btn-delete:hover{background:#ffd6d3;}
-.btn-restore{background:var(--indigo-lt);color:var(--indigo);border:1px solid rgba(45,45,159,0.2);padding:6px 13px;border-radius:9px;font-size:0.73rem;font-weight:700;cursor:pointer;font-family:'Pretendard',sans-serif;}
-.btn-restore:hover{opacity:0.85;}
+/* ── 빈 상태 ── */
+.empty{text-align:center;padding:24px;color:var(--text-sub);font-size:0.82rem;}
+.empty-icon{font-size:1.6rem;margin-bottom:6px;}
 
-/* 로그인 */
+/* ── 로그인 ── */
 .login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
 .login-card{background:white;border-radius:24px;padding:32px 28px;width:100%;max-width:360px;border:1px solid var(--border);box-shadow:0 4px 32px rgba(30,30,114,0.10);}
 .login-card h2{font-size:1.1rem;font-weight:900;color:var(--indigo-deep);margin-bottom:4px;}
@@ -81,9 +110,6 @@ input:focus{border-color:var(--indigo);}
 .msg{padding:10px 14px;border-radius:8px;font-size:0.78rem;margin-top:12px;display:none;}
 .msg.show{display:block;}
 .msg.error{background:#ffebee;color:var(--red);}
-
-.empty{text-align:center;padding:28px;color:var(--text-sub);font-size:0.83rem;}
-.empty-icon{font-size:1.8rem;margin-bottom:8px;}
 </style>
 </head>
 <body>
@@ -108,64 +134,59 @@ input:focus{border-color:var(--indigo);}
 
 <!-- 대시보드 -->
 <div id="admin-wrap" style="display:none;">
+
+  <!-- 탑바: 타이틀 + 아이콘 버튼만 -->
   <div class="topbar">
     <div>
-      <div class="topbar-title">⚙️ SuperSaver Kit — 관리자</div>
+      <div class="topbar-title">⚙️ 관리자</div>
       <div class="topbar-sub" id="admin-name-display"></div>
     </div>
-    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-      <a href="/SuperSaver-Kit/index.html" class="topbar-btn" style="text-decoration:none;">🏠 홈</a>
-      <a href="/SuperSaver-Kit/pages/mypage.html" class="topbar-btn" style="text-decoration:none;">👤 내 정보</a>
-      <button class="topbar-btn" onclick="adminLogout()">로그아웃</button>
+    <div class="topbar-btns">
+      <a href="/SuperSaver-Kit/index.html" class="icon-btn" title="홈">🏠</a>
+      <a href="/SuperSaver-Kit/pages/mypage.html" class="icon-btn" title="내 정보">👤</a>
+      <button class="icon-btn" onclick="adminLogout()" title="로그아웃">🚪</button>
     </div>
   </div>
 
   <div class="container">
 
-    <!-- 통계 -->
+    <!-- 통계 카드 (1행, 클릭하면 목록 토글) -->
     <div class="stats">
-      <div class="stat-card">
+      <div class="stat-card" id="card-total" onclick="toggleList('total')">
         <div class="stat-num" id="stat-total">-</div>
-        <div class="stat-label">전체 회원</div>
+        <div class="stat-label">전체</div>
       </div>
-      <div class="stat-card pending">
+      <div class="stat-card pending" id="card-pending" onclick="toggleList('pending')">
         <div class="stat-num" id="stat-pending">-</div>
-        <div class="stat-label">승인 대기</div>
+        <div class="stat-label">대기</div>
       </div>
-      <div class="stat-card approved">
+      <div class="stat-card approved" id="card-approved" onclick="toggleList('approved')">
         <div class="stat-num" id="stat-approved">-</div>
-        <div class="stat-label">승인 완료</div>
+        <div class="stat-label">승인</div>
       </div>
-      <div class="stat-card rejected">
+      <div class="stat-card rejected" id="card-rejected" onclick="toggleList('rejected')">
         <div class="stat-num" id="stat-rejected">-</div>
         <div class="stat-label">거절</div>
       </div>
     </div>
 
-    <!-- 정렬 컨트롤 -->
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
-      <span style="font-size:0.75rem;font-weight:700;color:var(--text-sub);">가입일 정렬</span>
-      <button class="sort-btn active" id="sort-desc" onclick="setSort('desc')">최신순 ↓</button>
-      <button class="sort-btn" id="sort-asc" onclick="setSort('asc')">오래된순 ↑</button>
-    </div>
+    <!-- 목록 영역 (기본 숨김) -->
+    <div id="list-area" style="display:none;">
 
-    <!-- 승인 대기 -->
-    <div class="section-header">
-      <div class="section-title">⏳ 승인 대기&nbsp;&nbsp;</div>
-    </div>
-    <div id="list-pending"></div>
+      <!-- 정렬 -->
+      <div class="sort-row">
+        <span class="sort-label">가입일</span>
+        <button class="sort-btn active" id="sort-desc" onclick="setSort('desc')">최신순 ↓</button>
+        <button class="sort-btn" id="sort-asc" onclick="setSort('asc')">오래된순 ↑</button>
+      </div>
 
-    <!-- 승인 완료 -->
-    <div class="section-header" style="margin-top:28px;">
-      <div class="section-title">✅ 승인된 회원&nbsp;&nbsp;</div>
-    </div>
-    <div id="list-approved"></div>
+      <!-- 섹션 타이틀 -->
+      <div class="section-header" id="list-section-title"></div>
 
-    <!-- 거절 -->
-    <div class="section-header" style="margin-top:28px;">
-      <div class="section-title">🚫 거절된 회원&nbsp;&nbsp;</div>
+      <!-- 회원 목록 -->
+      <div id="user-list"></div>
+
     </div>
-    <div id="list-rejected"></div>
 
   </div>
 </div>
@@ -173,7 +194,7 @@ input:focus{border-color:var(--indigo);}
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-import { getFirestore, collection, getDocs, getDoc, doc, updateDoc, deleteDoc, query, where } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getFirestore, collection, getDocs, getDoc, doc, updateDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 const FB = {
   apiKey:"AIzaSyCV4elOllJXF-Rx6qrYNDAwSSfVHKAQelQ",
@@ -183,17 +204,15 @@ const FB = {
   messagingSenderId:"800388848026",
   appId:"1:800388848026:web:1d64b6ffebf8544ecb0223"
 };
-const app = initializeApp(FB);
+const app  = initializeApp(FB);
 const auth = getAuth(app);
 const db   = getFirestore(app);
 
-// 전역 노출
 window._auth=auth; window._db=db;
 window._signIn=signInWithEmailAndPassword; window._signOut=signOut;
 window._collection=collection; window._getDocs=getDocs;
 window._getDoc=getDoc; window._doc=doc;
 window._updateDoc=updateDoc; window._deleteDoc=deleteDoc;
-window._query=query; window._where=where;
 
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
@@ -213,7 +232,16 @@ onAuthStateChanged(auth, async (user) => {
 </script>
 
 <script>
-let _sortOrder = 'desc'; // 최신순 기본
+let _sortOrder  = 'desc';
+let _activeTab  = null;   // 현재 열린 탭
+let _allUsers   = [];     // 로드된 전체 회원
+
+const TAB_INFO = {
+  total:   { label:'전체 회원',   icon:'👥', filter: u => true },
+  pending: { label:'승인 대기',   icon:'⏳', filter: u => u.status === 'pending' },
+  approved:{ label:'승인된 회원', icon:'✅', filter: u => u.status === 'approved' },
+  rejected:{ label:'거절된 회원', icon:'🚫', filter: u => u.status === 'rejected' },
+};
 
 function showMsg(id, text, type) {
   const el = document.getElementById(id);
@@ -225,7 +253,51 @@ function setSort(order) {
   _sortOrder = order;
   document.getElementById('sort-desc').classList.toggle('active', order === 'desc');
   document.getElementById('sort-asc').classList.toggle('active', order === 'asc');
-  loadUsers();
+  renderList();
+}
+
+window.toggleList = function(tab) {
+  // 같은 카드 다시 누르면 닫기
+  if (_activeTab === tab) {
+    _activeTab = null;
+    document.getElementById('list-area').style.display = 'none';
+    document.querySelectorAll('.stat-card').forEach(c => c.classList.remove('active-card'));
+    return;
+  }
+  _activeTab = tab;
+  document.querySelectorAll('.stat-card').forEach(c => c.classList.remove('active-card'));
+  document.getElementById('card-' + tab).classList.add('active-card');
+  document.getElementById('list-area').style.display = 'block';
+
+  const info = TAB_INFO[tab];
+  document.getElementById('list-section-title').textContent = info.icon + ' ' + info.label;
+
+  renderList();
+  // 목록으로 부드럽게 스크롤
+  setTimeout(() => document.getElementById('list-area').scrollIntoView({behavior:'smooth', block:'start'}), 50);
+};
+
+function renderList() {
+  if (!_activeTab) return;
+  const info = TAB_INFO[_activeTab];
+
+  let users = _allUsers.filter(info.filter);
+  users.sort((a,b) => {
+    const ta = a.createdAt?.seconds||0;
+    const tb = b.createdAt?.seconds||0;
+    return _sortOrder === 'desc' ? tb - ta : ta - tb;
+  });
+
+  const emptyMsg = {
+    total:    '<div class="empty"><div class="empty-icon">👥</div>회원이 없습니다.</div>',
+    pending:  '<div class="empty"><div class="empty-icon">✅</div>대기 중인 신청이 없습니다.</div>',
+    approved: '<div class="empty"><div class="empty-icon">👥</div>승인된 회원이 없습니다.</div>',
+    rejected: '<div class="empty"><div class="empty-icon">🚫</div>거절된 회원이 없습니다.</div>',
+  }[_activeTab];
+
+  document.getElementById('user-list').innerHTML = users.length === 0
+    ? emptyMsg
+    : users.map(u => userCard(u)).join('');
 }
 
 window.adminLogin = async function() {
@@ -250,49 +322,27 @@ window.adminLogin = async function() {
 
 window.adminLogout = async function() {
   await window._signOut(window._auth);
+  _activeTab = null; _allUsers = [];
   document.getElementById('login-wrap').style.display = 'flex';
   document.getElementById('admin-wrap').style.display = 'none';
 };
 
 window.loadUsers = async function() {
   try {
-    // 회원 목록
     const snap = await window._getDocs(window._collection(window._db,'users'));
-    let users = snap.docs.map(d=>({id:d.id,...d.data()})).filter(u=>u.role!=='admin');
+    _allUsers = snap.docs.map(d=>({id:d.id,...d.data()})).filter(u=>u.role!=='admin');
 
-    // 가입일 정렬
-    users.sort((a,b) => {
-      const ta = a.createdAt?.seconds||0;
-      const tb = b.createdAt?.seconds||0;
-      return _sortOrder === 'desc' ? tb - ta : ta - tb;
-    });
+    const pending  = _allUsers.filter(u=>u.status==='pending');
+    const approved = _allUsers.filter(u=>u.status==='approved');
+    const rejected = _allUsers.filter(u=>u.status==='rejected');
 
-    const pending  = users.filter(u=>u.status==='pending');
-    const approved = users.filter(u=>u.status==='approved');
-    const rejected = users.filter(u=>u.status==='rejected');
-
-    document.getElementById('stat-total').textContent    = users.length;
+    document.getElementById('stat-total').textContent    = _allUsers.length;
     document.getElementById('stat-pending').textContent  = pending.length;
     document.getElementById('stat-approved').textContent = approved.length;
     document.getElementById('stat-rejected').textContent = rejected.length;
 
-    // 승인 대기
-    const pEl = document.getElementById('list-pending');
-    pEl.innerHTML = pending.length === 0
-      ? '<div class="empty"><div class="empty-icon">✅</div>대기 중인 신청이 없습니다.</div>'
-      : pending.map(u => userCard(u, 'pending')).join('');
-
-    // 승인 완료
-    const aEl = document.getElementById('list-approved');
-    aEl.innerHTML = approved.length === 0
-      ? '<div class="empty"><div class="empty-icon">👥</div>승인된 회원이 없습니다.</div>'
-      : approved.map(u => userCard(u, 'approved')).join('');
-
-    // 거절
-    const rEl = document.getElementById('list-rejected');
-    rEl.innerHTML = rejected.length === 0
-      ? '<div class="empty"><div class="empty-icon">🚫</div>거절된 회원이 없습니다.</div>'
-      : rejected.map(u => userCard(u, 'rejected')).join('');
+    // 열려있던 탭 있으면 갱신
+    if (_activeTab) renderList();
 
   } catch(e) {
     console.error('loadUsers 오류:', e);
@@ -300,39 +350,36 @@ window.loadUsers = async function() {
   }
 };
 
-function userCard(u, status) {
+function userCard(u) {
+  const status  = u.status || 'pending';
   const initial = (u.name||'?')[0].toUpperCase();
-  const date = u.createdAt ? new Date(u.createdAt.seconds*1000).toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'}) : '-';
+  const date    = u.createdAt
+    ? new Date(u.createdAt.seconds*1000).toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'})
+    : '-';
   const badge = {
-    pending:  '<span class="badge badge-pending">대기 중</span>',
-    approved: '<span class="badge badge-approved">승인 완료</span>',
+    pending:  '<span class="badge badge-pending">대기</span>',
+    approved: '<span class="badge badge-approved">승인</span>',
     rejected: '<span class="badge badge-rejected">거절</span>',
-  }[status];
+  }[status] || '';
 
   let actions = '';
   if (status === 'pending') {
-    actions = `
-      <button class="btn-approve" onclick="approveUser('${u.id}','${u.name}')">승인</button>
-      <button class="btn-reject"  onclick="rejectUser('${u.id}','${u.name}')">거절</button>`;
+    actions = `<button class="btn-approve" onclick="approveUser('${u.id}','${u.name}')">승인</button>
+               <button class="btn-reject"  onclick="rejectUser('${u.id}','${u.name}')">거절</button>`;
   } else if (status === 'approved') {
-    actions = `
-      <button class="btn-reject" onclick="rejectUser('${u.id}','${u.name}')">승인 취소</button>`;
+    actions = `<button class="btn-reject" onclick="rejectUser('${u.id}','${u.name}')">취소</button>`;
   } else if (status === 'rejected') {
-    actions = `
-      <button class="btn-restore" onclick="approveUser('${u.id}','${u.name}')">재승인</button>
-      <button class="btn-delete"  onclick="deleteUser('${u.id}','${u.name}')">완전 삭제</button>`;
+    actions = `<button class="btn-restore" onclick="approveUser('${u.id}','${u.name}')">재승인</button>
+               <button class="btn-delete"  onclick="deleteUser('${u.id}','${u.name}')">삭제</button>`;
   }
 
-  return `
-  <div class="user-card">
+  return `<div class="user-card">
     <div class="user-card-top">
       <div class="user-avatar">${initial}</div>
       <div class="user-info">
         <div class="user-name">${u.name||'-'}${badge}</div>
         <div class="user-email">${u.email||'-'}</div>
-        <div class="user-meta">
-          <span>가입일: ${date}</span>
-        </div>
+        <div class="user-date">가입일: ${date}</div>
       </div>
       <div class="user-actions">${actions}</div>
     </div>
@@ -348,7 +395,7 @@ window.approveUser = async function(uid, name) {
 };
 
 window.rejectUser = async function(uid, name) {
-  if (!confirm(`"${name}" 님을 거절하시겠습니까?\n거절 목록으로 이동합니다.`)) return;
+  if (!confirm(`"${name}" 님을 거절하시겠습니까?`)) return;
   try {
     await window._updateDoc(window._doc(window._db,'users',uid), {status:'rejected'});
     loadUsers();
@@ -356,9 +403,8 @@ window.rejectUser = async function(uid, name) {
 };
 
 window.deleteUser = async function(uid, name) {
-  if (!confirm(`"${name}" 님을 완전 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.`)) return;
+  if (!confirm(`"${name}" 님을 완전 삭제하시겠습니까?\n되돌릴 수 없습니다.`)) return;
   try {
-    // Firestore users 문서 삭제
     await window._deleteDoc(window._doc(window._db,'users',uid));
     loadUsers();
   } catch(e) { alert('삭제 중 오류가 발생했습니다.'); }
