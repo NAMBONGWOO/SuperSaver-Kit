@@ -702,7 +702,7 @@ onAuthStateChanged(auth, async (user) => {
   <div class="compound-bars" id="cr_bars"></div>
 
   <div class="highlight-box" style="margin-top:14px;">
-    재참여 조건: 가용합계(주정산 + 이월금)가 단위 비용(100 USDT + Step2 SUT 매수비용)을 초과할 때마다 자동 재계약 발생. <strong>SUT 시세가 낮을수록 재참여 빈도↑</strong>
+    재참여 조건: 신용대금합계(주정산 + 이월금)가 단위 비용(100 USDT + Step2 SUT 매수비용)을 초과할 때마다 자동 재계약 발생. <strong>SUT 시세가 낮을수록 재참여 빈도↑</strong>
   </div>
 </div>
 
@@ -721,7 +721,7 @@ onAuthStateChanged(auth, async (user) => {
       <tr><td><strong>신용매수가</strong></td><td>신용대금 산정 기준</td><td>회사가 조정 (상향 가능)</td><td>상승 시 동일 SUT로 더 많은 신용대금 승인</td></tr>
       <tr><td><strong>SUT 시세</strong><br><small style="color:var(--mint)">현재: <span id="t_var_price">조회 중</span></small></td><td>Step2 비용 결정</td><td>시장 변동</td><td>하락 시 Step2 비용 감소 → 재참여 용이</td></tr>
       <tr><td><strong>준비금</strong></td><td>Step1 기준금액</td><td>회원 선택</td><td>클수록 신용대금 및 일지급금 비례 증가</td></tr>
-      <tr><td><strong>재참여 주기</strong></td><td>복리 속도</td><td>자동 (가용합계 기준)</td><td>빠를수록 신용대금 누적 속도 증가</td></tr>
+      <tr><td><strong>재참여 주기</strong></td><td>복리 속도</td><td>자동 (신용대금합계 기준)</td><td>빠를수록 신용대금 누적 속도 증가</td></tr>
     </tbody>
   </table>
 </div>
