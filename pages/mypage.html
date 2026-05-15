@@ -12,7 +12,11 @@
 <title>SuperSaver Kit — 내 정보</title>
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
 <style>
-:root{--indigo-deep:#1e1e72;--indigo:#2d2d9f;--indigo-lt:#f0f0ff;--indigo-bg:#f4f4ff;--mint:#00938a;--mint-lt:#e0f5f4;--gold-muted:#c9a84c;--gold-lt:#fdf3dc;--border:#e0e0f4;--gray-lt:#f4f7f9;--text-sub:#8888bb;--red:#d93025;}
+:root{
+  --indigo-deep:#1e1e72;--indigo:#2d2d9f;--indigo-lt:#f0f0ff;--indigo-bg:#f4f4ff;
+  --mint:#00938a;--mint-lt:#e0f5f4;--gold:#FFD700;
+  --border:#e0e0f4;--gray-lt:#f4f7f9;--text-sub:#8888bb;--red:#d93025;
+}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Pretendard',sans-serif;background:var(--indigo-bg);padding-bottom:80px;visibility:hidden;}
 .hero{background:linear-gradient(160deg,#1e1e72 0%,#2d2d9f 55%,#1e1e72 100%);color:white;padding:40px 24px 32px;text-align:center;}
@@ -38,6 +42,63 @@ body{font-family:'Pretendard',sans-serif;background:var(--indigo-bg);padding-bot
 .menu-arr{color:var(--text-sub);font-size:1.1rem;}
 .btn-logout{width:100%;padding:14px;border-radius:14px;border:1.5px solid var(--red);background:white;color:var(--red);font-family:'Pretendard',sans-serif;font-size:0.92rem;font-weight:700;cursor:pointer;transition:all 0.15s;margin-top:4px;}
 .btn-logout:hover{background:#ffebee;}
+
+/* 시뮬레이션 아이템 */
+.sim-item{padding:14px 0;border-bottom:1px solid var(--border);cursor:pointer;}
+.sim-item:last-child{border-bottom:none;}
+.sim-item-inner{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
+.sim-check{width:22px;height:22px;border-radius:6px;border:2px solid var(--border);background:white;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;transition:all 0.15s;}
+.sim-check.checked{border-color:var(--indigo);background:var(--indigo);}
+.sim-check svg{display:none;width:12px;height:12px;stroke:white;stroke-width:3;fill:none;}
+.sim-check.checked svg{display:block;}
+
+/* 비교 모드 토글 버튼 */
+.btn-compare-mode{font-size:0.72rem;font-weight:700;padding:5px 12px;border-radius:20px;border:1.5px solid var(--indigo);background:white;color:var(--indigo);font-family:'Pretendard',sans-serif;cursor:pointer;transition:all 0.15s;white-space:nowrap;}
+.btn-compare-mode.on{background:var(--indigo);color:white;}
+
+/* 비교 플로팅 바 */
+.compare-bar{
+  position:sticky;bottom:68px;left:0;right:0;z-index:100;
+  background:var(--indigo);border-radius:16px;margin:0 0 12px;
+  padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:10px;
+  box-shadow:0 8px 24px rgba(30,30,114,0.35);
+  transition:opacity 0.2s,transform 0.2s;
+  opacity:0;transform:translateY(10px);pointer-events:none;
+}
+.compare-bar.active{opacity:1;transform:translateY(0);pointer-events:all;}
+.btn-do-compare{padding:9px 18px;background:var(--gold);color:var(--indigo-deep);border:none;border-radius:10px;font-family:'Pretendard',sans-serif;font-size:0.82rem;font-weight:900;cursor:pointer;white-space:nowrap;}
+.btn-do-compare:disabled{background:rgba(255,255,255,0.2);color:rgba(255,255,255,0.4);cursor:default;}
+.btn-bar-cancel{background:none;border:none;color:rgba(255,255,255,0.5);font-size:1.2rem;cursor:pointer;padding:0 4px;line-height:1;}
+
+/* 비교 결과 모달 */
+#compare-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9999;overflow-y:auto;padding:16px;}
+.cmp-inner{background:white;border-radius:20px;padding:20px;max-width:640px;margin:0 auto;position:relative;}
+.cmp-inner h3{font-size:1.0rem;font-weight:900;color:var(--indigo-deep);margin-bottom:16px;text-align:center;}
+.cmp-close-btn{position:absolute;top:16px;right:16px;background:var(--gray-lt);border:none;width:30px;height:30px;border-radius:50%;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.cmp-header{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.cmp-head-card{border-radius:12px;padding:12px;text-align:center;}
+.cmp-head-a{background:linear-gradient(135deg,#1e1e72,#2d2d9f);}
+.cmp-head-b{background:linear-gradient(135deg,#00938a,#00bdb0);}
+.cmp-head-label{font-size:0.6rem;font-weight:700;letter-spacing:0.1em;margin-bottom:4px;opacity:0.7;color:white;}
+.cmp-head-title{font-size:0.82rem;font-weight:900;color:white;line-height:1.3;word-break:keep-all;}
+.cmp-head-date{font-size:0.65rem;color:rgba(255,255,255,0.6);margin-top:3px;}
+.cmp-block{margin-bottom:14px;}
+.cmp-block-title{font-size:0.7rem;font-weight:700;color:var(--text-sub);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;border-left:3px solid var(--indigo);padding-left:8px;}
+.cmp-row{display:grid;grid-template-columns:1fr 1fr 1fr;border-bottom:1px solid var(--border);}
+.cmp-row:last-child{border-bottom:none;}
+.cmp-cell{padding:9px 10px;font-size:0.78rem;}
+.cmp-lbl{color:var(--text-sub);font-weight:500;font-size:0.73rem;background:var(--gray-lt);}
+.cmp-a{color:var(--indigo-deep);font-weight:700;text-align:right;}
+.cmp-b{color:var(--mint);font-weight:700;text-align:right;}
+.win-badge{font-size:0.6rem;font-weight:700;padding:1px 5px;border-radius:6px;margin-left:3px;vertical-align:middle;}
+.win-a{background:rgba(30,30,114,0.1);color:var(--indigo);}
+.win-b{background:rgba(0,147,138,0.12);color:var(--mint);}
+
+/* 상세 모달 */
+#sim-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;overflow-y:auto;padding:20px;}
+.sim-modal-inner{background:white;border-radius:20px;padding:24px;max-width:500px;margin:auto;position:relative;}
+
+/* 탭바 */
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:9999;background:white;border-top:1px solid var(--border);display:flex;height:60px;box-shadow:0 -4px 20px rgba(30,30,114,0.08);}
 @supports (padding-bottom:env(safe-area-inset-bottom)){.bottom-nav{padding-bottom:env(safe-area-inset-bottom);height:calc(60px + env(safe-area-inset-bottom));}}
 .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;text-decoration:none;color:#bbbbdd;font-size:0.63rem;font-weight:700;transition:color 0.15s;}
@@ -47,15 +108,15 @@ body{font-family:'Pretendard',sans-serif;background:var(--indigo-bg);padding-bot
 </head>
 <body>
 
-<div class="hero" id="hero">
-  <div style="position:relative; display:inline-block;">
+<div class="hero">
+  <div style="position:relative;display:inline-block;">
     <div class="hero-avatar" id="hero-avatar">?</div>
   </div>
   <div class="hero-name" id="hero-name">로딩 중...</div>
   <div class="hero-email" id="hero-email"></div>
-  <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-top:8px;">
-    <div class="hero-badge" id="hero-badge">승인 완료</div>
-    <a id="admin-link" href="../admin.html" style="display:none; background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.25); border-radius:20px; padding:3px 10px; font-size:0.9rem; text-decoration:none;" title="관리자 페이지">⚙️</a>
+  <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:8px;">
+    <div class="hero-badge">승인 완료</div>
+    <a id="admin-link" href="../admin.html" style="display:none;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);border-radius:20px;padding:3px 10px;font-size:0.9rem;text-decoration:none;" title="관리자 페이지">⚙️</a>
   </div>
 </div>
 
@@ -99,57 +160,27 @@ body{font-family:'Pretendard',sans-serif;background:var(--indigo-bg);padding-bot
 
   <!-- 시뮬레이션 기록 -->
   <div class="section" id="sim-section">
-    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
       <div class="section-title" style="margin-bottom:0;">저장된 시뮬레이션</div>
-      <span style="font-size:0.72rem; color:var(--text-sub);" id="sim-count"></span>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="font-size:0.72rem;color:var(--text-sub);" id="sim-count"></span>
+        <button class="btn-compare-mode" id="btn-cmp-mode" onclick="toggleCompareMode()">비교 선택</button>
+      </div>
     </div>
-    <div id="sim-list"><div style="text-align:center; padding:20px; color:var(--text-sub); font-size:0.85rem;">불러오는 중...</div></div>
+    <div id="sim-list">
+      <div style="text-align:center;padding:20px;color:var(--text-sub);font-size:0.85rem;">불러오는 중...</div>
+    </div>
   </div>
 
-  <!-- 시뮬레이션 상세 모달 -->
-  <div id="sim-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9999; overflow-y:auto; padding:20px;">
-    <div style="background:white; border-radius:20px; padding:24px; max-width:500px; margin:auto; position:relative;">
-      <button onclick="document.getElementById('sim-modal').style.display='none'"
-        style="position:absolute; top:16px; right:16px; background:var(--gray-lt); border:none;
-               width:30px; height:30px; border-radius:50%; font-size:1.1rem; cursor:pointer; display:flex; align-items:center; justify-content:center;">✕</button>
-      <h3 style="font-size:1.0rem; font-weight:900; color:var(--indigo-deep); margin-bottom:4px;" id="modal-title"></h3>
-      <p style="font-size:0.72rem; color:var(--text-sub); margin-bottom:20px;" id="modal-date"></p>
-
-      <!-- 입력값 -->
-      <div style="background:var(--indigo-lt); border-radius:12px; padding:14px; margin-bottom:14px;">
-        <div style="font-size:0.7rem; font-weight:700; color:var(--text-sub); letter-spacing:0.08em; margin-bottom:10px;">입력값</div>
-        <div id="modal-inputs" style="display:grid; grid-template-columns:1fr 1fr; gap:8px;"></div>
-      </div>
-
-      <!-- 요약 결과 -->
-      <div style="background:linear-gradient(135deg,#1e1e72,#2d2d9f); border-radius:12px; padding:14px; margin-bottom:14px;">
-        <div style="font-size:0.7rem; font-weight:700; color:rgba(255,255,255,0.6); letter-spacing:0.08em; margin-bottom:10px;">최종 결과</div>
-        <div id="modal-summary" style="display:grid; grid-template-columns:1fr 1fr; gap:8px;"></div>
-      </div>
-
-      <!-- 주차별 데이터 -->
-      <div style="font-size:0.7rem; font-weight:700; color:var(--text-sub); letter-spacing:0.08em; margin-bottom:8px;">주차별 데이터</div>
-      <div style="overflow-x:auto; border-radius:10px; border:1px solid var(--border);">
-        <table style="width:100%; border-collapse:collapse; font-size:0.75rem; min-width:400px;">
-          <thead>
-            <tr style="background:linear-gradient(135deg,#1e1e72,#2d2d9f);">
-              <th style="padding:8px; color:white; text-align:center; font-weight:700;">주차</th>
-              <th style="padding:8px; color:white; text-align:right; font-weight:700;">날짜</th>
-              <th style="padding:8px; color:white; text-align:right; font-weight:700;">계약</th>
-              <th style="padding:8px; color:white; text-align:right; font-weight:700;">일수익</th>
-              <th style="padding:8px; color:white; text-align:right; font-weight:700;">가용</th>
-            </tr>
-          </thead>
-          <tbody id="modal-weekly"></tbody>
-        </table>
-      </div>
-
-      <button onclick="deleteSimulation(window._currentSimId)"
-        style="width:100%; margin-top:16px; padding:12px; border-radius:10px;
-               border:1.5px solid var(--red); background:white; color:var(--red);
-               font-family:'Pretendard',sans-serif; font-size:0.85rem; font-weight:700; cursor:pointer;">
-        🗑 이 기록 삭제
-      </button>
+  <!-- 비교 플로팅 바 (컨테이너 안에 sticky) -->
+  <div class="compare-bar" id="compare-bar">
+    <div>
+      <div style="font-size:0.85rem;font-weight:700;color:white;">📊 시뮬레이션 비교</div>
+      <div style="font-size:0.72rem;color:rgba(255,255,255,0.65);margin-top:2px;" id="cmp-bar-count">0 / 2개 선택됨</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <button class="btn-do-compare" id="btn-do-cmp" onclick="doCompare()" disabled>비교하기</button>
+      <button class="btn-bar-cancel" onclick="exitCompareMode()">✕</button>
     </div>
   </div>
 
@@ -157,6 +188,78 @@ body{font-family:'Pretendard',sans-serif;background:var(--indigo-bg);padding-bot
     <button class="btn-logout" onclick="doLogout()">로그아웃</button>
   </div>
 
+</div>
+
+<!-- ── 비교 결과 모달 ── -->
+<div id="compare-modal">
+  <div class="cmp-inner">
+    <button class="cmp-close-btn" onclick="document.getElementById('compare-modal').style.display='none'">✕</button>
+    <h3>📊 시뮬레이션 비교</h3>
+
+    <div class="cmp-header">
+      <div class="cmp-head-card cmp-head-a">
+        <div class="cmp-head-label">A</div>
+        <div class="cmp-head-title" id="cmp-title-a">-</div>
+        <div class="cmp-head-date" id="cmp-date-a">-</div>
+      </div>
+      <div class="cmp-head-card cmp-head-b">
+        <div class="cmp-head-label">B</div>
+        <div class="cmp-head-title" id="cmp-title-b">-</div>
+        <div class="cmp-head-date" id="cmp-date-b">-</div>
+      </div>
+    </div>
+
+    <div class="cmp-block">
+      <div class="cmp-block-title">입력 조건</div>
+      <div id="cmp-inp-tbl"></div>
+    </div>
+    <div class="cmp-block">
+      <div class="cmp-block-title">최종 결과</div>
+      <div id="cmp-sum-tbl"></div>
+    </div>
+
+    <button onclick="document.getElementById('compare-modal').style.display='none'"
+      style="width:100%;padding:13px;border-radius:12px;border:1.5px solid var(--border);background:white;color:var(--text-sub);font-family:'Pretendard',sans-serif;font-size:0.88rem;font-weight:700;cursor:pointer;margin-top:4px;">
+      닫기
+    </button>
+  </div>
+</div>
+
+<!-- ── 상세 모달 ── -->
+<div id="sim-modal">
+  <div class="sim-modal-inner">
+    <button onclick="document.getElementById('sim-modal').style.display='none'"
+      style="position:absolute;top:16px;right:16px;background:var(--gray-lt);border:none;width:30px;height:30px;border-radius:50%;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
+    <h3 style="font-size:1.0rem;font-weight:900;color:var(--indigo-deep);margin-bottom:4px;" id="modal-title"></h3>
+    <p style="font-size:0.72rem;color:var(--text-sub);margin-bottom:20px;" id="modal-date"></p>
+    <div style="background:var(--indigo-lt);border-radius:12px;padding:14px;margin-bottom:14px;">
+      <div style="font-size:0.7rem;font-weight:700;color:var(--text-sub);letter-spacing:0.08em;margin-bottom:10px;">입력값</div>
+      <div id="modal-inputs" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"></div>
+    </div>
+    <div style="background:linear-gradient(135deg,#1e1e72,#2d2d9f);border-radius:12px;padding:14px;margin-bottom:14px;">
+      <div style="font-size:0.7rem;font-weight:700;color:rgba(255,255,255,0.6);letter-spacing:0.08em;margin-bottom:10px;">최종 결과</div>
+      <div id="modal-summary" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"></div>
+    </div>
+    <div style="font-size:0.7rem;font-weight:700;color:var(--text-sub);letter-spacing:0.08em;margin-bottom:8px;">주차별 데이터</div>
+    <div style="overflow-x:auto;border-radius:10px;border:1px solid var(--border);">
+      <table style="width:100%;border-collapse:collapse;font-size:0.75rem;min-width:400px;">
+        <thead>
+          <tr style="background:linear-gradient(135deg,#1e1e72,#2d2d9f);">
+            <th style="padding:8px;color:white;text-align:center;font-weight:700;">주차</th>
+            <th style="padding:8px;color:white;text-align:right;font-weight:700;">날짜</th>
+            <th style="padding:8px;color:white;text-align:right;font-weight:700;">재참여</th>
+            <th style="padding:8px;color:white;text-align:right;font-weight:700;">일지급금</th>
+            <th style="padding:8px;color:white;text-align:right;font-weight:700;">신용대금</th>
+          </tr>
+        </thead>
+        <tbody id="modal-weekly"></tbody>
+      </table>
+    </div>
+    <button onclick="deleteSimulation(window._currentSimId)"
+      style="width:100%;margin-top:16px;padding:12px;border-radius:10px;border:1.5px solid var(--red);background:white;color:var(--red);font-family:'Pretendard',sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;">
+      🗑 이 기록 삭제
+    </button>
+  </div>
 </div>
 
 <nav class="bottom-nav">
@@ -180,177 +283,248 @@ body{font-family:'Pretendard',sans-serif;background:var(--indigo-bg);padding-bot
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getFirestore, doc, getDoc, collection, query, where, getDocs, deleteDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
-const app = initializeApp({
+const FB = {
   apiKey:"AIzaSyCV4elOllJXF-Rx6qrYNDAwSSfVHKAQelQ",
   authDomain:"supersaver-kit.firebaseapp.com",
   projectId:"supersaver-kit",
   storageBucket:"supersaver-kit.firebasestorage.app",
   messagingSenderId:"800388848026",
   appId:"1:800388848026:web:1d64b6ffebf8544ecb0223"
-});
+};
+const app = initializeApp(FB);
 const auth = getAuth(app);
-const db = getFirestore(app);
+const db   = getFirestore(app);
+
+// 전역 상태
+window._simData = {};
+window._compareMode = false;
+window._sel = []; // 비교 선택된 id 2개
 
 onAuthStateChanged(auth, async (user) => {
-  if (!user) { window.location.href='../auth.html'; return; }
+  if (!user) { location.href='../auth.html'; return; }
   const snap = await getDoc(doc(db,'users',user.uid));
   if (!snap.exists() || snap.data().status !== 'approved') {
-    await signOut(auth); window.location.href='../auth.html'; return;
+    await signOut(auth); location.href='../auth.html'; return;
   }
-  const data = snap.data();
-  const initial = (data.name||'?')[0].toUpperCase();
-  document.getElementById('hero-avatar').textContent = initial;
-  document.getElementById('hero-name').textContent = data.name||'-';
-  document.getElementById('hero-email').textContent = data.email||'-';
-  document.getElementById('info-name').textContent = data.name||'-';
-  document.getElementById('info-email').textContent = data.email||'-';
+  const d = snap.data();
+  document.getElementById('hero-avatar').textContent = (d.name||'?')[0].toUpperCase();
+  document.getElementById('hero-name').textContent   = d.name||'-';
+  document.getElementById('hero-email').textContent  = d.email||'-';
+  document.getElementById('info-name').textContent   = d.name||'-';
+  document.getElementById('info-email').textContent  = d.email||'-';
   document.body.style.visibility = 'visible';
   window._auth = auth;
-  if (data.role === 'admin') {
-    document.getElementById('admin-link').style.display = 'inline-block';
-  }
-  loadSimulations(user.uid);
+  if (d.role === 'admin') document.getElementById('admin-link').style.display='inline-block';
+  loadSims(user.uid);
 });
 
-window.doLogout = async function() {
+window.doLogout = async () => {
   if (!confirm('로그아웃 하시겠습니까?')) return;
   await signOut(window._auth);
-  window.location.href = '../auth.html';
+  location.href = '../auth.html';
 };
 
-// 시뮬레이션 기록 로드
-async function loadSimulations(uid) {
+/* ─── 시뮬레이션 로드 ─── */
+async function loadSims(uid) {
   try {
-    const { initializeApp, getApps } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
-    const { getFirestore, collection, query, where, getDocs, doc, deleteDoc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
-    const app = getApps().length ? getApps()[0] : initializeApp({
-      apiKey:"AIzaSyCV4elOllJXF-Rx6qrYNDAwSSfVHKAQelQ",
-      authDomain:"supersaver-kit.firebaseapp.com",
-      projectId:"supersaver-kit",
-      storageBucket:"supersaver-kit.firebasestorage.app",
-      messagingSenderId:"800388848026",
-      appId:"1:800388848026:web:1d64b6ffebf8544ecb0223"
-    });
-    const db = getFirestore(app);
-    window._db = db;
-    window._deleteDoc = deleteDoc;
-    window._doc = doc;
-
-    // orderBy 제거 → 인덱스 불필요, JS에서 정렬
     const q = query(collection(db,'simulations'), where('userId','==',uid));
     const snap = await getDocs(q);
-    const sims = snap.docs.map(d => ({id:d.id,...d.data()}))
-      .sort((a,b) => {
-        const ta = a.createdAt?.seconds || 0;
-        const tb = b.createdAt?.seconds || 0;
-        return tb - ta; // 최신순
-      });
-
-    const listEl = document.getElementById('sim-list');
+    const sims = snap.docs.map(d=>({id:d.id,...d.data()}))
+      .sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
+    sims.forEach(s=>{ window._simData[s.id]=s; });
     document.getElementById('sim-count').textContent = `총 ${sims.length}건`;
-
-    if (sims.length === 0) {
-      listEl.innerHTML = '<div style="text-align:center;padding:24px;color:var(--text-sub);font-size:0.85rem;">저장된 시뮬레이션이 없습니다.<br>시뮬레이터에서 결과를 저장해보세요!</div>';
-      return;
-    }
-
-    listEl.innerHTML = sims.map(s => {
-      const dt = s.createdAt ? new Date(s.createdAt.seconds*1000).toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'}) : '-';
-      const inp = s.inputs || {};
-      return `<div style="padding:14px 0; border-bottom:1px solid var(--border); cursor:pointer;" onclick="showSimDetail('${s.id}')">
-        <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:10px;">
-          <div style="flex:1;">
-            <div style="font-size:0.9rem; font-weight:700; color:var(--indigo-deep); margin-bottom:4px;">${s.title||'제목 없음'}</div>
-            <div style="font-size:0.72rem; color:var(--text-sub); margin-bottom:6px;">${dt}</div>
-            <div style="display:flex; gap:6px; flex-wrap:wrap;">
-              <span style="background:var(--indigo-lt);color:var(--indigo);font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:10px;">원금 ${inp.baseApproved||'-'} USDT</span>
-              <span style="background:var(--mint-lt);color:var(--mint-dk);font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:10px;">${inp.weeks||'-'}주</span>
-            </div>
-          </div>
-          <div style="text-align:right; flex-shrink:0;">
-            <div style="font-size:0.72rem; color:var(--text-sub);">최종 가용</div>
-            <div style="font-size:0.95rem; font-weight:900; color:var(--indigo-deep);">${(s.summary||{}).finalApproved||'-'}</div>
-          </div>
-        </div>
-      </div>`;
-    }).join('');
-
-    // 클릭용 데이터 저장
-    window._simData = {};
-    sims.forEach(s => { window._simData[s.id] = s; });
-
+    renderList(sims);
   } catch(e) {
-    console.error(e);
-    document.getElementById('sim-list').innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-sub);font-size:0.82rem;">불러오기 실패. 새로고침해주세요.</div>';
+    document.getElementById('sim-list').innerHTML =
+      '<div style="text-align:center;padding:20px;color:var(--text-sub);font-size:0.82rem;">불러오기 실패. 새로고침해주세요.</div>';
   }
 }
 
-window.showSimDetail = function(id) {
+function renderList(sims) {
+  const isCmp = window._compareMode;
+  if (sims.length === 0) {
+    document.getElementById('sim-list').innerHTML =
+      '<div style="text-align:center;padding:24px;color:var(--text-sub);font-size:0.85rem;">저장된 시뮬레이션이 없습니다.<br>시뮬레이터에서 결과를 저장해보세요!</div>';
+    return;
+  }
+  document.getElementById('sim-list').innerHTML = sims.map(s => {
+    const dt = s.createdAt ? new Date(s.createdAt.seconds*1000).toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'}) : '-';
+    const inp = s.inputs||{};
+    const isChecked = window._sel.includes(s.id);
+    return `
+    <div class="sim-item" onclick="${isCmp ? `toggleCheck('${s.id}')` : `showDetail('${s.id}')`}">
+      <div class="sim-item-inner">
+        ${isCmp ? `<div class="sim-check ${isChecked?'checked':''}" id="chk-${s.id}">
+          <svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>` : ''}
+        <div style="flex:1;">
+          <div style="font-size:0.9rem;font-weight:700;color:var(--indigo-deep);margin-bottom:4px;">${s.title||'제목 없음'}</div>
+          <div style="font-size:0.72rem;color:var(--text-sub);margin-bottom:6px;">${dt}</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            <span style="background:var(--indigo-lt);color:var(--indigo);font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:10px;">원금 ${inp.baseApproved||'-'} USDT</span>
+            <span style="background:var(--mint-lt);color:var(--mint);font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:10px;">${inp.weeks||'-'}주</span>
+          </div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;">
+          <div style="font-size:0.72rem;color:var(--text-sub);">최종 신용대금</div>
+          <div style="font-size:0.95rem;font-weight:900;color:var(--indigo-deep);">${(s.summary||{}).finalApproved||'-'}</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ─── 비교 모드 ─── */
+window.toggleCompareMode = function() {
+  window._compareMode = !window._compareMode;
+  window._sel = [];
+  const btn = document.getElementById('btn-cmp-mode');
+  btn.textContent = window._compareMode ? '취소' : '비교 선택';
+  btn.classList.toggle('on', window._compareMode);
+  document.getElementById('compare-bar').classList.toggle('active', window._compareMode);
+  refreshList();
+  updateBar();
+};
+
+window.exitCompareMode = function() {
+  window._compareMode = false;
+  window._sel = [];
+  document.getElementById('btn-cmp-mode').textContent = '비교 선택';
+  document.getElementById('btn-cmp-mode').classList.remove('on');
+  document.getElementById('compare-bar').classList.remove('active');
+  refreshList();
+};
+
+window.toggleCheck = function(id) {
+  const sel = window._sel;
+  const idx = sel.indexOf(id);
+  if (idx >= 0) {
+    sel.splice(idx,1);
+  } else {
+    if (sel.length >= 2) {
+      const old = sel.shift();
+      const el = document.getElementById('chk-'+old);
+      if (el) el.classList.remove('checked');
+    }
+    sel.push(id);
+  }
+  const el = document.getElementById('chk-'+id);
+  if (el) el.classList.toggle('checked', sel.includes(id));
+  updateBar();
+};
+
+function updateBar() {
+  const n = window._sel.length;
+  document.getElementById('cmp-bar-count').textContent = `${n} / 2개 선택됨`;
+  document.getElementById('btn-do-cmp').disabled = (n !== 2);
+}
+
+function refreshList() {
+  const sims = Object.values(window._simData)
+    .sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
+  renderList(sims);
+}
+
+/* ─── 비교 실행 ─── */
+window.doCompare = function() {
+  const [idA,idB] = window._sel;
+  const a = window._simData[idA];
+  const b = window._simData[idB];
+  if (!a||!b) return;
+
+  const fdt = s => s.createdAt ? new Date(s.createdAt.seconds*1000).toLocaleDateString('ko-KR',{month:'short',day:'numeric'}) : '-';
+  document.getElementById('cmp-title-a').textContent = a.title||'제목 없음';
+  document.getElementById('cmp-title-b').textContent = b.title||'제목 없음';
+  document.getElementById('cmp-date-a').textContent = fdt(a);
+  document.getElementById('cmp-date-b').textContent = fdt(b);
+
+  const p = v => parseFloat((v||'').toString().replace(/[^0-9.\-]/g,''))||0;
+
+  const inpRows = [
+    ['원금 (신용대금)', s=>(s.inputs?.baseApproved||'-')+' USDT', null],
+    ['일 지급금',    s=>(s.inputs?.baseDaily||'-')+' USDT',      null],
+    ['기간',       s=>(s.inputs?.weeks||'-')+'주',              (a,b)=>p(a.inputs?.weeks)-p(b.inputs?.weeks)],
+    ['CR 가격',    s=>(s.inputs?.creditPrice||'-')+' USDT',    null],
+    ['SUT 가격',   s=>(s.inputs?.sutPrice||'-')+' USDT',       null],
+    ['SUT 변화율', s=>(s.inputs?.sutChangeRate||'-')+'%',      null],
+    ['CR 변화율',  s=>(s.inputs?.crChangeRate||'-')+'%',       null],
+  ];
+  const sumRows = [
+    ['최종 신용대금',    s=>(s.summary?.finalApproved||'-'), (a,b)=>p(a.summary?.finalApproved)-p(b.summary?.finalApproved)],
+    ['일 지급금',      s=>(s.summary?.finalDaily||'-'),    (a,b)=>p(a.summary?.finalDaily)-p(b.summary?.finalDaily)],
+    ['주 지급금',      s=>(s.summary?.finalWeekly||'-'),   (a,b)=>p(a.summary?.finalWeekly)-p(b.summary?.finalWeekly)],
+    ['총 주정산',    s=>(s.summary?.totalWeekly||'-'),   (a,b)=>p(a.summary?.totalWeekly)-p(b.summary?.totalWeekly)],
+    ['총 재참여',      s=>(s.summary?.totalContract||'-'), (a,b)=>p(a.summary?.totalContract)-p(b.summary?.totalContract)],
+    ['총 2단계비용', s=>(s.summary?.totalCost||'-'),     (a,b)=>p(b.summary?.totalCost)-p(a.summary?.totalCost)],
+  ];
+
+  document.getElementById('cmp-inp-tbl').innerHTML = buildTbl(a,b,inpRows);
+  document.getElementById('cmp-sum-tbl').innerHTML = buildTbl(a,b,sumRows);
+  document.getElementById('compare-modal').style.display = 'block';
+  document.getElementById('compare-modal').scrollTop = 0;
+};
+
+function buildTbl(a,b,rows) {
+  return rows.map(([lbl,fn,diffFn])=>{
+    const va=fn(a), vb=fn(b);
+    let ba='', bb='';
+    if (diffFn) {
+      const d=diffFn(a,b);
+      if (d>0) ba='<span class="win-badge win-a">▲</span>';
+      else if (d<0) bb='<span class="win-badge win-b">▲</span>';
+    }
+    return `<div class="cmp-row">
+      <div class="cmp-cell cmp-lbl">${lbl}</div>
+      <div class="cmp-cell cmp-a">${va}${ba}</div>
+      <div class="cmp-cell cmp-b">${vb}${bb}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ─── 상세 모달 ─── */
+window.showDetail = function(id) {
   const s = window._simData[id];
   if (!s) return;
   window._currentSimId = id;
-
-  document.getElementById('modal-title').textContent = s.title || '제목 없음';
+  document.getElementById('modal-title').textContent = s.title||'제목 없음';
   const dt = s.createdAt ? new Date(s.createdAt.seconds*1000).toLocaleString('ko-KR') : '-';
   document.getElementById('modal-date').textContent = `저장일시: ${dt}`;
-
-  // 입력값
-  const inp = s.inputs || {};
-  const inputItems = [
-    ['원금(가용)', inp.baseApproved+' USDT'],
-    ['일수익', inp.baseDaily+' USDT'],
-    ['기간', inp.weeks+'주'],
-    ['CR가격', inp.creditPrice+' USDT'],
-    ['SUT가격', inp.sutPrice+' USDT'],
-    ['SUT변화율', inp.sutChangeRate+'%'],
-    ['CR변화율', inp.crChangeRate+'%'],
-  ];
-  document.getElementById('modal-inputs').innerHTML = inputItems.map(([k,v]) =>
-    `<div><div style="font-size:0.65rem;color:var(--text-sub);margin-bottom:2px;">${k}</div><div style="font-size:0.82rem;font-weight:700;color:var(--indigo-deep);">${v}</div></div>`
-  ).join('');
-
-  // 요약 결과
-  const sum = s.summary || {};
-  const sumItems = [
-    ['최종 가용', sum.finalApproved],
-    ['일 수익', sum.finalDaily],
-    ['주 수익', sum.finalWeekly],
-    ['총 주정산', sum.totalWeekly],
-    ['총 계약', sum.totalContract],
-    ['총 2단계비용', sum.totalCost],
-  ];
-  document.getElementById('modal-summary').innerHTML = sumItems.map(([k,v]) =>
-    `<div><div style="font-size:0.65rem;color:rgba(255,255,255,0.6);margin-bottom:2px;">${k}</div><div style="font-size:0.82rem;font-weight:700;color:white;">${v||'-'}</div></div>`
-  ).join('');
-
-  // 주차별 데이터
-  const weekly = s.weeklyData || [];
-  document.getElementById('modal-weekly').innerHTML = weekly.map(w =>
+  const inp = s.inputs||{};
+  document.getElementById('modal-inputs').innerHTML = [
+    ['원금(신용대금)', inp.baseApproved+' USDT'],['일지급금', inp.baseDaily+' USDT'],
+    ['기간', inp.weeks+'주'],['CR가격', inp.creditPrice+' USDT'],
+    ['SUT가격', inp.sutPrice+' USDT'],['SUT변화율', inp.sutChangeRate+'%'],['CR변화율', inp.crChangeRate+'%'],
+  ].map(([k,v])=>`<div><div style="font-size:0.65rem;color:var(--text-sub);margin-bottom:2px;">${k}</div><div style="font-size:0.82rem;font-weight:700;color:var(--indigo-deep);">${v}</div></div>`).join('');
+  const sum=s.summary||{};
+  document.getElementById('modal-summary').innerHTML = [
+    ['최종 신용대금',sum.finalApproved],['일 지급금',sum.finalDaily],
+    ['주 지급금',sum.finalWeekly],['총 주정산',sum.totalWeekly],
+    ['총 재참여',sum.totalContract],['총 2단계비용',sum.totalCost],
+  ].map(([k,v])=>`<div><div style="font-size:0.65rem;color:rgba(255,255,255,0.6);margin-bottom:2px;">${k}</div><div style="font-size:0.82rem;font-weight:700;color:white;">${v||'-'}</div></div>`).join('');
+  document.getElementById('modal-weekly').innerHTML = (s.weeklyData||[]).map(w=>
     `<tr style="border-bottom:1px solid var(--border);">
-      <td style="padding:7px 8px; text-align:center; font-weight:700; color:var(--text-sub);">${w.week}</td>
-      <td style="padding:7px 8px; text-align:right; color:var(--indigo-deep);">${w.date}</td>
-      <td style="padding:7px 8px; text-align:right; color:var(--mint);">${w.contract||'-'}</td>
-      <td style="padding:7px 8px; text-align:right; color:var(--indigo);">${w.daily||'-'}</td>
-      <td style="padding:7px 8px; text-align:right; color:var(--indigo-deep);">${w.approved||'-'}</td>
-    </tr>`
-  ).join('');
-
-  document.getElementById('sim-modal').style.display = 'block';
-  document.getElementById('sim-modal').scrollTop = 0;
-}
+      <td style="padding:7px 8px;text-align:center;font-weight:700;color:var(--text-sub);">${w.week}</td>
+      <td style="padding:7px 8px;text-align:right;color:var(--indigo-deep);">${w.date}</td>
+      <td style="padding:7px 8px;text-align:right;color:var(--mint);">${w.contract||'-'}</td>
+      <td style="padding:7px 8px;text-align:right;color:var(--indigo);">${w.daily||'-'}</td>
+      <td style="padding:7px 8px;text-align:right;color:var(--indigo-deep);">${w.approved||'-'}</td>
+    </tr>`).join('');
+  document.getElementById('sim-modal').style.display='block';
+  document.getElementById('sim-modal').scrollTop=0;
+};
 
 window.deleteSimulation = async function(id) {
   if (!confirm('이 시뮬레이션 기록을 삭제하시겠습니까?')) return;
   try {
-    await window._deleteDoc(window._doc(window._db,'simulations',id));
-    document.getElementById('sim-modal').style.display = 'none';
-    const user = JSON.parse(sessionStorage.getItem('ssk_user')||'null');
-    if (user) loadSimulations(user.uid);
+    await deleteDoc(doc(db,'simulations',id));
+    document.getElementById('sim-modal').style.display='none';
+    delete window._simData[id];
+    const cnt = Object.keys(window._simData).length;
+    document.getElementById('sim-count').textContent = `총 ${cnt}건`;
+    refreshList();
   } catch(e) { alert('삭제 중 오류가 발생했습니다.'); }
-}
-
+};
 </script>
 </body>
 </html>
