@@ -333,54 +333,71 @@ p:last-child { margin-bottom: 0; }
 .term-card.red-term::before{background:var(--red);}
 
 
-/* ── 탭바 통일 ── */
+/* ── 탭바 ── */
 .bottom-nav{
-  position:fixed !important;bottom:0 !important;left:0 !important;right:0 !important;
-  z-index:9999 !important;background:white !important;
-  border-top:1px solid #e0e0f4 !important;display:flex !important;
-  height:60px !important;box-shadow:0 -4px 20px rgba(30,30,114,0.08) !important;
+  position:fixed!important;bottom:0!important;left:0!important;right:0!important;
+  z-index:9999!important;background:white!important;
+  border-top:1px solid #e0e0f4!important;display:flex!important;
+  height:60px!important;box-shadow:0 -4px 20px rgba(30,30,114,0.08)!important;
   will-change:transform;-webkit-backface-visibility:hidden;backface-visibility:hidden;
   transform:translate3d(0,0,0);-webkit-transform:translate3d(0,0,0);
 }
 @supports (padding-bottom:env(safe-area-inset-bottom)){
-  .bottom-nav{padding-bottom:env(safe-area-inset-bottom) !important;height:calc(60px + env(safe-area-inset-bottom)) !important;}
+  .bottom-nav{padding-bottom:env(safe-area-inset-bottom)!important;height:calc(60px + env(safe-area-inset-bottom))!important;}
 }
-.nav-item{flex:1 !important;display:flex !important;flex-direction:column !important;
-  align-items:center !important;justify-content:center !important;
-  gap:3px !important;text-decoration:none !important;
-  color:#bbbbdd !important;font-size:0.63rem !important;font-weight:700 !important;transition:color 0.15s;}
-.nav-item svg{width:22px !important;height:22px !important;stroke:currentColor;fill:none;stroke-width:2;}
-.nav-item.active{color:#2d2d9f !important;}
+.nav-item{flex:1!important;display:flex!important;flex-direction:column!important;
+  align-items:center!important;justify-content:center!important;
+  gap:3px!important;text-decoration:none!important;
+  color:#bbbbdd!important;font-size:0.63rem!important;font-weight:700!important;}
+.nav-item svg{width:22px!important;height:22px!important;stroke:currentColor;fill:none;stroke-width:2;}
+.nav-item.active{color:#2d2d9f!important;}
 
 </style>
 <script>
-function showTab(panelId, btn) {
-  var panels = document.querySelectorAll('.tab-panel');
-  for (var i = 0; i < panels.length; i++) {
-    panels[i].classList.remove('active');
-    panels[i].style.display = 'none';
+/* ── 탭 전환 ── */
+(function() {
+  function showTab(panelId, btn) {
+    var allPanels = document.querySelectorAll('.tab-panel');
+    var allChips  = document.querySelectorAll('.stage-chip');
+    for (var i = 0; i < allPanels.length; i++) {
+      allPanels[i].style.cssText = 'display:none!important';
+      allPanels[i].classList.remove('active');
+    }
+    for (var j = 0; j < allChips.length; j++) allChips[j].classList.remove('active');
+    if (btn) btn.classList.add('active');
+    var el = document.getElementById(panelId) || document.getElementById('tab-' + panelId);
+    if (el) {
+      el.style.cssText = 'display:block!important';
+      el.classList.add('active');
+    }
+    window.scrollTo({top: 0, behavior: 'smooth'});
   }
-  var chips = document.querySelectorAll('.stage-chip');
-  for (var j = 0; j < chips.length; j++) chips[j].classList.remove('active');
-  if (btn) btn.classList.add('active');
-  var el = document.getElementById(panelId) || document.getElementById('tab-' + panelId);
-  if (el) { el.classList.add('active'); el.style.display = 'block'; }
-  window.scrollTo({top: 0, behavior: 'smooth'});
-}
-document.addEventListener('DOMContentLoaded', function() {
-  var panels = document.querySelectorAll('.tab-panel');
-  for (var i = 0; i < panels.length; i++) {
-    panels[i].style.display = (i === 0) ? 'block' : 'none';
-    if (i === 0) panels[i].classList.add('active');
-    else panels[i].classList.remove('active');
+  window.showTab = showTab;
+
+  function initTabs() {
+    var allPanels = document.querySelectorAll('.tab-panel');
+    var allChips  = document.querySelectorAll('.stage-chip');
+    for (var i = 0; i < allPanels.length; i++) {
+      allPanels[i].style.cssText = (i===0) ? 'display:block!important' : 'display:none!important';
+      if (i===0) allPanels[i].classList.add('active');
+      else allPanels[i].classList.remove('active');
+    }
+    for (var j = 0; j < allChips.length; j++) {
+      if (j===0) allChips[j].classList.add('active');
+      else allChips[j].classList.remove('active');
+    }
   }
-});
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initTabs);
+  } else {
+    initTabs();
+  }
+})();
 </script>
 </head>
 <body>
 <!-- Firebase 로그인 상태 체크 -->
-
-
 <div class="hero">
   <h1>디지털 자산의 <em>구조와 이코노미</em></h1>
   <p class="hero-sub">코인·토큰부터 거래소·지갑·RWA까지<br>디지털 자산 생태계 전체를 이해합니다.</p>
@@ -712,4 +729,33 @@ document.addEventListener('DOMContentLoaded', function() {
 </div><!-- /container -->
 
 <nav class="bottom-nav">
+  <a class="nav-item" href="/SuperSaver-Kit/index.html">
+    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>홈
+  </a>
+  <a class="nav-item active" href="/SuperSaver-Kit/pages/guide_home.html">
+    <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>가이드
+  </a>
+  <a class="nav-item" href="/SuperSaver-Kit/pages/calculator.html">
+    <svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="16" y2="10"/></svg>계산기
+  </a>
+  <a class="nav-item" href="/SuperSaver-Kit/pages/simulator.html">
+    <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>시뮬레이터
+  </a>
 </nav>
+<script>
+(function(){
+  var nav=null;
+  function fixNav(){
+    if(!nav) nav=document.querySelector('.bottom-nav');
+    if(!nav) return;
+    nav.style.position='fixed';
+    nav.style.bottom='0px';
+  }
+  ['scroll','touchmove','touchend'].forEach(function(e){
+    window.addEventListener(e,fixNav,{passive:true});
+  });
+  document.addEventListener('DOMContentLoaded',fixNav);
+})();
+</script>
+</body>
+</html>
