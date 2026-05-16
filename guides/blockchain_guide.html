@@ -310,48 +310,34 @@ p:last-child { margin-bottom: 0; }
 </style>
 
 <script>
-(function() {
-  function showTab(panelId, btn) {
-    // 모든 패널 숨김
-    document.querySelectorAll('.tab-panel').forEach(function(p) {
-      p.classList.remove('active');
-      p.style.display = 'none';
-    });
-    // 모든 칩 비활성화
-    document.querySelectorAll('.stage-chip').forEach(function(c) {
-      c.classList.remove('active');
-    });
-    // 선택된 칩 활성화
-    if (btn) btn.classList.add('active');
-    // 패널 표시
-    var el = document.getElementById(panelId) || document.getElementById('tab-' + panelId);
-    if (el) {
-      el.classList.add('active');
-      el.style.display = 'block';
-    }
-    window.scrollTo({top: 0, behavior: 'smooth'});
+function showTab(panelId, btn) {
+  var panels = document.querySelectorAll('.tab-panel');
+  for (var i = 0; i < panels.length; i++) {
+    panels[i].classList.remove('active');
+    panels[i].style.display = 'none';
   }
-  window.showTab = showTab;
-
-  // 초기 로드: 1단계 패널 강제 표시
-  document.addEventListener('DOMContentLoaded', function() {
-    var panels = document.querySelectorAll('.tab-panel');
-    panels.forEach(function(p, i) {
-      if (i === 0) {
-        p.classList.add('active');
-        p.style.display = 'block';
-      } else {
-        p.classList.remove('active');
-        p.style.display = 'none';
-      }
-    });
-    var chips = document.querySelectorAll('.stage-chip');
-    chips.forEach(function(c, i) {
-      if (i === 0) c.classList.add('active');
-      else c.classList.remove('active');
-    });
-  });
-})();
+  var chips = document.querySelectorAll('.stage-chip');
+  for (var j = 0; j < chips.length; j++) {
+    chips[j].classList.remove('active');
+  }
+  if (btn) btn.classList.add('active');
+  var el = document.getElementById(panelId) || document.getElementById('tab-' + panelId);
+  if (el) { el.classList.add('active'); el.style.display = 'block'; }
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+function initTabs() {
+  var panels = document.querySelectorAll('.tab-panel');
+  for (var i = 0; i < panels.length; i++) {
+    panels[i].style.display = (i === 0) ? 'block' : 'none';
+    if (i === 0) panels[i].classList.add('active');
+    else panels[i].classList.remove('active');
+  }
+  var chips = document.querySelectorAll('.stage-chip');
+  for (var j = 0; j < chips.length; j++) {
+    if (j === 0) chips[j].classList.add('active');
+    else chips[j].classList.remove('active');
+  }
+}
 </script>
 </head>
 <body>
@@ -377,6 +363,7 @@ onAuthStateChanged(auth, async (user) => {
     await auth.signOut(); window.location.href='../auth.html'; return;
   }
   document.body.style.visibility='visible';
+  initTabs();
   const d=snap.data();
   sessionStorage.setItem('ssk_user',JSON.stringify({uid:user.uid,name:d.name,email:d.email,role:d.role||'user'}));
 });
