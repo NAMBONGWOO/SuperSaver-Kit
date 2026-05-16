@@ -261,7 +261,7 @@ p:last-child { margin-bottom: 0; }
 
 /* ── 비교 테이블 ── */
 .compare-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 10px; margin: 16px 0; }
-.compare-table { width: 100%; min-width: 360px; border-collapse: collapse; font-size: 0.85rem; }
+.compare-table { width: 100%; min-width: 480px; border-collapse: collapse; font-size: 0.85rem; }
 .compare-table th {
   background: linear-gradient(160deg, #1e1e72 0%, #2d2d9f 55%, #1e1e72 100%);
   color: white; padding: 10px 14px; text-align: left;
@@ -270,7 +270,7 @@ p:last-child { margin-bottom: 0; }
 .compare-table th:first-child { border-radius: 10px 0 0 0; }
 .compare-table th:last-child  { border-radius: 0 10px 0 0; }
 .compare-table td {
-  padding: 10px 14px; word-break: keep-all; white-space: normal; border-bottom: 1px solid var(--border);
+  padding: 10px 14px; border-bottom: 1px solid var(--border);
   color: #3a4a5c; vertical-align: middle;
 }
 .compare-table tr:last-child td { border-bottom: none; }
@@ -321,7 +321,7 @@ p:last-child { margin-bottom: 0; }
   margin-top: 12px;
   background: white; border-radius: 20px;
   border: 1px dashed var(--border);
-  padding: 14px;
+  padding: 24px;
   text-align: center;
   opacity: 0.6;
 }
@@ -469,25 +469,52 @@ p:last-child { margin-bottom: 0; }
   color: rgba(255,255,255,0.6);
 }
 
-</style>
 
-<script>
-function showTab(panelId, btn) {
-  var panels = document.querySelectorAll('.tab-panel');
-  for (var i = 0; i < panels.length; i++) {
-    panels[i].classList.remove('active');
-    panels[i].style.display = 'none';
-  }
-  var chips = document.querySelectorAll('.stage-chip');
-  for (var j = 0; j < chips.length; j++) {
-    chips[j].classList.remove('active');
-  }
-  if (btn) btn.classList.add('active');
-  var el = document.getElementById(panelId) || document.getElementById('tab-' + panelId);
-  if (el) { el.classList.add('active'); el.style.display = 'block'; }
-  window.scrollTo({top: 0, behavior: 'smooth'});
+/* ── 탭바 ── */
+.bottom-nav{
+  position:fixed !important;bottom:0 !important;left:0 !important;right:0 !important;
+  z-index:9999 !important;background:white !important;
+  border-top:1px solid #e0e0f4 !important;display:flex !important;
+  height:60px !important;box-shadow:0 -4px 20px rgba(30,30,114,0.08) !important;
+  will-change:transform;-webkit-backface-visibility:hidden;backface-visibility:hidden;
+  transform:translate3d(0,0,0);-webkit-transform:translate3d(0,0,0);
 }
-function initTabs() {
+@supports (padding-bottom:env(safe-area-inset-bottom)){
+  .bottom-nav{padding-bottom:env(safe-area-inset-bottom) !important;height:calc(60px + env(safe-area-inset-bottom)) !important;}
+}
+.nav-item{flex:1 !important;display:flex !important;flex-direction:column !important;
+  align-items:center !important;justify-content:center !important;
+  gap:3px !important;text-decoration:none !important;
+  color:#bbbbdd !important;font-size:0.63rem !important;font-weight:700 !important;transition:color 0.15s;}
+.nav-item svg{width:22px !important;height:22px !important;stroke:currentColor;fill:none;stroke-width:2;}
+.nav-item.active{color:#2d2d9f !important;}
+
+</style>
+</head>
+<body>
+<!-- Firebase 로그인 상태 체크 -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+const app = initializeApp({
+  apiKey:"AIzaSyCV4elOllJXF-Rx6qrYNDAwSSfVHKAQelQ",
+  authDomain:"supersaver-kit.firebaseapp.com",
+  projectId:"supersaver-kit",
+  storageBucket:"supersaver-kit.firebasestorage.app",
+  messagingSenderId:"800388848026",
+  appId:"1:800388848026:web:1d64b6ffebf8544ecb0223"
+});
+const auth = getAuth(app);
+const db = getFirestore(app);
+onAuthStateChanged(auth, async (user) => {
+  if (!user) { window.location.href='../auth.html'; return; }
+  const snap = await getDoc(doc(db,'users',user.uid));
+  if (!snap.exists() || snap.data().status !== 'approved') {
+    await signOut(auth); window.location.href='../auth.html'; return;
+  }
+  document.body.style.visibility = 'visible';
+  // 탭 초기화 — body가 보인 직후 실행
   var panels = document.querySelectorAll('.tab-panel');
   for (var i = 0; i < panels.length; i++) {
     panels[i].style.display = (i === 0) ? 'block' : 'none';
@@ -499,36 +526,22 @@ function initTabs() {
     if (j === 0) chips[j].classList.add('active');
     else chips[j].classList.remove('active');
   }
-}
+});
 </script>
-</head>
-<body>
-<!-- Firebase 로그인 상태 체크 -->
-<script type="module">
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-import { getFirestore, doc, getDoc, setDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
-const app = initializeApp({
-  apiKey: "AIzaSyCV4elOllJXF-Rx6qrYNDAwSSfVHKAQelQ",
-  authDomain: "supersaver-kit.firebaseapp.com",
-  projectId: "supersaver-kit",
-  storageBucket: "supersaver-kit.firebasestorage.app",
-  messagingSenderId: "800388848026",
-  appId: "1:800388848026:web:1d64b6ffebf8544ecb0223"
-});
-const auth = getAuth(app);
-const db = getFirestore(app);
-onAuthStateChanged(auth, async (user) => {
-  if (!user) { window.location.href='../auth.html'; return; }
-  const snap = await getDoc(doc(db,'users',user.uid));
-  if (!snap.exists() || snap.data().status !== 'approved') {
-    await auth.signOut(); window.location.href='../auth.html'; return;
+<script>
+function showTab(panelId, btn) {
+  var panels = document.querySelectorAll('.tab-panel');
+  for (var i = 0; i < panels.length; i++) {
+    panels[i].classList.remove('active');
+    panels[i].style.display = 'none';
   }
-  document.body.style.visibility='visible';
-  initTabs();
-  const d=snap.data();
-  sessionStorage.setItem('ssk_user',JSON.stringify({uid:user.uid,name:d.name,email:d.email,role:d.role||'user'}));
-});
+  var chips = document.querySelectorAll('.stage-chip');
+  for (var j = 0; j < chips.length; j++) chips[j].classList.remove('active');
+  if (btn) btn.classList.add('active');
+  var el = document.getElementById(panelId) || document.getElementById('tab-' + panelId);
+  if (el) { el.classList.add('active'); el.style.display = 'block'; }
+  window.scrollTo({top:0, behavior:'smooth'});
+}
 </script>
 
 <!-- ── 헤더 ── -->
@@ -1623,4 +1636,3 @@ onAuthStateChanged(auth, async (user) => {
     <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>내 정보
   </a>
 </nav>
-</body></html>
