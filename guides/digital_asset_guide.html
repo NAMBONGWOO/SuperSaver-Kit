@@ -405,8 +405,6 @@ onAuthStateChanged(auth, async (user) => {
   document.body.style.visibility='visible';
   const d=snap.data();
   sessionStorage.setItem('ssk_user',JSON.stringify({uid:user.uid,name:d.name,email:d.email,role:d.role||'user'}));
-  if (true) loadProgress();
-  else saveProgress('visited');
 });
 </script>
 
