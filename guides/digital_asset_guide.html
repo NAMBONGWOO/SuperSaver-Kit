@@ -36,7 +36,6 @@
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
-  visibility: hidden;
   font-family: 'Pretendard', sans-serif;
   background: var(--indigo-bg);
   color: var(--indigo-deep);
@@ -118,8 +117,8 @@ body {
 .stage-chip:hover:not(.active) { background: #e4e4ff; color: var(--indigo); }
 
 /* ── 탭 패널 ── */
-.tab-panel { display: none !important; }
-.tab-panel.active { display: block !important; }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
 
 /* ── 레이아웃 ── */
 .container { max-width: 860px; margin: 0 auto; padding: 0 16px 32px; }
@@ -333,65 +332,7 @@ p:last-child { margin-bottom: 0; }
 /* red term */
 .term-card.red-term::before{background:var(--red);}
 
-
-/* ── 탭바 ── */
-.bottom-nav{
-  position:fixed !important;bottom:0 !important;left:0 !important;right:0 !important;
-  z-index:9999 !important;background:white !important;
-  border-top:1px solid #e0e0f4 !important;display:flex !important;
-  height:60px !important;box-shadow:0 -4px 20px rgba(30,30,114,0.08) !important;
-  will-change:transform;-webkit-backface-visibility:hidden;backface-visibility:hidden;
-  transform:translate3d(0,0,0);-webkit-transform:translate3d(0,0,0);
-}
-@supports (padding-bottom:env(safe-area-inset-bottom)){
-  .bottom-nav{padding-bottom:env(safe-area-inset-bottom) !important;height:calc(60px + env(safe-area-inset-bottom)) !important;}
-}
-.nav-item{flex:1 !important;display:flex !important;flex-direction:column !important;
-  align-items:center !important;justify-content:center !important;
-  gap:3px !important;text-decoration:none !important;
-  color:#bbbbdd !important;font-size:0.63rem !important;font-weight:700 !important;transition:color 0.15s;}
-.nav-item svg{width:22px !important;height:22px !important;stroke:currentColor;fill:none;stroke-width:2;}
-.nav-item.active{color:#2d2d9f !important;}
-
 </style>
-</head>
-<body>
-<!-- Firebase 로그인 상태 체크 -->
-<script type="module">
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
-const app = initializeApp({
-  apiKey:"AIzaSyCV4elOllJXF-Rx6qrYNDAwSSfVHKAQelQ",
-  authDomain:"supersaver-kit.firebaseapp.com",
-  projectId:"supersaver-kit",
-  storageBucket:"supersaver-kit.firebasestorage.app",
-  messagingSenderId:"800388848026",
-  appId:"1:800388848026:web:1d64b6ffebf8544ecb0223"
-});
-const auth = getAuth(app);
-const db = getFirestore(app);
-onAuthStateChanged(auth, async (user) => {
-  if (!user) { window.location.href='../auth.html'; return; }
-  const snap = await getDoc(doc(db,'users',user.uid));
-  if (!snap.exists() || snap.data().status !== 'approved') {
-    await signOut(auth); window.location.href='../auth.html'; return;
-  }
-  document.body.style.visibility = 'visible';
-  // 탭 초기화 — body가 보인 직후 실행
-  var panels = document.querySelectorAll('.tab-panel');
-  for (var i = 0; i < panels.length; i++) {
-    panels[i].style.display = (i === 0) ? 'block' : 'none';
-    if (i === 0) panels[i].classList.add('active');
-    else panels[i].classList.remove('active');
-  }
-  var chips = document.querySelectorAll('.stage-chip');
-  for (var j = 0; j < chips.length; j++) {
-    if (j === 0) chips[j].classList.add('active');
-    else chips[j].classList.remove('active');
-  }
-});
-</script>
 <script>
 function showTab(panelId, btn) {
   var panels = document.querySelectorAll('.tab-panel');
@@ -404,9 +345,19 @@ function showTab(panelId, btn) {
   if (btn) btn.classList.add('active');
   var el = document.getElementById(panelId) || document.getElementById('tab-' + panelId);
   if (el) { el.classList.add('active'); el.style.display = 'block'; }
-  window.scrollTo({top:0, behavior:'smooth'});
+  window.scrollTo({top: 0, behavior: 'smooth'});
 }
+document.addEventListener('DOMContentLoaded', function() {
+  var panels = document.querySelectorAll('.tab-panel');
+  for (var i = 0; i < panels.length; i++) {
+    panels[i].style.display = (i === 0) ? 'block' : 'none';
+    if (i === 0) panels[i].classList.add('active');
+    else panels[i].classList.remove('active');
+  }
+});
 </script>
+</head>
+<body>
 
 <div class="hero">
   <h1>디지털 자산의 <em>구조와 이코노미</em></h1>
