@@ -118,8 +118,8 @@ body {
 .stage-chip:hover:not(.active) { background: #e4e4ff; color: var(--indigo); }
 
 /* ── 탭 패널 ── */
-.tab-panel { display: none; }
-.tab-panel.active { display: block; }
+.tab-panel { display: none !important; }
+.tab-panel.active { display: block !important; }
 
 /* ── 레이아웃 ── */
 .container { max-width: 860px; margin: 0 auto; padding: 0 16px 32px; }
@@ -334,6 +334,51 @@ p:last-child { margin-bottom: 0; }
 .term-card.red-term::before{background:var(--red);}
 
 </style>
+
+<script>
+(function() {
+  function showTab(panelId, btn) {
+    // 모든 패널 숨김
+    document.querySelectorAll('.tab-panel').forEach(function(p) {
+      p.classList.remove('active');
+      p.style.display = 'none';
+    });
+    // 모든 칩 비활성화
+    document.querySelectorAll('.stage-chip').forEach(function(c) {
+      c.classList.remove('active');
+    });
+    // 선택된 칩 활성화
+    if (btn) btn.classList.add('active');
+    // 패널 표시
+    var el = document.getElementById(panelId) || document.getElementById('tab-' + panelId);
+    if (el) {
+      el.classList.add('active');
+      el.style.display = 'block';
+    }
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  }
+  window.showTab = showTab;
+
+  // 초기 로드: 1단계 패널 강제 표시
+  document.addEventListener('DOMContentLoaded', function() {
+    var panels = document.querySelectorAll('.tab-panel');
+    panels.forEach(function(p, i) {
+      if (i === 0) {
+        p.classList.add('active');
+        p.style.display = 'block';
+      } else {
+        p.classList.remove('active');
+        p.style.display = 'none';
+      }
+    });
+    var chips = document.querySelectorAll('.stage-chip');
+    chips.forEach(function(c, i) {
+      if (i === 0) c.classList.add('active');
+      else c.classList.remove('active');
+    });
+  });
+})();
+</script>
 </head>
 <body>
 <!-- Firebase 로그인 상태 체크 -->
@@ -704,14 +749,4 @@ onAuthStateChanged(auth, async (user) => {
     <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>내 정보
   </a>
 </nav>
-<script>
-function showTab(panelId, btn) {
-  document.querySelectorAll(".tab-panel").forEach(function(p){ p.classList.remove("active"); });
-  document.querySelectorAll(".stage-chip").forEach(function(c){ c.classList.remove("active"); });
-  if (btn) btn.classList.add("active");
-  var el = document.getElementById(panelId) || document.getElementById("tab-" + panelId);
-  if (el) el.classList.add("active");
-  window.scrollTo({top:0, behavior:"smooth"});
-}
-</script>
 </body></html>
