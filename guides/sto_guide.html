@@ -478,25 +478,46 @@ p:last-child { margin-bottom: 0; }
 
 </style>
 <script>
-function showTab(panelId, btn) {
-  document.querySelectorAll('.tab-panel').forEach(function(p){
-    p.style.display = 'none';
-    p.classList.remove('active');
-  });
-  document.querySelectorAll('.stage-chip').forEach(function(c){ c.classList.remove('active'); });
-  if (btn) btn.classList.add('active');
-  var el = document.getElementById(panelId) || document.getElementById('tab-' + panelId);
-  if (el) { el.style.display = 'block'; el.classList.add('active'); }
-  window.scrollTo({top: 0, behavior: 'smooth'});
-}
-document.addEventListener('DOMContentLoaded', function() {
-  var panels = document.querySelectorAll('.tab-panel');
-  panels.forEach(function(p, i) {
-    p.style.display = i === 0 ? 'block' : 'none';
-    if (i === 0) p.classList.add('active');
-    else p.classList.remove('active');
-  });
-});
+/* ── 탭 전환 ── */
+(function() {
+  function showTab(panelId, btn) {
+    var allPanels = document.querySelectorAll('.tab-panel');
+    var allChips  = document.querySelectorAll('.stage-chip');
+    for (var i = 0; i < allPanels.length; i++) {
+      allPanels[i].style.cssText = 'display:none!important';
+      allPanels[i].classList.remove('active');
+    }
+    for (var j = 0; j < allChips.length; j++) allChips[j].classList.remove('active');
+    if (btn) btn.classList.add('active');
+    var el = document.getElementById(panelId) || document.getElementById('tab-' + panelId);
+    if (el) {
+      el.style.cssText = 'display:block!important';
+      el.classList.add('active');
+    }
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  }
+  window.showTab = showTab;
+
+  function initTabs() {
+    var allPanels = document.querySelectorAll('.tab-panel');
+    var allChips  = document.querySelectorAll('.stage-chip');
+    for (var i = 0; i < allPanels.length; i++) {
+      allPanels[i].style.cssText = (i===0) ? 'display:block!important' : 'display:none!important';
+      if (i===0) allPanels[i].classList.add('active');
+      else allPanels[i].classList.remove('active');
+    }
+    for (var j = 0; j < allChips.length; j++) {
+      if (j===0) allChips[j].classList.add('active');
+      else allChips[j].classList.remove('active');
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initTabs);
+  } else {
+    initTabs();
+  }
+})();
 </script>
 </head>
 <body>
