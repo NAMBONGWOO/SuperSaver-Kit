@@ -470,66 +470,33 @@ p:last-child { margin-bottom: 0; }
 
 
 /* ── 탭바 ── */
-.bottom-nav{
-  position:fixed!important;bottom:0!important;left:0!important;right:0!important;
-  z-index:9999!important;background:white!important;
-  border-top:1px solid #e0e0f4!important;display:flex!important;
-  height:60px!important;box-shadow:0 -4px 20px rgba(30,30,114,0.08)!important;
-  will-change:transform;-webkit-backface-visibility:hidden;backface-visibility:hidden;
-  transform:translate3d(0,0,0);-webkit-transform:translate3d(0,0,0);
-}
-@supports (padding-bottom:env(safe-area-inset-bottom)){
-  .bottom-nav{padding-bottom:env(safe-area-inset-bottom)!important;height:calc(60px + env(safe-area-inset-bottom))!important;}
-}
-.nav-item{flex:1!important;display:flex!important;flex-direction:column!important;
-  align-items:center!important;justify-content:center!important;
-  gap:3px!important;text-decoration:none!important;
-  color:#bbbbdd!important;font-size:0.63rem!important;font-weight:700!important;}
+.bottom-nav{position:fixed!important;bottom:0!important;left:0!important;right:0!important;z-index:9999!important;background:white!important;border-top:1px solid #e0e0f4!important;display:flex!important;height:60px!important;box-shadow:0 -4px 20px rgba(30,30,114,0.08)!important;will-change:transform;-webkit-backface-visibility:hidden;backface-visibility:hidden;transform:translate3d(0,0,0);-webkit-transform:translate3d(0,0,0);}
+@supports (padding-bottom:env(safe-area-inset-bottom)){.bottom-nav{padding-bottom:env(safe-area-inset-bottom)!important;height:calc(60px + env(safe-area-inset-bottom))!important;}}
+.nav-item{flex:1!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:3px!important;text-decoration:none!important;color:#bbbbdd!important;font-size:0.63rem!important;font-weight:700!important;}
 .nav-item svg{width:22px!important;height:22px!important;stroke:currentColor;fill:none;stroke-width:2;}
 .nav-item.active{color:#2d2d9f!important;}
 
 </style>
 <script>
-/* ── 탭 전환 ── */
-(function() {
-  function showTab(panelId, btn) {
-    var allPanels = document.querySelectorAll('.tab-panel');
-    var allChips  = document.querySelectorAll('.stage-chip');
-    for (var i = 0; i < allPanels.length; i++) {
-      allPanels[i].style.cssText = 'display:none!important';
-      allPanels[i].classList.remove('active');
-    }
-    for (var j = 0; j < allChips.length; j++) allChips[j].classList.remove('active');
-    if (btn) btn.classList.add('active');
-    var el = document.getElementById(panelId) || document.getElementById('tab-' + panelId);
-    if (el) {
-      el.style.cssText = 'display:block!important';
-      el.classList.add('active');
-    }
-    window.scrollTo({top: 0, behavior: 'smooth'});
-  }
-  window.showTab = showTab;
-
-  function initTabs() {
-    var allPanels = document.querySelectorAll('.tab-panel');
-    var allChips  = document.querySelectorAll('.stage-chip');
-    for (var i = 0; i < allPanels.length; i++) {
-      allPanels[i].style.cssText = (i===0) ? 'display:block!important' : 'display:none!important';
-      if (i===0) allPanels[i].classList.add('active');
-      else allPanels[i].classList.remove('active');
-    }
-    for (var j = 0; j < allChips.length; j++) {
-      if (j===0) allChips[j].classList.add('active');
-      else allChips[j].classList.remove('active');
-    }
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initTabs);
-  } else {
-    initTabs();
-  }
-})();
+function showTab(panelId, btn) {
+  document.querySelectorAll('.tab-panel').forEach(function(p){
+    p.style.display = 'none';
+    p.classList.remove('active');
+  });
+  document.querySelectorAll('.stage-chip').forEach(function(c){ c.classList.remove('active'); });
+  if (btn) btn.classList.add('active');
+  var el = document.getElementById(panelId) || document.getElementById('tab-' + panelId);
+  if (el) { el.style.display = 'block'; el.classList.add('active'); }
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+document.addEventListener('DOMContentLoaded', function() {
+  var panels = document.querySelectorAll('.tab-panel');
+  panels.forEach(function(p, i) {
+    p.style.display = i === 0 ? 'block' : 'none';
+    if (i === 0) p.classList.add('active');
+    else p.classList.remove('active');
+  });
+});
 </script>
 </head>
 <body>
