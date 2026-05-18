@@ -165,7 +165,7 @@ body{font-family:'Pretendard',sans-serif;background:var(--indigo-bg);padding-bot
   transform:translate3d(0,0,0);-webkit-transform:translate3d(0,0,0);
 }
 @supports (padding-bottom:env(safe-area-inset-bottom)){
-  .bottom-nav{padding-bottom:env(safe-area-inset-bottom) !important;height:calc(60px + env(safe-area-inset-bottom)) !important;}
+  .bottom-nav{padding-bottom:min(env(safe-area-inset-bottom), 12px) !important;height:calc(60px + min(env(safe-area-inset-bottom), 12px)) !important;}
 }
 .nav-item{flex:1 !important;display:flex !important;flex-direction:column !important;
   align-items:center !important;justify-content:center !important;
