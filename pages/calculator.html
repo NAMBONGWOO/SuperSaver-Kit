@@ -329,3 +329,63 @@ onAuthStateChanged(auth, async (user) => {
     <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>시뮬레이터
   </a>
 </nav>
+<script>
+    var input = document.getElementById('usdtInput');
+    var marketPriceInput = document.getElementById('marketPrice');
+    var creditPriceInput = document.getElementById('creditPrice');
+    var ratioAInput = document.getElementById('ratioA');
+    var ratioBInput = document.getElementById('ratioB');
+
+    var f = function(n, d) { d = d || 0; return n.toLocaleString(undefined, {minimumFractionDigits: d, maximumFractionDigits: d}); };
+    function formatComma(val) { return val.toString().replace(/[^0-9]/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
+    function getRawNum(val) { return parseFloat(val.replace(/,/g, "")) || 0; }
+    function handleInput(el) { el.value = formatComma(getRawNum(el.value)); calculate(); }
+    function stepChange(val) { input.value = formatComma(Math.max(0, getRawNum(input.value) + val)); calculate(); }
+
+    function calculate() {
+        var reserveUsdt = getRawNum(input.value);
+        var marketPrice = parseFloat(marketPriceInput.value) || 0;
+        var creditPrice = parseFloat(creditPriceInput.value) || 0;
+        var ratioA = (parseFloat(ratioAInput.value) / 100) || 0;
+        var ratioB = (parseFloat(ratioBInput.value) / 100) || 0;
+
+        if (reserveUsdt === 0 || creditPrice === 0) return;
+
+        var baseSutQuantity = (reserveUsdt * 1.2) / creditPrice;
+        var appBase = reserveUsdt * 2.4;
+
+        function updateUI(app, totalSut, ids) {
+            var sutCostUsdt = totalSut * marketPrice;
+            var principal = reserveUsdt + sutCostUsdt;
+            var margin = ((app / principal) - 1) * 100;
+            var daily = app / 365;
+            document.getElementById(ids.app).innerText = f(app) + ' USDT';
+            document.getElementById(ids.daily).innerText = f(daily, 3);
+            document.getElementById(ids.weekly).innerText = f(daily * 7, 2);
+            document.getElementById(ids.margin).innerText = '순마진율: +' + f(margin, 1) + '%';
+            if (ids.total) {
+                document.getElementById(ids.total).innerText = f(totalSut, 1) + ' SUT';
+                document.getElementById(ids.total + 'Buy').innerText = '(매수: ' + f(sutCostUsdt, 1) + ' USDT)';
+            }
+            if (ids.baseBuy) {
+                document.getElementById(ids.baseBuy).innerText = '(매수: ' + f(sutCostUsdt, 1) + ' USDT)';
+            }
+        }
+
+        document.getElementById('baseSut').innerText = f(baseSutQuantity, 1) + ' SUT';
+        updateUI(appBase, baseSutQuantity, {app:'app_base', daily:'d_base', weekly:'w_base', margin:'m_base', baseBuy:'baseBuy'});
+
+        var contractableBonusA = Math.floor((reserveUsdt * ratioA) / 100) * 100;
+        var sutBonusA = (contractableBonusA * 1.2) / creditPrice;
+        var appBonusA = contractableBonusA * 1.2;
+        updateUI(appBase + appBonusA, baseSutQuantity + sutBonusA, {app:'app_50', daily:'d_50', weekly:'w_50', margin:'m_50', total:'total50'});
+
+        var contractableBonusB = Math.floor((reserveUsdt * ratioB) / 100) * 100;
+        var sutBonusB = (contractableBonusB * 1.2) / creditPrice;
+        var appBonusB = contractableBonusB * 1.2;
+        updateUI(appBase + appBonusB, baseSutQuantity + sutBonusB, {app:'app_100', daily:'d_100', weekly:'w_100', margin:'m_100', total:'total100'});
+    }
+    calculate();
+</script>
+</body>
+</html>
