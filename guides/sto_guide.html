@@ -489,7 +489,7 @@ p:last-child { margin-bottom: 0; }
     }
     for (var j = 0; j < allChips.length; j++) allChips[j].classList.remove('active');
     if (btn) btn.classList.add('active');
-    var el = document.getElementById(panelId) || document.getElementById('tab-' + panelId);
+    var el = document.getElementById('tab-' + panelId);
     if (el) {
       el.style.cssText = 'display:block!important';
       el.classList.add('active');
